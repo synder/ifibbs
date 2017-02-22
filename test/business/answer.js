@@ -120,13 +120,13 @@ describe('获取问题回答列表', function () {
                 let list = res.body.result.list;
 
                 if(list.length > 0){
-                    chai.expect(list[0]).to.have.ownProperty('id');
                     chai.expect(list[0]).to.have.ownProperty('user_id');
                     chai.expect(list[0]).to.have.ownProperty('user_avatar');
                     chai.expect(list[0]).to.have.ownProperty('user_name');
-                    chai.expect(list[0]).to.have.ownProperty('question_id');
-                    chai.expect(list[0]).to.have.ownProperty('question_title');
-                    chai.expect(list[0]).to.have.ownProperty('question_collect_count');
+                    chai.expect(list[0]).to.have.ownProperty('answer_id');
+                    chai.expect(list[0]).to.have.ownProperty('answer_content');
+                    chai.expect(list[0]).to.have.ownProperty('answer_comment_count');
+                    chai.expect(list[0]).to.have.ownProperty('answer_favour_count');
                 }
 
                 done();
