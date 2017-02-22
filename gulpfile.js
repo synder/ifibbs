@@ -33,12 +33,12 @@ gulp.task('test', ['test_init_data'], function (done) {
         .pipe(mocha());
 
     stream.on('end', function () {
+        done();
         process.exit();
     });
 
     stream.on('error', function () {
-        process.exit(1);
-
         done();
+        process.exit(1);
     });
 });
