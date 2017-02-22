@@ -34,7 +34,7 @@ gulp.task('test', ['test_init_data'], function (done) {
 
     stream.on('end', function () {
         done();
-        process.exit();
+        process.exit(0);
     });
 
     stream.on('error', function () {
