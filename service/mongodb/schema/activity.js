@@ -19,8 +19,13 @@ const ActivitySchema = new Schema({
     favour_count    : {type: Number, required: true},   //点赞数量
     comment_count   : {type: Number, required: true},   //评论数量
     collect_count   : {type: Number, required: true},   //收藏数量
-    create_time     : {type: Date, default: Date.now},     //创建时间
-    update_time     : {type: Date, default: Date.now},     //更新时间
+    create_time     : {type: Date, default: Date.now, required: true},     //创建时间
+    update_time     : {type: Date, default: Date.now, required: true},     //更新时间
+},{
+    timestamps: {
+        createdAt: 'create_time',
+            updatedAt: 'update_time',
+    }
 });
 
 ActivitySchema.virtual('id', function () {

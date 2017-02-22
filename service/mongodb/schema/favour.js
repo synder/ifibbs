@@ -12,10 +12,15 @@ const ObjectId = Schema.Types.ObjectId;
 //文章===================================================
 const UserFavourArticleSchema = new Schema({
     status    : {type: Boolean, required: true},    //点赞状态
-    create_time : {type: Date, default: Date.now},    //创建时间
-    update_time : {type: Date, default: Date.now},    //更新时间
+    create_time : {type: Date, required: true, default: Date.now},    //创建时间
+    update_time : {type: Date, required: true, default: Date.now},    //更新时间
     target_id : {type: ObjectId, required: true, ref: 'Article'}, //点赞对象ID
     user_id   : {type: ObjectId, required: true, ref: 'User'},    //点赞用户ID
+}, {
+    timestamps: {
+        createdAt: 'create_time',
+        updatedAt: 'update_time',
+    }
 });
 
 UserFavourArticleSchema.virtual('id', function () {
@@ -35,10 +40,15 @@ UserFavourArticleSchema.statics.STATUS = {
 //回答===================================================
 const UserFavourAnswerSchema = new Schema({
     status    : {type: Boolean, required: true},    //点赞状态
-    create_time : {type: Date, required: true},    //创建时间
-    update_time : {type: Date, required: true},    //更新时间
+    create_time : {type: Date, required: true, default: Date.now},    //创建时间
+    update_time : {type: Date, required: true, default: Date.now},    //更新时间
     target_id : {type: ObjectId, required: true, ref: 'QuestionAnswer'}, //点赞对象ID
     user_id   : {type: ObjectId, required: true, ref: 'User'},    //点赞用户ID
+}, {
+    timestamps: {
+        createdAt: 'create_time',
+        updatedAt: 'update_time',
+    }
 });
 
 UserFavourAnswerSchema.virtual('id', function () {
@@ -46,18 +56,6 @@ UserFavourAnswerSchema.virtual('id', function () {
 });
 
 UserFavourAnswerSchema.index({user_id : 1, target_id: 1});
-
-UserFavourAnswerSchema.pre('validate', function (next) {
-    if(!this.create_time){
-        this.create_time = new Date();
-    }
-
-    if(!this.update_time){
-        this.update_time = new Date();
-    }
-
-    next();
-});
 
 //点赞状态
 UserFavourAnswerSchema.statics.STATUS = {
@@ -69,10 +67,15 @@ UserFavourAnswerSchema.statics.STATUS = {
 //评论===================================================
 const UserFavourAnswerCommentSchema = new Schema({
     status    : {type: Boolean, required: true},    //点赞状态
-    create_time : {type: Date, required: true},    //创建时间
-    update_time : {type: Date, required: true},    //更新时间
+    create_time : {type: Date, required: true, default: Date.now},    //创建时间
+    update_time : {type: Date, required: true, default: Date.now},    //更新时间
     target_id : {type: ObjectId, required: true, ref: 'AnswerComment'}, //点赞对象ID
     user_id   : {type: ObjectId, required: true, ref: 'User'},    //点赞用户ID
+}, {
+    timestamps: {
+        createdAt: 'create_time',
+        updatedAt: 'update_time',
+    }
 });
 
 UserFavourAnswerCommentSchema.virtual('id', function () {
@@ -80,18 +83,6 @@ UserFavourAnswerCommentSchema.virtual('id', function () {
 });
 
 UserFavourAnswerCommentSchema.index({user_id : 1, target_id: 1});
-
-UserFavourAnswerCommentSchema.pre('validate', function (next) {
-    if(!this.create_time){
-        this.create_time = new Date();
-    }
-
-    if(!this.update_time){
-        this.update_time = new Date();
-    }
-
-    next();
-});
 
 //点赞状态
 UserFavourAnswerCommentSchema.statics.STATUS = {

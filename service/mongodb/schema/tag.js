@@ -18,8 +18,13 @@ const QuestionTagSchema = new Schema({
     title      : {type: String,  required: true},  //标签名称
     icon       : {type: String, required: true},   //标签图标
     describe   : {type: String, required: true},   //问题描述
-    create_time   : {type: Date, default: Date.now},  //创建时间
-    update_time   : {type: Date, default: Date.now},  //更新时间
+    create_time   : {type: Date, default: Date.now, required: true},  //创建时间
+    update_time   : {type: Date, default: Date.now, required: true},  //更新时间
+}, {
+    timestamps: {
+        createdAt: 'create_time',
+        updatedAt: 'update_time',
+    }
 });
 
 

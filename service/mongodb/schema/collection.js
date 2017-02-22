@@ -15,13 +15,18 @@ const ObjectId = Schema.Types.ObjectId;
 const UserCollectionSchema = new Schema({
     status    : {type: Boolean, required: true},  //收藏状态
     type      : {type: Number, required: true},   //收藏类型
-    create_time : {type: Date, default: Date.now},   //创建时间
-    update_time : {type: Date, default: Date.now},   //更新时间
+    create_time : {type: Date, default: Date.now, required: true},   //创建时间
+    update_time : {type: Date, default: Date.now, required: true},   //更新时间
     question_id : {type: ObjectId, required: false, ref: 'Question'},        //收藏对象ID
     answer_id   : {type: ObjectId, required: false, ref: 'QuestionAnswer'},  //收藏对象ID
     subject_id  : {type: ObjectId, required: false, ref: 'Article'},         //收藏对象ID
     article_id  : {type: ObjectId, required: false, ref: 'Article'},         //收藏对象ID
     user_id     : {type: ObjectId, required: true, ref: 'User'},             //收藏用户ID
+}, {
+    timestamps: {
+        createdAt: 'create_time',
+        updatedAt: 'update_time',
+    }
 });
 
 UserCollectionSchema.virtual('id', function () {

@@ -23,10 +23,15 @@ const ArticleSchema = new Schema({
     favour_count    : {type: Number,  required: true},    //被赞次数
     comment_count   : {type: Number,  required: true},    //被评论次数
     collect_count   : {type: Number,  required: true},    //被收藏次数
-    create_time     : {type: Date,    default: Date.now},    //创建时间
-    update_time     : {type: Date,    default: Date.now},    //更新时间
+    create_time     : {type: Date,    default: Date.now,  required: true},    //创建时间
+    update_time     : {type: Date,    default: Date.now,  required: true},    //更新时间
     subject_id      : {type: ObjectId, required: false, ref: 'Subject'},  //文章所属主题
     create_user_id  : {type: ObjectId, required: false, ref: 'User'}      //创建人
+}, {
+    timestamps: {
+        createdAt: 'create_time',
+        updatedAt: 'update_time',
+    }
 });
 
 ArticleSchema.virtual('id', function () {
