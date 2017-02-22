@@ -24,7 +24,7 @@ const ActivitySchema = new Schema({
 },{
     timestamps: {
         createdAt: 'create_time',
-            updatedAt: 'update_time',
+        updatedAt: 'update_time',
     }
 });
 
