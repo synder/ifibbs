@@ -114,13 +114,13 @@ exports.getQuestionAnswerList = function(req, res, next){
 
         answers = answers.map(function (answer) {
             return {
-                id: answer.id,
                 user_id: answer.create_user_id.id,
                 user_avatar: answer.create_user_id.user_avatar,
                 user_name: answer.create_user_id.user_name,
-                question_id: answer.question_id.id,
-                question_title: answer.question_id.title,
-                question_collect_count: answer.question_id.collect_count,
+                answer_id: answer.id,
+                answer_content: answer.content,
+                answer_comment_count: answer.comment_count,
+                answer_favour_count: answer.favour_count,
             }
         });
 
