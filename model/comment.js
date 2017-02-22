@@ -22,8 +22,6 @@ exports.createNewAnswerComment = function (userID, answerID, comment, callback) 
         comment_count: 0,
         favour_count: 0,
         collect_count: 0,
-        create_time: 0,
-        update_time: 0,
         question_id: comment.question_id,
         answer_id: answerID,
         create_user_id: userID,
