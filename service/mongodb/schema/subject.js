@@ -18,8 +18,8 @@ const SubjectSchema = new Schema({
     cover          : {type: String, required: true},   //专题封面图URL
     status         : {type: Number, required: true},   //专题状态
     display_order  : {type: Number, required: true},   //专题显示顺序
-    create_time    : {type: Date, required: true},     //创建时间
-    update_time    : {type: Date, required: true},     //更新时间
+    create_time    : {type: Date, default: Date.now},     //创建时间
+    update_time    : {type: Date, default: Date.now},     //更新时间
 });
 
 SubjectSchema.virtual('id').get(function () {
@@ -28,17 +28,6 @@ SubjectSchema.virtual('id').get(function () {
 
 SubjectSchema.index({create_time : 1});
 
-SubjectSchema.pre('validate', function (next) {
-    if(!this.create_time){
-        this.create_time = new Date();
-    }
-
-    if(!this.update_time){
-        this.update_time = new Date();
-    }
-
-    next();
-});
 
 //回答状态
 SubjectSchema.statics.STATUS = {

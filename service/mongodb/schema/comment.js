@@ -17,8 +17,8 @@ const AnswerCommentSchema = new Schema({
     comment_count   : {type: Number, required: true},    //评论数量
     favour_count    : {type: Number, required: true},    //点赞数量
     collect_count   : {type: Number, required: true},    //收藏数量
-    create_time     : {type: Date, required: true},      //创建时间
-    update_time     : {type: Date, required: true},      //更新时间
+    create_time     : {type: Date, default: Date.now},      //创建时间
+    update_time     : {type: Date, default: Date.now},      //更新时间
     question_id     : {type: ObjectId, required: true, ref: 'Question'},        //问题ID
     answer_id       : {type: ObjectId, required: true, ref: 'QuestionAnswer'},  //回答ID
     create_user_id  : {type: ObjectId, required: true, ref: 'User'},            //评论用户
@@ -32,17 +32,6 @@ AnswerCommentSchema.virtual('id', function () {
 
 AnswerCommentSchema.index({create_time : 1});
 
-AnswerCommentSchema.pre('validate', function (next) {
-    if(!this.create_time){
-        this.create_time = new Date();
-    }
-
-    if(!this.update_time){
-        this.update_time = new Date();
-    }
-
-    next();
-});
 
 //回答状态
 AnswerCommentSchema.statics.STATUS = {

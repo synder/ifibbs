@@ -18,21 +18,10 @@ const QuestionTagSchema = new Schema({
     title      : {type: String,  required: true},  //标签名称
     icon       : {type: String, required: true},   //标签图标
     describe   : {type: String, required: true},   //问题描述
-    create_time   : {type: Date, required: true},  //创建时间
-    update_time   : {type: Date, required: true},  //更新时间
+    create_time   : {type: Date, default: Date.now},  //创建时间
+    update_time   : {type: Date, default: Date.now},  //更新时间
 });
 
-QuestionTagSchema.pre('validate', function (next) {
-    if(!this.create_time){
-        this.create_time = new Date();
-    }
-
-    if(!this.update_time){
-        this.update_time = new Date();
-    }
-
-    next();
-});
 
 QuestionTagSchema.virtual('id').get(function () {
     return this._id;

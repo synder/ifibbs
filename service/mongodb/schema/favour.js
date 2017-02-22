@@ -12,8 +12,8 @@ const ObjectId = Schema.Types.ObjectId;
 //文章===================================================
 const UserFavourArticleSchema = new Schema({
     status    : {type: Boolean, required: true},    //点赞状态
-    create_time : {type: Date, required: true},    //创建时间
-    update_time : {type: Date, required: true},    //更新时间
+    create_time : {type: Date, default: Date.now},    //创建时间
+    update_time : {type: Date, default: Date.now},    //更新时间
     target_id : {type: ObjectId, required: true, ref: 'Article'}, //点赞对象ID
     user_id   : {type: ObjectId, required: true, ref: 'User'},    //点赞用户ID
 });
@@ -24,17 +24,6 @@ UserFavourArticleSchema.virtual('id', function () {
 
 UserFavourArticleSchema.index({user_id : 1, target_id: 1});
 
-UserFavourArticleSchema.pre('validate', function (next) {
-    if(!this.create_time){
-        this.create_time = new Date();
-    }
-
-    if(!this.update_time){
-        this.update_time = new Date();
-    }
-
-    next();
-});
 
 //点赞状态
 UserFavourArticleSchema.statics.STATUS = {

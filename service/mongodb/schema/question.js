@@ -19,21 +19,9 @@ const QuestionSchema = new Schema({
     favour_count    : {type: Number, required: true},  //点赞数量
     attention_count : {type: Number, required: true},  //关注数量
     collect_count   : {type: Number, required: true},  //收藏数量
-    create_time     : {type: Date, required: true},    //创建时间
-    update_time     : {type: Date, required: true},    //更新时间
+    create_time     : {type: Date, default: Date.now},    //创建时间
+    update_time     : {type: Date, default: Date.now},    //更新时间
     create_user_id  : {type: ObjectId, required: true, ref: 'User'} //发表用户
-});
-
-QuestionSchema.pre('validate', function (next) {
-    if(!this.create_time){
-        this.create_time = new Date();
-    }
-
-    if(!this.update_time){
-        this.update_time = new Date();
-    }
-
-    next();
 });
 
 

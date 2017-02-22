@@ -17,8 +17,8 @@ const UserNotificationSchema = new Schema({
     title       : {type: String, required: true},  //通知标题
     content     : {type: String, required: true},  //通知内容
     user_id     : {type: ObjectId, required: true},//用户ID
-    create_time : {type: Date, required: true},    //创建时间
-    update_time : {type: Date, required: true},    //更新时间
+    create_time : {type: Date, default: Date.now},    //创建时间
+    update_time : {type: Date, default: Date.now},    //更新时间
 });
 
 UserNotificationSchema.virtual('id', function () {
@@ -27,17 +27,6 @@ UserNotificationSchema.virtual('id', function () {
 
 UserNotificationSchema.index({user_id : 1, target_id: 1});
 
-UserNotificationSchema.pre('validate', function (next) {
-    if(!this.create_time){
-        this.create_time = new Date();
-    }
-
-    if(!this.update_time){
-        this.update_time = new Date();
-    }
-
-    next();
-});
 
 //通知状态
 UserNotificationSchema.statics.STATUS = {

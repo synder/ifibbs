@@ -15,8 +15,8 @@ const ObjectId = Schema.Types.ObjectId;
 const UserCollectionSchema = new Schema({
     status    : {type: Boolean, required: true},  //收藏状态
     type      : {type: Number, required: true},   //收藏类型
-    create_time : {type: Date, required: true},   //创建时间
-    update_time : {type: Date, required: true},   //更新时间
+    create_time : {type: Date, default: Date.now},   //创建时间
+    update_time : {type: Date, default: Date.now},   //更新时间
     question_id : {type: ObjectId, required: false, ref: 'Question'},        //收藏对象ID
     answer_id   : {type: ObjectId, required: false, ref: 'QuestionAnswer'},  //收藏对象ID
     subject_id  : {type: ObjectId, required: false, ref: 'Article'},         //收藏对象ID
@@ -29,18 +29,6 @@ UserCollectionSchema.virtual('id', function () {
 });
 
 UserCollectionSchema.index({user_id : 1, target_id: 1});
-
-UserCollectionSchema.pre('validate', function (next) {
-    if(!this.create_time){
-        this.create_time = new Date();
-    }
-
-    if(!this.update_time){
-        this.update_time = new Date();
-    }
-
-    next();
-});
 
 
 //点赞状态

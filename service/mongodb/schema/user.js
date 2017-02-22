@@ -21,8 +21,8 @@ const UserSchema = new Schema({
     user_name    : {type: String, required: true},   //用户名
     user_profile : {type: String, required: true},   //用户简介
     user_avatar  : {type: String, required: true},   //用户头像
-    create_time  : {type: Date, required: true},     //创建时间
-    update_time  : {type: Date, required: true},     //更新时间
+    create_time  : {type: Date, default: Date.now},     //创建时间
+    update_time  : {type: Date, default: Date.now},     //更新时间
     user_gender  : {type: Boolean, required: false}, //用户性别
     user_mobile  : {type: String, required: false},  //用户手机
     work_info    : {type: String, required: false},  //用户性别
@@ -39,17 +39,6 @@ UserSchema.virtual('id').get(function () {
     return this._id.toString();
 });
 
-UserSchema.pre('validate', function (next) {
-    if(!this.create_time){
-        this.create_time = new Date();
-    }
-
-    if(!this.update_time){
-        this.update_time = new Date();
-    }
-
-    next();
-});
 
 //账户状态
 UserSchema.statics.STATUS = {
