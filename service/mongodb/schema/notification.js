@@ -11,7 +11,7 @@ const ObjectId = Schema.Types.ObjectId;
 
 //用户===================================================
 const UserNotificationSchema = new Schema({
-    status      : {type: Boolean, required: true}, //通知状态
+    status      : {type: Number, required: true}, //通知状态
     category    : {type: Number, required: true},  //通知类别
     type        : {type: Number, required: true},  //通知类型
     title       : {type: String, required: true},  //通知标题

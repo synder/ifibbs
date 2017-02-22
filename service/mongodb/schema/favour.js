@@ -9,9 +9,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId;
 
+const STATUS = {
+    UNFAVOUR : 0,  //取消点赞
+    FAVOUR : 1     //点赞
+};
+
 //文章===================================================
 const UserFavourArticleSchema = new Schema({
-    status    : {type: Boolean, required: true},    //点赞状态
+    status      : {type: Number, required: true},    //点赞状态
     create_time : {type: Date, required: true, default: Date.now},    //创建时间
     update_time : {type: Date, required: true, default: Date.now},    //更新时间
     target_id : {type: ObjectId, required: true, ref: 'Article'}, //点赞对象ID
@@ -31,15 +36,12 @@ UserFavourArticleSchema.index({user_id : 1, target_id: 1});
 
 
 //点赞状态
-UserFavourArticleSchema.statics.STATUS = {
-    UNFAVOUR : false, //取消点赞
-    FAVOUR : true     //点赞
-};
+UserFavourArticleSchema.statics.STATUS = STATUS;
 
 
 //回答===================================================
 const UserFavourAnswerSchema = new Schema({
-    status    : {type: Boolean, required: true},    //点赞状态
+    status    : {type: Number, required: true},    //点赞状态
     create_time : {type: Date, required: true, default: Date.now},    //创建时间
     update_time : {type: Date, required: true, default: Date.now},    //更新时间
     target_id : {type: ObjectId, required: true, ref: 'QuestionAnswer'}, //点赞对象ID
@@ -58,15 +60,12 @@ UserFavourAnswerSchema.virtual('id', function () {
 UserFavourAnswerSchema.index({user_id : 1, target_id: 1});
 
 //点赞状态
-UserFavourAnswerSchema.statics.STATUS = {
-    UNFAVOUR : false, //取消点赞
-    FAVOUR : true     //点赞
-};
+UserFavourAnswerSchema.statics.STATUS = STATUS;
 
 
 //评论===================================================
 const UserFavourAnswerCommentSchema = new Schema({
-    status    : {type: Boolean, required: true},    //点赞状态
+    status      : {type: Number, required: true},    //点赞状态
     create_time : {type: Date, required: true, default: Date.now},    //创建时间
     update_time : {type: Date, required: true, default: Date.now},    //更新时间
     target_id : {type: ObjectId, required: true, ref: 'AnswerComment'}, //点赞对象ID
@@ -85,10 +84,7 @@ UserFavourAnswerCommentSchema.virtual('id', function () {
 UserFavourAnswerCommentSchema.index({user_id : 1, target_id: 1});
 
 //点赞状态
-UserFavourAnswerCommentSchema.statics.STATUS = {
-    UNFAVOUR : false, //取消点赞
-    FAVOUR : true     //点赞
-};
+UserFavourAnswerCommentSchema.statics.STATUS = STATUS;
 
 exports.UserFavourArticleSchema = UserFavourArticleSchema;
 exports.UserFavourAnswerSchema = UserFavourAnswerSchema;

@@ -13,7 +13,7 @@ const ObjectId = Schema.Types.ObjectId;
 
 //文章=======================================================
 const UserCollectionSchema = new Schema({
-    status    : {type: Boolean, required: true},  //收藏状态
+    status    : {type: Number, required: true},   //收藏状态
     type      : {type: Number, required: true},   //收藏类型
     create_time : {type: Date, default: Date.now, required: true},   //创建时间
     update_time : {type: Date, default: Date.now, required: true},   //更新时间
@@ -38,8 +38,8 @@ UserCollectionSchema.index({user_id : 1, target_id: 1});
 
 //点赞状态
 UserCollectionSchema.statics.STATUS = {
-    COLLECTED : true,        //已经收藏
-    UNCOLLECTED : false      //未收藏
+    COLLECTED : 1,        //已经收藏
+    UNCOLLECTED : 0       //未收藏
 };
 
 

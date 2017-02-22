@@ -10,13 +10,13 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId;
 
 const STATUS = {
-    ATTENTION : true,        //关注
-    NO_ATTENTION : false     //不关注
+    ATTENTION : 1,        //关注
+    NO_ATTENTION : 0     //不关注
 };
 
 //用户关注问题和专题=========================================
 const AttentionQuestionSchema = new Schema({
-    status    : {type: Boolean, required: true},                      //关注状态
+    status    : {type: Number, required: true},                      //关注状态
     user_id   : {type: ObjectId, required: true, ref: 'User'},        //关注用户ID
     create_time : {type: Date, default: Date.now, required: true},     //创建时间
     update_time : {type: Date, default: Date.now, required: true},     //更新时间
@@ -43,7 +43,7 @@ AttentionQuestionSchema.statics.STATUS = STATUS;
 
 //用户关注专题==============================================
 const AttentionSubjectSchema = new Schema({
-    status    : {type: Boolean, required: true},                    //关注状态
+    status    : {type: Number, required: true},                    //关注状态
     create_time : {type: Date, default: Date.now, required: true},     //创建时间
     update_time : {type: Date, default: Date.now, required: true},     //更新时间
     user_id   : {type: ObjectId, required: true, ref: 'User'},      //关注用户ID
@@ -69,7 +69,7 @@ AttentionSubjectSchema.statics.STATUS = STATUS;
 
 //用户关注用户==============================================
 const AttentionUserSchema = new Schema({
-    status    : {type: Boolean, required: true},          //关注状态
+    status    : {type: Number, required: true},          //关注状态
     create_time : {type: Date, default: Date.now, required: true},           //创建时间
     update_time : {type: Date, default: Date.now, required: true},           //更新时间
     user_id   : {type: ObjectId, required: true, ref: 'User'},         //关注用户ID

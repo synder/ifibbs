@@ -12,11 +12,11 @@ const ObjectId = Schema.Types.ObjectId;
 
 //用户===================================================
 const SubjectSchema = new Schema({
+    status         : {type: Number, required: true},   //专题状态
     title          : {type: String, required: true},   //专题名称
     describe       : {type: String, required: true},   //专题描述
     icon           : {type: String, required: true},   //专题图标URL
     cover          : {type: String, required: true},   //专题封面图URL
-    status         : {type: Number, required: true},   //专题状态
     display_order  : {type: Number, required: true},   //专题显示顺序
     create_time    : {type: Date, default: Date.now, required: true},     //创建时间
     update_time    : {type: Date, default: Date.now, required: true},     //更新时间
