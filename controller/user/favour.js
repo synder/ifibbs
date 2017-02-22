@@ -59,7 +59,7 @@ exports.removeAnswerFromFavour = function(req, res, next){
  * @desc 用户对文章点赞
  * */
 exports.addArticleToFavour = function(req, res, next){
-    let articleID = req.query.article_id;
+    let articleID = req.body.article_id;
 
     let userID = req.session.id;
 
@@ -82,7 +82,7 @@ exports.addArticleToFavour = function(req, res, next){
  * @desc 用户取消对文章点赞
  * */
 exports.removeArticleFromFavour = function(req, res, next){
-    let articleID = req.query.article_id;
+    let articleID = req.body.article_id;
 
     let userID = req.session.id;
 
@@ -106,7 +106,7 @@ exports.removeArticleFromFavour = function(req, res, next){
  * @desc 用户对文章点赞
  * */
 exports.addAnswerCommentToFavour = function(req, res, next){
-    let commentID = req.query.comment_id;
+    let commentID = req.body.comment_id;
 
     let userID = req.session.id;
 
