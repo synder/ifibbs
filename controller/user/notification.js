@@ -97,3 +97,20 @@ exports.getUserBusinessNotification = function(req, res, next){
         }
     });
 };
+
+
+/**
+ * @desc 标记通知为已读
+ * */
+exports.changeNotificationToReaded = function (req, res, next) {
+    let notificationIDS = req.body.notification_ids;
+    let userID = req.session.id;
+    
+    res.json({
+        flag: '0000',
+        msg: '',
+        result: {
+            ok: true
+        }
+    });
+};
