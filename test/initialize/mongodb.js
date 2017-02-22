@@ -20,6 +20,8 @@ const User = mongodb.model('User');
  * @desc 初始化用户数据
  * */
 const initMongodbUserCollection = function (callback) {
+    
+    let avatar = 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518';
 
     let userDoc = [
         {
@@ -27,7 +29,7 @@ const initMongodbUserCollection = function (callback) {
             status: User.STATUS.NORMAL, //用户状态
             user_name: 'synder',   //用户名
             user_profile: Mock.Random.ctitle(10, 20),   //用户简介
-            user_avatar: Mock.Random.url(),   //用户头像
+            user_avatar: avatar,   //用户头像
             create_time: new Date(),     //创建时间
             update_time: new Date(),     //更新时间
             user_gender: false, //用户性别
@@ -41,7 +43,7 @@ const initMongodbUserCollection = function (callback) {
             status: User.STATUS.NORMAL,   //用户状态
             user_name: 'sam',   //用户名
             user_profile: Mock.Random.ctitle(10, 20),   //用户简介
-            user_avatar: Mock.Random.url(),   //用户头像
+            user_avatar: avatar,   //用户头像
             create_time: new Date(),     //创建时间
             update_time: new Date(),     //更新时间
             user_gender: false, //用户性别
@@ -62,11 +64,13 @@ const initMongodbUserCollection = function (callback) {
  * @desc 初始化标签数据库
  * */
 const initMongodbQuestionTagsCollection = function (callback) {
+
+    let icon = 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518';
     
     let tags = [{
         status: QuestionTag.STATUS.RECOMMEND,
         title: '基金',
-        icon: Mock.Random.url(),
+        icon: icon,
         describe: '基金（Fund）从广义上说，基金是指为了某种目的而设立的具有一定数量的资金。主要包括信托投资基金、公积金、保险基金、退休基金，各种基金会的基金。人们平常所说的基金主要是指证券投资基金',
     }];
 
@@ -74,7 +78,7 @@ const initMongodbQuestionTagsCollection = function (callback) {
         tags.push({
             status: QuestionTag.STATUS.RECOMMEND,
             title: Mock.Random.ctitle(2, 4),
-            icon: Mock.Random.url(),
+            icon: icon,
             describe: Mock.Random.ctitle(20, 30),
         });
     }
@@ -83,7 +87,7 @@ const initMongodbQuestionTagsCollection = function (callback) {
         tags.push({
             status: QuestionTag.STATUS.ENABLE,
             title: Mock.Random.ctitle(2, 4),
-            icon: Mock.Random.url(),
+            icon: icon,
             describe: Mock.Random.ctitle(20, 30),
         });
     }
