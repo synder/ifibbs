@@ -9,6 +9,8 @@ const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
 
 const UserCollection = mongodb.model('UserCollection');
+const QuestionAnswer = mongodb.model('QuestionAnswer');
+const Article = mongodb.model('Article');
 
 /**
  * @desc 获取用户收藏的回答列表
@@ -80,7 +82,9 @@ exports.addAnswerToCollection = function (userID, questionID, answerID, callback
         type: UserCollection.TYPES.ANSWER,
         user_id: userID,
         answer_id: answerID,
-        question_id: questionID
+        question_id: questionID,
+        create_time: new Date(),
+        update_time: new Date(),
     };
 
     UserCollection.update(condition, update, {upsert: true}, function (err, result) {
@@ -88,7 +92,14 @@ exports.addAnswerToCollection = function (userID, questionID, answerID, callback
             return callback(err);
         }
 
-        callback(null, result.ok === 1);
+        if(result.upserted == null && result.nModified){
+            return callback(null, false);
+        }
+
+        //更新收藏数
+        QuestionAnswer.update({_id: answerID}, {$inc: {collect_count: 1}}, function (err) {
+            callback(err, true);
+        });
     });
 };
 
@@ -105,7 +116,10 @@ exports.removeAnswerFromCollection = function (userID, answerID, callback) {
     };
 
     let update = {
-        status: UserCollection.STATUS.UNCOLLECTED,
+        $set:{
+            status: UserCollection.STATUS.UNCOLLECTED,
+            update_time: new Date(),
+        }
     };
 
     UserCollection.update(condition, update, function (err, result) {
@@ -113,7 +127,15 @@ exports.removeAnswerFromCollection = function (userID, answerID, callback) {
             return callback(err);
         }
 
-        callback(null, result.ok === 1);
+        if(result.nModified === 0){
+            return callback(null, false);
+        }
+
+        //更新收藏数
+        QuestionAnswer.update({_id: answerID}, {$inc: {collect_count: -1}}, function (err) {
+            callback(err, true);
+        });
+        
     });
 };
 
@@ -132,7 +154,9 @@ exports.addArticleToCollection = function (userID, subjectID, articleID, callbac
         type: UserCollection.TYPES.ANSWER,
         user_id: userID,
         article_id: articleID,
-        subject_id: subjectID
+        subject_id: subjectID,
+        create_time: new Date(),
+        update_time: new Date(),
     };
 
     UserCollection.update(condition, update, {upsert: true}, function (err, result) {
@@ -140,7 +164,14 @@ exports.addArticleToCollection = function (userID, subjectID, articleID, callbac
             return callback(err);
         }
 
-        callback(null, result.ok === 1);
+        if(result.upserted == null && result.nModified){
+            return callback(null, false);
+        }
+
+        //更新收藏数
+        Article.update({_id: articleID}, {$inc: {collect_count: 1}}, function (err) {
+            callback(err, true);
+        });
     });
 };
 
@@ -157,14 +188,25 @@ exports.removeArticleFromCollection = function (userID, articleID, callback) {
     };
 
     let update = {
-        status: UserCollection.STATUS.UNCOLLECTED,
+        $set: {
+            status: UserCollection.STATUS.UNCOLLECTED,
+            update_time: new Date(),
+        }
     };
+    
 
     UserCollection.update(condition, update, function (err, result) {
         if(err){
             return callback(err);
         }
 
-        callback(null, result.ok === 1);
+        if(result.nModified === 0){
+            return callback(null, false);
+        }
+
+        //更新收藏数
+        Article.update({_id: articleID}, {$inc: {collect_count: -1}}, function (err) {
+            callback(err, true);
+        });
     });
 };

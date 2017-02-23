@@ -19,14 +19,9 @@ const QuestionSchema = new Schema({
     favour_count    : {type: Number, required: true},  //点赞数量
     attention_count : {type: Number, required: true},  //关注数量
     collect_count   : {type: Number, required: true},  //收藏数量
-    create_time     : {type: Date, default: Date.now, required: true},    //创建时间
-    update_time     : {type: Date, default: Date.now, required: true},    //更新时间
+    create_time     : {type: Date,   required: true},    //创建时间
+    update_time     : {type: Date,   required: true},    //更新时间
     create_user_id  : {type: ObjectId, required: true, ref: 'User'} //发表用户
-}, {
-    timestamps: {
-        createdAt: 'create_time',
-        updatedAt: 'update_time',
-    }
 });
 
 

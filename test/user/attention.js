@@ -64,7 +64,7 @@ describe('用户关注问题', function() {
 describe('用户取消关注问题', function() {
 
     let questionID = null;
-    
+
     before(function(done) {
 
         request(app)
@@ -109,9 +109,9 @@ describe('用户取消关注问题', function() {
                     });
             });
     });
-    
+
     it('#用户取消关注问题', function (done) {
-        
+
         request(app)
             .delete('/user/attention/question')
             .send({
@@ -160,9 +160,9 @@ describe('用户关注专题', function() {
 });
 
 describe('用户取消关注专题', function() {
-    
+
     let subjectID = '58aaae950e95c9205f3db5de';
-    
+
     before(function(done) {
         request(app)
             .put('/user/attention/subject')
@@ -184,7 +184,7 @@ describe('用户取消关注专题', function() {
                 done();
             });
     });
-    
+
     it('#用户取消关注专题状态', function (done) {
 
         request(app)
@@ -235,7 +235,7 @@ describe('用户关注用户', function() {
 });
 
 describe('用户取消关注用户', function() {
-    
+
     before(function(done) {
         request(app)
             .put('/user/attention/user')
@@ -257,7 +257,7 @@ describe('用户取消关注用户', function() {
                 done();
             });
     });
-    
+
     it('#用户取消关注用户状态', function (done) {
 
         request(app)
@@ -283,7 +283,7 @@ describe('用户取消关注用户', function() {
 });
 
 describe('用户关注的问题列表', function(){
-    
+
     before(function(done) {
         request(app)
             .put('/user/question')
@@ -327,9 +327,9 @@ describe('用户关注的问题列表', function(){
                     });
             });
     });
-    
+
     it('#返回用户关注的问题列表', function(done) {
-        
+
         request(app)
             .get('/user/attention/questions')
             .query({
@@ -345,12 +345,12 @@ describe('用户关注的问题列表', function(){
                 chai.expect(res.body).to.have.property('flag', '0000');
                 chai.expect(res.body).to.have.property('msg', '');
                 chai.expect(res.body).to.have.ownProperty('result');
-                
+
                 chai.expect(res.body.result).to.have.ownProperty('count');
                 chai.expect(res.body.result).to.have.ownProperty('list');
 
                 let list = res.body.result.list;
-                
+
                 if(list.length > 0){
                     chai.expect(list[0]).to.have.ownProperty('user_id');
                     chai.expect(list[0]).to.have.ownProperty('user_avatar');
@@ -361,14 +361,14 @@ describe('用户关注的问题列表', function(){
                     chai.expect(list[0]).to.have.ownProperty('question_attention_count');
                     chai.expect(list[0]).to.have.ownProperty('question_answer_count');
                 }
-                
+
                 done();
             });
     });
 });
 
 describe('用户关注的用户列表', function(){
-    
+
     before(function(done) {
         request(app)
             .put('/user/attention/user')
@@ -390,9 +390,9 @@ describe('用户关注的用户列表', function(){
                 done();
             });
     });
-    
+
     it('#返回用户关注问的用户列表', function(done) {
-        
+
         request(app)
             .get('/user/attention/users')
             .query({
@@ -427,7 +427,7 @@ describe('用户关注的用户列表', function(){
 });
 
 describe('用户关注问的专题列表', function(){
-    
+
     before(function(done) {
         request(app)
             .put('/user/attention/subject')
@@ -449,7 +449,7 @@ describe('用户关注问的专题列表', function(){
                 done();
             });
     });
-    
+
     it('#返回用户关注问的专题列表', function(done) {
 
         request(app)

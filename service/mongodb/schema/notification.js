@@ -17,13 +17,8 @@ const UserNotificationSchema = new Schema({
     title       : {type: String, required: true},  //通知标题
     content     : {type: String, required: true},  //通知内容
     user_id     : {type: ObjectId, required: true},//用户ID
-    create_time : {type: Date, default: Date.now, required: true},    //创建时间
-    update_time : {type: Date, default: Date.now, required: true},    //更新时间
-}, {
-    timestamps: {
-        createdAt: 'create_time',
-        updatedAt: 'update_time',
-    }
+    create_time : {type: Date,     required: true},    //创建时间
+    update_time : {type: Date,     required: true},    //更新时间
 });
 
 UserNotificationSchema.virtual('id', function () {

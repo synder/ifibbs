@@ -72,6 +72,8 @@ const initMongodbQuestionTagsCollection = function (callback) {
         title: '基金',
         icon: icon,
         describe: '基金（Fund）从广义上说，基金是指为了某种目的而设立的具有一定数量的资金。主要包括信托投资基金、公积金、保险基金、退休基金，各种基金会的基金。人们平常所说的基金主要是指证券投资基金',
+        create_time: new Date(),
+        update_time: new Date()
     }];
 
     for (let i = 0; i < 12; i++) {
@@ -80,6 +82,8 @@ const initMongodbQuestionTagsCollection = function (callback) {
             title: Mock.Random.ctitle(2, 4),
             icon: icon,
             describe: Mock.Random.ctitle(20, 30),
+            create_time: new Date(),
+            update_time: new Date()
         });
     }
 
@@ -89,6 +93,8 @@ const initMongodbQuestionTagsCollection = function (callback) {
             title: Mock.Random.ctitle(2, 4),
             icon: icon,
             describe: Mock.Random.ctitle(20, 30),
+            create_time: new Date(),
+            update_time: new Date()
         });
     }
 

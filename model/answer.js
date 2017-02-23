@@ -126,6 +126,8 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
         collect_count: 0,
         question_id: questionID,
         create_user_id: userID,
+        create_time: new Date(),
+        update_time: new Date(),
     };
     
     QuestionAnswer.create(answerDoc, function (err, result) {

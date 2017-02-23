@@ -23,7 +23,7 @@ describe('用户对回答点赞', function() {
                 chai.expect(res.body).to.have.property('msg', '');
 
                 chai.expect(res.body).to.have.ownProperty('result');
-                chai.expect(res.body.result).to.have.property('ok', true);
+                chai.expect(res.body.result).to.have.ownProperty('ok');
 
                 done();
             });
@@ -48,7 +48,7 @@ describe('用户对回答评论点赞', function() {
                 chai.expect(res.body).to.have.property('msg', '');
 
                 chai.expect(res.body).to.have.ownProperty('result');
-                chai.expect(res.body.result).to.have.property('ok', true);
+                chai.expect(res.body.result).to.have.ownProperty('ok');
 
                 done();
             });
@@ -73,7 +73,7 @@ describe('用户对文章点赞', function() {
                 chai.expect(res.body).to.have.property('msg', '');
 
                 chai.expect(res.body).to.have.ownProperty('result');
-                chai.expect(res.body.result).to.have.property('ok', true);
+                chai.expect(res.body.result).to.have.ownProperty('ok');
 
                 done();
             });
@@ -100,7 +100,7 @@ describe('用户取消对回答点赞', function() {
                 chai.expect(res.body).to.have.property('msg', '');
 
                 chai.expect(res.body).to.have.ownProperty('result');
-                chai.expect(res.body.result).to.have.property('ok', true);
+                chai.expect(res.body.result).to.have.ownProperty('ok');
 
                 done();
             });
@@ -123,7 +123,7 @@ describe('用户取消对回答点赞', function() {
                 chai.expect(res.body).to.have.property('msg', '');
 
                 chai.expect(res.body).to.have.ownProperty('result');
-                chai.expect(res.body.result).to.have.property('ok', true);
+                chai.expect(res.body.result).to.have.ownProperty('ok');
 
                 done();
             });
@@ -150,7 +150,7 @@ describe('用户取消对回答评论点赞', function() {
                 chai.expect(res.body).to.have.property('msg', '');
 
                 chai.expect(res.body).to.have.ownProperty('result');
-                chai.expect(res.body.result).to.have.property('ok', true);
+                chai.expect(res.body.result).to.have.ownProperty('ok');
 
                 done();
             });
@@ -173,7 +173,7 @@ describe('用户取消对回答评论点赞', function() {
                 chai.expect(res.body).to.have.property('msg', '');
 
                 chai.expect(res.body).to.have.ownProperty('result');
-                chai.expect(res.body.result).to.have.property('ok', true);
+                chai.expect(res.body.result).to.have.ownProperty('ok');
 
                 done();
             });
@@ -200,7 +200,7 @@ describe('用户取消对文章点赞', function() {
                 chai.expect(res.body).to.have.property('msg', '');
 
                 chai.expect(res.body).to.have.ownProperty('result');
-                chai.expect(res.body.result).to.have.property('ok', true);
+                chai.expect(res.body.result).to.have.ownProperty('ok');
 
                 done();
             });
@@ -223,7 +223,7 @@ describe('用户取消对文章点赞', function() {
                 chai.expect(res.body).to.have.property('msg', '');
 
                 chai.expect(res.body).to.have.ownProperty('result');
-                chai.expect(res.body.result).to.have.property('ok', true);
+                chai.expect(res.body.result).to.have.ownProperty('ok');
 
                 done();
             });

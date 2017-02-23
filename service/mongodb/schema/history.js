@@ -13,16 +13,11 @@ const ObjectId = Schema.Types.ObjectId;
 const UserHistorySchema = new Schema({
     status    : {type: Number, required: true},    //历史状态
     type      : {type: Number, required: true},    //历史类型
-    create_time : {type: Date, default: Date.now, required: true},    //创建时间
-    update_time : {type: Date, default: Date.now, required: true},    //更新时间
-    user_id   : {type: ObjectId, required: true, ref: 'User'},         //浏览用户ID
-    question_id : {type: ObjectId, required: false, ref: 'Question'},  //浏览问题ID
-    article_id : {type: ObjectId, required: false, ref: 'Article'},    //浏览文章ID
-}, {
-    timestamps: {
-        createdAt: 'create_time',
-        updatedAt: 'update_time',
-    }
+    create_time : {type: Date, required: true},    //创建时间
+    update_time : {type: Date, required: true},    //更新时间
+    user_id     : {type: ObjectId, required: true,  ref: 'User'},     //浏览用户ID
+    question_id : {type: ObjectId, required: false, ref: 'Question'}, //浏览问题ID
+    article_id  : {type: ObjectId, required: false, ref: 'Article'},  //浏览文章ID
 });
 
 UserHistorySchema.virtual('id', function () {
