@@ -4,39 +4,39 @@
  * @desc
  */
 
-const notificationModel=require('../../model/notification');
+const notificationModel = require('../../model/notification');
 
 /**
  * @desc 获取用户系统通知
  * */
-exports.getUserSystemNotification = function(req, res, next){
-    let pageIndex = req.query.page_index;
+exports.getUserSystemNotification = function (req, res, next) {
     let pageSize = req.query.page_size;
-    let pageSkip=req.query.page_skip;
-    let userId=req.session.id;
+    let pageSkip = req.query.page_skip;
+    let userId = req.session.id;
 
-    notificationModel.getSysNotificationList(userId,pageSkip,pageSize,function (err, results) {
-        if(err){
+    notificationModel.getSysNotificationList(userId, pageSkip, pageSize, function (err, results) {
+        if (err) {
             return next(err);
         }
         let count = results.count;
         let list = [];
 
-        results.list.forEach((l)=>{
+        results.notifications.forEach(function(notification) {
             list.push({
-            "id":l._id,
-            "title": l.title,
-            "content": l.content,
-            "type": l.type, //1 发布了问题
-            "add_on": l.target_id?l.target_id:null
-        })
-    });
+                id: notification._id,
+                title: notification.title,
+                content: notification.content,
+                type: notification.type, 
+                add_on: notification.target_id ? notification.target_id : null
+            })
+        });
+
         res.json({
-            "flag": "0000",
-            "msg": "",
-            "result": {
-                "count":count,
-                "list":list
+            flag: '0000',
+            msg: '',
+            result: {
+                count: count,
+                list: list
             }
         })
     });
@@ -46,36 +46,38 @@ exports.getUserSystemNotification = function(req, res, next){
 /**
  * @desc 获取用户业务通知
  * */
-exports.getUserBusinessNotification = function(req, res, next){
-    let pageIndex = req.query.page_index;
+exports.getUserBusinessNotification = function (req, res, next) {
     let pageSize = req.query.page_size;
     let pageSkip = req.query.page_skip;
     let userId = req.session.id;
 
-    notificationModel.getBusNotificationList(userId,pageSkip,pageSize,(err,results)=>{
-        if(err){
+    notificationModel.getBusNotificationList(userId, pageSkip, pageSize, function(err, results) {
+        if (err) {
             return next(err);
         }
+
         let count = results.count;
-    let list = [];
-    results.list.forEach((l)=>{
-        list.push({
-            "id":l._id,
-            "title": l.title,
-            "content": l.content,
-            "type": l.type, //1 发布了问题
-            "add_on": l.target_id?l.target_id:null
+        let list = [];
+
+        results.notifications.forEach(function(notification) {
+            list.push({
+                id: notification._id,
+                title: notification.title,
+                content: notification.content,
+                type: notification.type,
+                add_on: notification.target_id ? notification.target_id : null
+            })
+        });
+
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                count: count,
+                list: list
+            }
         })
     });
-    res.json({
-        "flag": "0000",
-        "msg": "",
-        "result": {
-            "count":count,
-            "list":list
-        }
-    })
-});
 };
 
 
@@ -86,18 +88,28 @@ exports.changeNotificationToReaded = function (req, res, next) {
     let notificationIDS = req.body.notification_ids;
     let userID = req.session.id;
 
-    notificationModel.changeNotificationToReaded(userID,notificationIDS,(err,success)=>{
-        if(err){
+    if(!Array.isArray(notificationIDS)){
+        return res.json({
+            flag: '0000',
+            msg: '请传入数组',
+            result: {
+
+            }
+        });
+    }
+
+    notificationModel.changeNotificationToReaded(userID, notificationIDS, function(err, success) {
+        if (err) {
             return next(err);
         }
+
         res.json({
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success
             }
         });
     })
 
 };
-
