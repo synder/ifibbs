@@ -26,7 +26,7 @@ exports.getUserSystemNotification = function (req, res, next) {
                 id: notification._id,
                 title: notification.title,
                 content: notification.content,
-                type: notification.type, 
+                type: notification.type,
                 add_on: notification.target_id ? notification.target_id : null
             })
         });
@@ -51,7 +51,7 @@ exports.getUserBusinessNotification = function (req, res, next) {
     let pageSkip = req.query.page_skip;
     let userId = req.session.id;
 
-    notificationModel.getBusNotificationList(userId, pageSkip, pageSize, function(err, results) {
+    notificationModel.getBusinessNotificationList(userId, pageSkip, pageSize, function(err, results) {
         if (err) {
             return next(err);
         }
