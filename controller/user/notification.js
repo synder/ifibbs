@@ -4,6 +4,7 @@
  * @desc
  */
 
+const notificationModel=require('../../model/notification');
 
 /**
  * @desc 获取用户系统通知
@@ -11,43 +12,33 @@
 exports.getUserSystemNotification = function(req, res, next){
     let pageIndex = req.query.page_index;
     let pageSize = req.query.page_size;
+    let pageSkip=req.query.page_skip;
+    let userId=req.session.id;
 
-    res.json({
-        "flag": "0000",
-        "msg": "",
-        "result": {
-            "count": 2,
-            "list": [
-                {
-                    "id": "",
-                    "title": "通知标题",
-                    "content": "通知内容",
-                    "type": 1, //1 发布了问题
-                    "add_on": "问题ID",
-                },
-                {
-                    "id": "",
-                    "title": "通知标题",
-                    "content": "通知内容",
-                    "type": 2, //2 问题被管理员加精
-                    "add_on": "问题ID",
-                },
-                {
-                    "id": "",
-                    "title": "通知标题",
-                    "content": "通知内容",
-                    "type": 3, //3 问题不管理员删除
-                    "add_on": "问题ID",
-                },
-                {
-                    "id": "",
-                    "title": "通知标题",
-                    "content": "通知内容",
-                    "type": 4, //4 活动通知
-                    "add_on": "活动url",
-                }
-            ]
+    notificationModel.getSysNotificationList(userId,pageSkip,pageSize,function (err, results) {
+        if(err){
+            return next(err);
         }
+        let count = results.count;
+        let list = [];
+
+        results.list.forEach((l)=>{
+            list.push({
+            "id":l._id,
+            "title": l.title,
+            "content": l.content,
+            "type": l.type, //1 发布了问题
+            "add_on": l.target_id?l.target_id:null
+        })
+    });
+        res.json({
+            "flag": "0000",
+            "msg": "",
+            "result": {
+                "count":count,
+                "list":list
+            }
+        })
     });
 };
 
@@ -58,42 +49,55 @@ exports.getUserSystemNotification = function(req, res, next){
 exports.getUserBusinessNotification = function(req, res, next){
     let pageIndex = req.query.page_index;
     let pageSize = req.query.page_size;
+    let pageSkip = req.query.page_skip;
+    let userId = req.session.id;
 
+    notificationModel.getBusNotificationList(userId,pageSkip,pageSize,(err,results)=>{
+        if(err){
+            return next(err);
+        }
+        let count = results.count;
+    let list = [];
+    results.list.forEach((l)=>{
+        list.push({
+            "id":l._id,
+            "title": l.title,
+            "content": l.content,
+            "type": l.type, //1 发布了问题
+            "add_on": l.target_id?l.target_id:null
+        })
+    });
     res.json({
         "flag": "0000",
         "msg": "",
         "result": {
-            "count": 2,
-            "list": [
-                {
-                    "id": "",
-                    "title": "通知标题",
-                    "content": "通知内容",
-                    "type": 1, //1 问题被评论
-                    "add_on": "问题ID",
-                },
-                {
-                    "id": "",
-                    "title": "通知标题",
-                    "content": "通知内容",
-                    "type": 2, //2 回答被赞
-                    "add_on": "问题ID",
-                },
-                {
-                    "id": "",
-                    "title": "通知标题",
-                    "content": "通知内容",
-                    "type": 3, //3 问题被分享
-                    "add_on": "问题ID",
-                },
-                {
-                    "id": "",
-                    "title": "通知标题",
-                    "content": "通知内容",
-                    "type": 4, //4 回答被分享
-                    "add_on": "问题ID",
-                },
-            ]
+            "count":count,
+            "list":list
         }
-    });
+    })
+});
 };
+
+
+/**
+ * @desc 标记通知为已读
+ * */
+exports.changeNotificationToReaded = function (req, res, next) {
+    let notificationIDS = req.body.notification_ids;
+    let userID = req.session.id;
+
+    notificationModel.changeNotificationToReaded(userID,notificationIDS,(err,success)=>{
+        if(err){
+            return next(err);
+        }
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                ok: success
+            }
+        });
+    })
+
+};
+
