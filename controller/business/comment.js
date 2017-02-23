@@ -16,6 +16,14 @@ exports.getAnswerCommentList = function (req, res, next) {
     let questionID = req.query.question_id;
     let answerID = req.query.answer_id;
 
+    if(!questionID){
+        return next(new BadRequestError('question_id is needed'));
+    }
+
+    if(!answerID){
+        return next(new BadRequestError('answer_id is needed'));
+    }
+
     commentModel.getAnswerCommentList(answerID, pageSkip, pageSize, function (err, results) {
         if(err){
             return next(err);

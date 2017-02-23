@@ -15,6 +15,14 @@ exports.addAnswerToFavour = function(req, res, next){
     
     let userID = req.session.id;
 
+    if(!questionID){
+        return next(new BadRequestError('question_id is needed'));
+    }
+
+    if(!answerID){
+        return next(new BadRequestError('answer_id is needed'));
+    }
+
     favourModel.createFavourToAnswer(userID, questionID, answerID, function (err, success) {
        if(err){
            return next(err);
@@ -38,6 +46,10 @@ exports.removeAnswerFromFavour = function(req, res, next){
     
     let userID = req.session.id;
 
+    if(!answerID){
+        return next(new BadRequestError('answer_id is needed'));
+    }
+
     favourModel.cancelFavourToAnswer(userID, answerID, function (err, success) {
         if(err){
             return next(err);
@@ -58,10 +70,18 @@ exports.removeAnswerFromFavour = function(req, res, next){
  * @desc 用户对文章点赞
  * */
 exports.addArticleToFavour = function(req, res, next){
-    let subjectID = req.body.subject_id; //可为空
+    
+    //必填参数
     let articleID = req.body.article_id;
 
+    //可为空
+    let subjectID = req.body.subject_id; 
+
     let userID = req.session.id;
+
+    if(!articleID){
+        return next(new BadRequestError('article_id is needed'));
+    }
 
     favourModel.createFavourToArticle(userID, subjectID, articleID, function (err, success) {
         if(err){
@@ -84,6 +104,10 @@ exports.addArticleToFavour = function(req, res, next){
 exports.removeArticleFromFavour = function(req, res, next){
     let articleID = req.body.article_id;
     let userID = req.session.id;
+
+    if(!articleID){
+        return next(new BadRequestError('article_id is needed'));
+    }
 
     favourModel.cancelFavourToArticle(userID, articleID, function (err, success) {
         if(err){
@@ -110,6 +134,14 @@ exports.addAnswerCommentToFavour = function(req, res, next){
 
     let userID = req.session.id;
 
+    if(!answerID){
+        return next(new BadRequestError('answer_id is needed'));
+    }
+
+    if(!commentID){
+        return next(new BadRequestError('comment_id is needed'));
+    }
+
     favourModel.createFavourToAnswerComment(userID, answerID, commentID, function (err, success) {
         if(err){
             return next(err);
@@ -126,12 +158,16 @@ exports.addAnswerCommentToFavour = function(req, res, next){
 };
 
 /**
- * @desc 用户取消对文章点赞
+ * @desc 用户取消对回答评论点赞
  * */
 exports.removeAnswerCommentFromFavour = function(req, res, next){
-    let commentID = req.query.comment_id;
+    let commentID = req.body.comment_id;
 
     let userID = req.session.id;
+
+    if(!commentID){
+        return next(new BadRequestError('comment_id is needed'));
+    }
 
     favourModel.cancelFavourToAnswerComment(userID, commentID, function (err, success) {
         if(err){

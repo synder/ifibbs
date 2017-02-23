@@ -61,6 +61,10 @@ exports.getQuestionDetail = function(req, res, next){
     let questionID = req.query.question_id;
     let userID = req.session.id;
 
+    if(!questionID){
+        return next(new BadRequestError('question_id is needed'));
+    }
+
     questionModel.getQuestionDetail(questionID, function (err, question) {
         
         if(err){
@@ -132,6 +136,17 @@ exports.searchQuestions = function (req, res, next) {
     let pageSkip = req.query.page_skip;
     
     let content = req.query.content;
+
+    if(!content){
+        return res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                count: 0,
+                list: []
+            }
+        });
+    }
     
     async.parallel({
         searchByQuestions: function (cb) {
@@ -196,6 +211,17 @@ exports.searchQuestionsByAnswer = function(req, res, next){
     let pageSize = req.query.page_size;
     let pageSkip = req.query.page_skip;
     let content = req.query.content;
+    
+    if(!content){
+        return res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                count: 0,
+                list: []
+            }
+        });
+    }
 
     questionModel.searchQuestionByAnswer(content, pageSkip, pageSize, function (err, question) {
         //todo
@@ -241,6 +267,17 @@ exports.getDefaultQuestionTags = function(req, res, next){
  * */
 exports.findQuestionTags = function(req, res, next){
     let content = req.query.content;
+    
+    if(!content){
+        return res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                count: 0,
+                list: []
+            }
+        });
+    }
     
     tagsModel.searchQuestionTags(content, function (err, result) {
         if(err){

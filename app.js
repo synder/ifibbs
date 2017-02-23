@@ -6,6 +6,7 @@
 
 const Server = require('./lib/server');
 const Logger = require('./lib/logger');
+const error = require('./lib/error');
 
 const config = global.config = require('./config');
 const logger = global.logger = new Logger(config.log);
@@ -65,12 +66,11 @@ server.route(function(app){
 });
 
 //=======================================
-const notFoundHandler = require('./middleware/error/4XX');
-const serverErrorHandler = require('./middleware/error/5XX');
+const errorHandler = require('./middleware/error/index');
 
 server.error(function(app){
-    app.use(notFoundHandler());
-    app.use(serverErrorHandler());
+    app.use(errorHandler.notFoundHandler());
+    app.use(errorHandler.serverErrorHandler());
 });
 
 module.exports = server;

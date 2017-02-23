@@ -67,6 +67,14 @@ exports.addAnswerToCollection = function(req, res, next){
     let answerID = req.body.answer_id;
     let userID = req.session.id;
 
+    if(!questionID){
+        return next(new BadRequestError('question_id is needed'));
+    }
+
+    if(!answerID){
+        return next(new BadRequestError('answer_id is needed'));
+    }
+
     collectionModel.addAnswerToCollection(userID, questionID, answerID, function (err, success) {
         if(err){
             return next(err);
@@ -89,6 +97,10 @@ exports.removeAnswerFromCollection = function(req, res, next){
     let answerID = req.body.answer_id;
     let userID = req.session.id;
 
+    if(!answerID){
+        return next(new BadRequestError('answer_id is needed'));
+    }
+
     collectionModel.removeAnswerFromCollection(userID, answerID, function (err, success) {
         if(err){
             return next(err);
@@ -109,8 +121,12 @@ exports.removeAnswerFromCollection = function(req, res, next){
  * */
 exports.addArticleToCollection = function(req, res, next){
     let articleID = req.body.article_id;
-    let subjectID = req.body.subject_id;
+    let subjectID = req.body.subject_id; //可为空
     let userID = req.session.id;
+
+    if(!articleID){
+        return next(new BadRequestError('article_id is needed'));
+    }
 
     collectionModel.addArticleToCollection(userID, subjectID, articleID, function (err, success) {
         if(err){
@@ -133,6 +149,10 @@ exports.addArticleToCollection = function(req, res, next){
 exports.removeArticleFromCollection = function(req, res, next){
     let articleID = req.body.article_id;
     let userID = req.session.id;
+
+    if(!articleID){
+        return next(new BadRequestError('article_id is needed'));
+    }
 
     collectionModel.removeArticleFromCollection(userID, articleID, function (err, success) {
         if(err){

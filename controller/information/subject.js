@@ -55,7 +55,10 @@ exports.getSubjectDetail = function(req, res, next){
 
     let subjectID = req.query.subject_id;
     let userID = req.session.id;
-    
+
+    if(!subjectID){
+        return next(new BadRequestError('subject_id is needed'));
+    }
     
     subjectModel.getSubjectDetail(subjectID, function (err, subject) {
 

@@ -51,6 +51,9 @@ exports.getSubjectArticleList = function (req, res, next) {
     let pageSkip = req.query.page_skip;
     let pageSize = req.query.page_size;
 
+    if(!subjectID){
+        return next(new BadRequestError('subject_id is needed'));
+    }
 
     articleModel.getSubjectArticleList(subjectID, pageSkip, pageSize, function (err, results) {
         if(err){
@@ -86,8 +89,11 @@ exports.getSubjectArticleList = function (req, res, next) {
  * */
 exports.getSubjectArticleDetail = function (req, res, next) {
     let articleID = req.query.article_id;
-    
     let userID = req.session.id;
+
+    if(!articleID){
+        return next(new BadRequestError('subject_id is needed'));
+    }
     
     articleModel.getArticleDetail(articleID, function (err, article) {
         if(err){

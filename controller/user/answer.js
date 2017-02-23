@@ -54,8 +54,15 @@ exports.getUserAnswers = function(req, res, next){
 exports.createNewAnswer = function(req, res, next){
     let questionID = req.body.question_id;
     let answerContent = req.body.answer_content;
-    
     let userID = req.session.id;
+
+    if(!questionID){
+        return next(new BadRequestError('question_id is needed'));
+    }
+
+    if(!answerContent){
+        return next(new BadRequestError('answer_content is needed'));
+    }
     
     answerModel.createNewQuestionAnswer(userID, questionID, answerContent, function (err, answerID) {
         if(err){
@@ -80,6 +87,11 @@ exports.createNewAnswer = function(req, res, next){
 exports.removeUserAnswer = function (req, res, next) {
     let answerID = req.body.answer_id;
     let userID = req.session.id;
+
+    if(!answerID){
+        return next(new BadRequestError('answer_id is needed'));
+    }
+    
     
     answerModel.removeQuestionAnswer(userID, answerID, function (err, success) {
         if(err){

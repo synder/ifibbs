@@ -10,13 +10,30 @@ const commentModel = require('../../model/comment');
  * @desc 对回答新增评论
  * */
 exports.addNewCommentToAnswer = function (req, res, next) {
-    let toUserId = req.body.to_user_id;
-    let toCommentId = req.body.to_comment_id;
+    
+    //必填参数
     let questionId = req.body.question_id;
     let answerId = req.body.answer_id;
     let commentContent = req.body.content;
+
+    //可以为空
+    let toUserId = req.body.to_user_id;
+    let toCommentId = req.body.to_comment_id;
     
     let userID = req.session.id;
+    
+
+    if(!questionId){
+        return next(new BadRequestError('question_id is needed'));
+    }
+
+    if(!answerId){
+        return next(new BadRequestError('answer_id is needed'));
+    }
+
+    if(!commentContent){
+        return next(new BadRequestError('content is needed'));
+    }
 
     commentModel.createNewAnswerComment(userID, answerId, {
         to_user_id: toUserId,
@@ -49,11 +66,14 @@ exports.addNewCommentToAnswer = function (req, res, next) {
  * */
 exports.removeUserComments = function (req, res, next) {
     let commentID = req.body.comment_id;
-    let answerID = req.body.answer_id;
     
     let userID = req.session.id;
+
+    if(!commentID){
+        return next(new BadRequestError('comment_id is needed'));
+    }
     
-    commentModel.removeAnswerComment(userID, answerID, commentID, function (err, success) {
+    commentModel.removeAnswerComment(userID, commentID, function (err, success) {
         if(err){
             return next(err);
         }

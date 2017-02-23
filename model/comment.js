@@ -51,11 +51,10 @@ exports.createNewAnswerComment = function (userID, answerID, comment, callback) 
 /**
  * @desc 删除评论
  * */
-exports.removeAnswerComment = function (userID, answerID, commentID, callback) {
+exports.removeAnswerComment = function (userID, commentID, callback) {
     
     let condition = {
         create_user_id: userID,
-        answer_id: answerID,
         _id: commentID,
     };
     
@@ -74,12 +73,20 @@ exports.removeAnswerComment = function (userID, answerID, commentID, callback) {
         if(result.nModified === 0){
             return callback(null, false);
         }
+        
+        AnswerComment.findOne(condition, function (err, comment) {
+            if(err){
+                return callback(err);
+            }
+            
+            let updateAnswerCondition = {_id: comment.answer_id};
+            let updateAnswer =  {$inc: {comment_count: -1}};
 
-        QuestionAnswer.update({_id: answerID}, {$inc: {comment_count: -1}}, function (err) {
-            callback(err, true);
+            QuestionAnswer.update(updateAnswerCondition, updateAnswer, function (err) {
+                callback(err, true);
+            });
         });
     });
-    
 };
 
 

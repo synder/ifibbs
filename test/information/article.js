@@ -81,7 +81,8 @@ describe('文章相关接口测试', function () {
             .get('/subject/articles')
             .query({
                 page_size: 20,
-                page_index: 1
+                page_index: 1,
+                subject_id : '58ae562adebe8b145b4f58bb'
             })
             .expect(200)
             .end(function (err, res) {

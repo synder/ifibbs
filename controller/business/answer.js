@@ -104,6 +104,10 @@ exports.getQuestionAnswerList = function(req, res, next){
     
     let questionID = req.query.question_id;
     
+    if(!questionID){
+        return next(new BadRequestError('question_id is needed'));
+    }
+    
     answerModel.getQuestionAnswerList(questionID, pageSkip, pageSize, function (err, result) {
         if(err){
             return next(err);
@@ -143,6 +147,10 @@ exports.getAnswerDetail = function(req, res, next){
     let questionID = req.query.question_id;
     let answerID = req.query.answer_id;
     let userID = req.session.id;
+
+    if(!answerID){
+        return next(new BadRequestError('answer_id is needed'));
+    }
     
     answerModel.getQuestionAnswerDetail(answerID, function (err, answer) {
         if(err){

@@ -102,7 +102,8 @@ describe('获取问题回答列表', function () {
             .get('/question/answers')
             .query({
                 page_size: pageSize,
-                page_index: pageIndex
+                page_index: pageIndex,
+                question_id: '58aaae950e95c9205f3db5de',
             })
             .expect(200)
             .end(function (err, res) {

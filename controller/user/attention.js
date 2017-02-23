@@ -139,6 +139,10 @@ exports.addQuestionToAttention = function (req, res, next) {
     let questionID = req.body.question_id;
     let userID = req.session.id;
 
+    if(!questionID){
+        return next(new BadRequestError('question_id is needed'));
+    }
+
     attentionModel.addAttentionToQuestion(userID, questionID, function (err, success) {
         
         if(err){
@@ -163,6 +167,10 @@ exports.addQuestionToAttention = function (req, res, next) {
 exports.removeQuestionFromAttention = function (req, res, next) {
     let questionID = req.body.question_id;
     let userID = req.session.id;
+
+    if(!questionID){
+        return next(new BadRequestError('question_id is needed'));
+    }
     
     attentionModel.cancelAttentionToQuestion(userID, questionID, function (err, success) {
         if(err){
@@ -188,6 +196,10 @@ exports.removeQuestionFromAttention = function (req, res, next) {
 exports.addSubjectToAttention = function (req, res, next) {
     let subjectID = req.body.subject_id;
     let userID = req.session.id;
+
+    if(!subjectID){
+        return next(new BadRequestError('subject_id is needed'));
+    }
     
     attentionModel.addAttentionToSubject(userID, subjectID, function (err, success) {
         if(err){
@@ -210,6 +222,10 @@ exports.addSubjectToAttention = function (req, res, next) {
 exports.removeSubjectFromAttention = function (req, res, next) {
     let subjectID = req.body.subject_id;
     let userID = req.session.id;
+
+    if(!subjectID){
+        return next(new BadRequestError('subject_id is needed'));
+    }
 
     attentionModel.cancelAttentionToSubject(userID, subjectID, function (err, success) {
         if(err){
@@ -236,6 +252,10 @@ exports.addUserToAttention = function (req, res, next) {
     let toUserID = req.body.user_id;
     let userID = req.session.id;
 
+    if(!toUserID){
+        return next(new BadRequestError('user_id is needed'));
+    }
+
     attentionModel.addAttentionToUser(userID, toUserID, function (err, success) {
         if(err){
             return next(err);
@@ -257,6 +277,10 @@ exports.addUserToAttention = function (req, res, next) {
 exports.removeUserFromAttention = function (req, res, next) {
     let toUserID = req.body.user_id;
     let userID = req.session.id;
+
+    if(!toUserID){
+        return next(new BadRequestError('user_id is needed'));
+    }
 
     attentionModel.cancelAttentionToUser(userID, toUserID, function (err, success) {
         if(err){

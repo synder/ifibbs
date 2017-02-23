@@ -4,21 +4,13 @@
  * @desc
  */
 
-const redis = require('../../service/redis').client;
-
-const NODE_ENV = process.env.NODE_ENV;
-
 /**
  * @desc 检测用户是否登录
  * */
 exports.check = function (req, res, next) {
     
     if(!req.session.id){
-        return res.json({
-            flag: '0001',
-            msg: 'this interface need login, please login and then retry',
-            result: null
-        });
+        return next(new UnauthorizedError('not login, please login and then try again'));
     }
     
     next();

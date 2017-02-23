@@ -58,6 +58,10 @@ exports.removeUserQuestion = function(req, res, next){
     let questionID = req.body.question_id;
     let userID = req.session.id;
 
+    if(!questionID){
+        return next(new BadRequestError('question_id is needed'));
+    }
+
     questionModel.removeUserQuestion(userID, questionID, function (err, success) {
         
         if(err){
@@ -85,10 +89,18 @@ exports.addNewUserQuestion = function(req, res, next){
     
     let createUserId = req.session.id;
 
-    if(!Array.isArray(tags)){
-        let msg = 'request params error, tags should be array';
-        return next(new Error({code: 400, message: msg}));
+    if(!title){
+        return next(new BadRequestError('title is needed'));
     }
+
+    if(!describe){
+        return next(new BadRequestError('describe is needed'));
+    }
+    
+    if(!Array.isArray(tags)){
+        return next(new BadRequestError('tags should be array'));
+    }
+    
     
     let questionDoc = {
         title: title,
