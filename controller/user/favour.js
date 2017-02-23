@@ -15,7 +15,7 @@ exports.addAnswerToFavour = function(req, res, next){
     
     let userID = req.session.id;
 
-    favourModel.createFavourToAnswer(userID, answerID, function (err, success) {
+    favourModel.createFavourToAnswer(userID, questionID, answerID, function (err, success) {
        if(err){
            return next(err);
        } 
@@ -34,7 +34,6 @@ exports.addAnswerToFavour = function(req, res, next){
  * @desc 用户取消对回答点赞
  * */
 exports.removeAnswerFromFavour = function(req, res, next){
-    let questionID = req.body.question_id;
     let answerID = req.body.answer_id;
     
     let userID = req.session.id;
@@ -59,11 +58,12 @@ exports.removeAnswerFromFavour = function(req, res, next){
  * @desc 用户对文章点赞
  * */
 exports.addArticleToFavour = function(req, res, next){
+    let subjectID = req.body.subject_id; //可为空
     let articleID = req.body.article_id;
 
     let userID = req.session.id;
 
-    favourModel.createFavourToArticle(userID, articleID, function (err, success) {
+    favourModel.createFavourToArticle(userID, subjectID, articleID, function (err, success) {
         if(err){
             return next(err);
         }
@@ -83,7 +83,6 @@ exports.addArticleToFavour = function(req, res, next){
  * */
 exports.removeArticleFromFavour = function(req, res, next){
     let articleID = req.body.article_id;
-
     let userID = req.session.id;
 
     favourModel.cancelFavourToArticle(userID, articleID, function (err, success) {
@@ -106,11 +105,12 @@ exports.removeArticleFromFavour = function(req, res, next){
  * @desc 用户对文章点赞
  * */
 exports.addAnswerCommentToFavour = function(req, res, next){
+    let answerID = req.body.answer_id;
     let commentID = req.body.comment_id;
 
     let userID = req.session.id;
 
-    favourModel.createFavourToAnswerComment(userID, commentID, function (err, success) {
+    favourModel.createFavourToAnswerComment(userID, answerID, commentID, function (err, success) {
         if(err){
             return next(err);
         }

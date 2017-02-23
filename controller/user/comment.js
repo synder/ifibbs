@@ -49,10 +49,11 @@ exports.addNewCommentToAnswer = function (req, res, next) {
  * */
 exports.removeUserComments = function (req, res, next) {
     let commentID = req.body.comment_id;
+    let answerID = req.body.answer_id;
     
     let userID = req.session.id;
     
-    commentModel.removeAnswerComment(userID, commentID, function (err, success) {
+    commentModel.removeAnswerComment(userID, answerID, commentID, function (err, success) {
         if(err){
             return next(err);
         }

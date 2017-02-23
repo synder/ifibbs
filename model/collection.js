@@ -9,6 +9,8 @@ const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
 
 const UserCollection = mongodb.model('UserCollection');
+const QuestionAnswer = mongodb.model('QuestionAnswer');
+const Article = mongodb.model('Article');
 
 /**
  * @desc 获取用户收藏的回答列表
@@ -90,7 +92,14 @@ exports.addAnswerToCollection = function (userID, questionID, answerID, callback
             return callback(err);
         }
 
-        callback(null, result.ok === 1);
+        if(result.upserted == null && result.nModified){
+            return callback(null, false);
+        }
+
+        //更新收藏数
+        QuestionAnswer.update({_id: answerID}, {$inc: {collect_count: 1}}, function (err) {
+            callback(err, true);
+        });
     });
 };
 
@@ -118,7 +127,15 @@ exports.removeAnswerFromCollection = function (userID, answerID, callback) {
             return callback(err);
         }
 
-        callback(null, result.ok === 1);
+        if(result.nModified === 0){
+            return callback(null, false);
+        }
+
+        //更新收藏数
+        QuestionAnswer.update({_id: answerID}, {$inc: {collect_count: -1}}, function (err) {
+            callback(err, true);
+        });
+        
     });
 };
 
@@ -147,7 +164,14 @@ exports.addArticleToCollection = function (userID, subjectID, articleID, callbac
             return callback(err);
         }
 
-        callback(null, result.ok === 1);
+        if(result.upserted == null && result.nModified){
+            return callback(null, false);
+        }
+
+        //更新收藏数
+        Article.update({_id: articleID}, {$inc: {collect_count: 1}}, function (err) {
+            callback(err, true);
+        });
     });
 };
 
@@ -176,6 +200,13 @@ exports.removeArticleFromCollection = function (userID, articleID, callback) {
             return callback(err);
         }
 
-        callback(null, result.ok === 1);
+        if(result.nModified === 0){
+            return callback(null, false);
+        }
+
+        //更新收藏数
+        Article.update({_id: articleID}, {$inc: {collect_count: -1}}, function (err) {
+            callback(err, true);
+        });
     });
 };

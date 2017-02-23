@@ -9,6 +9,7 @@ const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
 
 const AnswerComment = mongodb.model('AnswerComment');
+const QuestionAnswer = mongodb.model('QuestionAnswer');
 
 
 /**
@@ -31,16 +32,30 @@ exports.createNewAnswerComment = function (userID, answerID, comment, callback) 
         update_time: new Date(),
     };
 
-    AnswerComment.create(commentDoc, callback);
+    AnswerComment.create(commentDoc, function (err, answer) {
+        if(err){
+            return callback(err);
+        }
+        
+        if(!answer){
+            return callback(null, answer);
+        }
+        
+        //更新评论数
+        QuestionAnswer.update({_id: answerID}, {$inc: {comment_count: 1}}, function (err) {
+            callback(err, answer);
+        });
+    });
 };
 
 /**
  * @desc 删除评论
  * */
-exports.removeAnswerComment = function (userID, commentID, callback) {
+exports.removeAnswerComment = function (userID, answerID, commentID, callback) {
     
     let condition = {
         create_user_id: userID,
+        answer_id: answerID,
         _id: commentID,
     };
     
@@ -55,8 +70,14 @@ exports.removeAnswerComment = function (userID, commentID, callback) {
         if(err){
             return callback(err);
         }
-        
-        callback(null, result.ok === 1);
+
+        if(result.nModified === 0){
+            return callback(null, false);
+        }
+
+        QuestionAnswer.update({_id: answerID}, {$inc: {comment_count: -1}}, function (err) {
+            callback(err, true);
+        });
     });
     
 };

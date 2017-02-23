@@ -202,7 +202,8 @@ exports.addAttentionToQuestion = function (userID, toQuestionID, callback) {
 
         let condition = {
             user_id: userID,
-            question_id: toQuestionID
+            question_id: toQuestionID,
+            status: AttentionQuestion.STATUS.NO_ATTENTION,
         };
 
         let update = {
@@ -220,7 +221,7 @@ exports.addAttentionToQuestion = function (userID, toQuestionID, callback) {
                 return callback(err);
             }
             
-            if(!result.upserted && result.nModified === 0){
+            if(result.upserted == null && result.nModified){
                 return callback(null, false);
             }
             
@@ -253,8 +254,15 @@ exports.cancelAttentionToQuestion = function (userID, toQuestionID, callback) {
         if(err){
             return callback(err);
         }
+        
+        if(result.nModified === 0){
+            return callback(null, false);
+        }
 
-        callback(null, result.ok === 1);
+        //更新问题关注数
+        Question.update({_id: toQuestionID}, {$inc: {attention_count: -1}}, function (err) {
+            callback(err, true);
+        });
     });
 };
 

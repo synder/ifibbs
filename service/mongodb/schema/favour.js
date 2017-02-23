@@ -19,13 +19,9 @@ const UserFavourArticleSchema = new Schema({
     status      : {type: Number, required: true},    //点赞状态
     create_time : {type: Date, required: true, default: Date.now},    //创建时间
     update_time : {type: Date, required: true, default: Date.now},    //更新时间
-    target_id : {type: ObjectId, required: true, ref: 'Article'}, //点赞对象ID
-    user_id   : {type: ObjectId, required: true, ref: 'User'},    //点赞用户ID
-}, {
-    timestamps: {
-        createdAt: 'create_time',
-        updatedAt: 'update_time',
-    }
+    article_id  : {type: ObjectId, required: true,  ref: 'Article'},    //点赞对象ID
+    subject_id  : {type: ObjectId, required: false, ref: 'Subject'},    //点赞对象ID
+    user_id     : {type: ObjectId, required: true,  ref: 'User'},       //点赞用户ID
 });
 
 UserFavourArticleSchema.virtual('id', function () {
@@ -44,20 +40,16 @@ const UserFavourAnswerSchema = new Schema({
     status    : {type: Number, required: true},    //点赞状态
     create_time : {type: Date, required: true},    //创建时间
     update_time : {type: Date, required: true},    //更新时间
-    target_id : {type: ObjectId, required: true, ref: 'QuestionAnswer'}, //点赞对象ID
-    user_id   : {type: ObjectId, required: true, ref: 'User'},    //点赞用户ID
-}, {
-    timestamps: {
-        createdAt: 'create_time',
-        updatedAt: 'update_time',
-    }
+    answer_id   : {type: ObjectId, required: true, ref: 'QuestionAnswer'},  //点赞对象ID
+    qestion_id  : {type: ObjectId, required: true, ref: 'Question'}, //点赞对象ID
+    user_id     : {type: ObjectId, required: true, ref: 'User'},    //点赞用户ID
 });
 
 UserFavourAnswerSchema.virtual('id', function () {
     return this._id.toString();
 });
 
-UserFavourAnswerSchema.index({user_id : 1, target_id: 1});
+UserFavourAnswerSchema.index({user_id : 1, answer_id: 1});
 
 //点赞状态
 UserFavourAnswerSchema.statics.STATUS = STATUS;
@@ -68,8 +60,9 @@ const UserFavourAnswerCommentSchema = new Schema({
     status      : {type: Number, required: true},    //点赞状态
     create_time : {type: Date,   required: true},    //创建时间
     update_time : {type: Date,   required: true},    //更新时间
-    target_id : {type: ObjectId, required: true, ref: 'AnswerComment'}, //点赞对象ID
-    user_id   : {type: ObjectId, required: true, ref: 'User'},    //点赞用户ID
+    comment_id  : {type: ObjectId, required: true, ref: 'AnswerComment'}, //点赞对象ID
+    answer_id   : {type: ObjectId, required: true, ref: 'QuestionAnswer'}, //点赞对象ID
+    user_id     : {type: ObjectId, required: true, ref: 'User'},    //点赞用户ID
 });
 
 UserFavourAnswerCommentSchema.virtual('id', function () {
