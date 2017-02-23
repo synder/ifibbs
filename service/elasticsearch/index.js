@@ -9,7 +9,8 @@
 const elasticsearch = require('elasticsearch');
 
 const indices = require('./indices');
-const config = global.config;
+
+const config = global.config || require('../../config');
 
 if(!config.service && !config.service.elasticsearch && !config.service.elasticsearch.host){
     throw new Error('please provide elasticsearch config');

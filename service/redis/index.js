@@ -7,7 +7,7 @@
 
 const redis = require('redis');
 
-const config = global.config;
+const config = global.config || require('../../config');
 
 if(!config.service && !config.service.redis && config.service.redis.host){
     throw new Error('please provice mongodb config');

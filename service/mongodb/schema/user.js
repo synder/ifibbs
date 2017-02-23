@@ -21,8 +21,8 @@ const UserSchema = new Schema({
     user_name    : {type: String, required: true},   //用户名
     user_profile : {type: String, required: true},   //用户简介
     user_avatar  : {type: String, required: true,},   //用户头像
-    create_time  : {type: Date, default: Date.now, required: true},     //创建时间
-    update_time  : {type: Date, default: Date.now, required: true},     //更新时间
+    create_time  : {type: Date,   required: true},    //创建时间
+    update_time  : {type: Date,   required: true},    //更新时间
     user_gender  : {type: Boolean, required: false}, //用户性别
     user_mobile  : {type: String, required: false},  //用户手机
     work_info    : {type: String, required: false},  //用户性别
@@ -33,11 +33,6 @@ const UserSchema = new Schema({
     bind_weibo   : ThirdBindSchema,                         //微博绑定
     login_token         : {type: String, required: false},  //登录Token
     login_token_expire  : {type: Date, required: false},    //登录过期时间
-}, {
-    timestamps: {
-        createdAt: 'create_time',
-        updatedAt: 'update_time',
-    }
 });
 
 UserSchema.virtual('id').get(function () {

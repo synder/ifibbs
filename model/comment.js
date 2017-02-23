@@ -26,7 +26,9 @@ exports.createNewAnswerComment = function (userID, answerID, comment, callback) 
         answer_id: answerID,
         create_user_id: userID,
         to_user_id: comment.to_user_id,
-        to_comment_id: comment.to_comment_id
+        to_comment_id: comment.to_comment_id,
+        create_time: new Date(),
+        update_time: new Date(),
     };
 
     AnswerComment.create(commentDoc, callback);
@@ -43,7 +45,10 @@ exports.removeAnswerComment = function (userID, commentID, callback) {
     };
     
     let update = {
-        status: AnswerComment.STATUS.REMOVED
+        $set: {
+            status: AnswerComment.STATUS.REMOVED,
+            update_time: new Date(),
+        }
     };
 
     AnswerComment.update(condition, update, function (err, result) {

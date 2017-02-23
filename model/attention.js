@@ -146,6 +146,8 @@ exports.addAttentionToUser = function (userID, toUserID, callback) {
         status: AttentionUser.STATUS.ATTENTION,
         user_id: userID,
         to_user_id: toUserID,
+        create_time: new Date(),
+        update_time: new Date(),
     };
 
     AttentionUser.update(condition, update, {upsert: true}, function (err, result) {
@@ -168,7 +170,10 @@ exports.cancelAttentionToUser = function (userID, toUserID, callback) {
     };
 
     let update = {
-        status: AttentionUser.STATUS.NO_ATTENTION,
+        $set: {
+            status: AttentionUser.STATUS.NO_ATTENTION,
+            update_time: new Date(),
+        }
     };
 
     AttentionUser.update(condition, update, function (err, result) {
@@ -204,15 +209,25 @@ exports.addAttentionToQuestion = function (userID, toQuestionID, callback) {
             status: AttentionQuestion.STATUS.ATTENTION,
             user_id: userID,
             question_id: toQuestionID,
-            question_user_id: question.create_user_id
+            question_user_id: question.create_user_id,
+            create_time: new Date(),
+            update_time: new Date(),
         };
+        
 
         AttentionQuestion.update(condition, update, {upsert: true}, function (err, result) {
             if(err){
                 return callback(err);
             }
-
-            callback(null, result.ok === 1);
+            
+            if(!result.upserted && result.nModified === 0){
+                return callback(null, false);
+            }
+            
+            //更新问题关注数
+            Question.update({_id: toQuestionID}, {$inc: {attention_count: 1}}, function (err) {
+                 callback(err, true);
+            });
         });
     });
 };
@@ -228,7 +243,10 @@ exports.cancelAttentionToQuestion = function (userID, toQuestionID, callback) {
     };
 
     let update = {
-        status: AttentionQuestion.STATUS.NO_ATTENTION,
+        $set: {
+            status: AttentionQuestion.STATUS.NO_ATTENTION,
+            update_time: new Date(),
+        }
     };
 
     AttentionQuestion.update(condition, update, function (err, result) {
@@ -254,6 +272,8 @@ exports.addAttentionToSubject = function (userID, toSubjectID, callback) {
         status: AttentionSubject.STATUS.ATTENTION,
         user_id: userID,
         subject_id: toSubjectID,
+        create_time: new Date(),
+        update_time: new Date(),
     };
 
     AttentionSubject.update(condition, update, {upsert: true}, function (err, result) {
@@ -276,7 +296,10 @@ exports.cancelAttentionToSubject = function (userID, toSubjectID, callback) {
     };
 
     let update = {
-        status: AttentionSubject.STATUS.NO_ATTENTION,
+        $set: {
+            status: AttentionSubject.STATUS.NO_ATTENTION,
+            update_time: new Date(),
+        }
     };
 
     AttentionSubject.update(condition, update, function (err, result) {

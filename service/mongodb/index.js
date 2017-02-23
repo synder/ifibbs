@@ -6,7 +6,7 @@
 
 const mongoose = require('mongoose');
 
-const config = global.config;
+const config = global.config || require('../../config');
 
 mongoose.Promise = global.Promise;
 

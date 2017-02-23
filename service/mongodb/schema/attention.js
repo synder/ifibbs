@@ -16,17 +16,12 @@ const STATUS = {
 
 //用户关注问题和专题=========================================
 const AttentionQuestionSchema = new Schema({
-    status    : {type: Number, required: true},                      //关注状态
+    status    : {type: Number, required: true},                       //关注状态
     user_id   : {type: ObjectId, required: true, ref: 'User'},        //关注用户ID
-    create_time : {type: Date, default: Date.now, required: true},     //创建时间
-    update_time : {type: Date, default: Date.now, required: true},     //更新时间
+    create_time : {type: Date, required: true},    //创建时间
+    update_time : {type: Date, required: true},    //更新时间
     question_id : {type: ObjectId, required: true, ref: 'Question'},  //关注对象ID
     question_user_id : {type: ObjectId, required: true, ref: 'User'}, //关注对象ID
-}, {
-    timestamps: {
-        createdAt: 'create_time',
-        updatedAt: 'update_time',
-    }
 });
 
 
@@ -44,15 +39,10 @@ AttentionQuestionSchema.statics.STATUS = STATUS;
 //用户关注专题==============================================
 const AttentionSubjectSchema = new Schema({
     status    : {type: Number, required: true},                    //关注状态
-    create_time : {type: Date, default: Date.now, required: true},     //创建时间
-    update_time : {type: Date, default: Date.now, required: true},     //更新时间
+    create_time : {type: Date, required: true},     //创建时间
+    update_time : {type: Date, required: true},     //更新时间
     user_id   : {type: ObjectId, required: true, ref: 'User'},      //关注用户ID
     subject_id : {type: ObjectId, required: true, ref: 'Subject'},  //关注对象ID
-}, {
-    timestamps: {
-        createdAt: 'create_time',
-        updatedAt: 'update_time',
-    }
 });
 
 AttentionSubjectSchema.virtual('id', function () {
@@ -70,15 +60,10 @@ AttentionSubjectSchema.statics.STATUS = STATUS;
 //用户关注用户==============================================
 const AttentionUserSchema = new Schema({
     status    : {type: Number, required: true},          //关注状态
-    create_time : {type: Date, default: Date.now, required: true},           //创建时间
-    update_time : {type: Date, default: Date.now, required: true},           //更新时间
+    create_time : {type: Date, required: true},           //创建时间
+    update_time : {type: Date, required: true},           //更新时间
     user_id   : {type: ObjectId, required: true, ref: 'User'},         //关注用户ID
     to_user_id : {type: ObjectId, required: true, ref: 'User'},        //关注用户ID
-}, {
-    timestamps: {
-        createdAt: 'create_time',
-        updatedAt: 'update_time',
-    }
 });
 
 AttentionUserSchema.virtual('id', function () {

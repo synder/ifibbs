@@ -74,7 +74,10 @@ exports.removeUserQuestion = function (userID, questionID, callback) {
     };
 
     let update = {
-        status: Question.STATUS.REMOVED
+        $set:{
+            status: Question.STATUS.REMOVED,
+            update_time: new Date(),
+        }
     };
 
     Question.update(condition, update, function (err, result) {

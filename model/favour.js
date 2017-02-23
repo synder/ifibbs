@@ -66,6 +66,8 @@ exports.createFavourToAnswer = function (userID, answerID, callback) {
         status: UserFavourAnswer.STATUS.FAVOUR,
         user_id: userID,
         target_id: answerID,
+        create_time: new Date(),
+        update_time: new Date(),
     };
     
     UserFavourAnswer.update(condition, update, {upsert: true}, function (err, result) {
@@ -90,7 +92,10 @@ exports.cancelFavourToAnswer = function (userID, answerID, callback) {
     };
     
     let update = {
-        status: UserFavourAnswer.STATUS.UNFAVOUR,
+        $set:{
+            status: UserFavourAnswer.STATUS.UNFAVOUR,
+            update_time: new Date(),
+        }
     };
 
     UserFavourAnswer.update(condition, update, function (err, result) {
@@ -117,6 +122,8 @@ exports.createFavourToArticle = function (userID, articleID, callback) {
         status: UserFavourArticle.STATUS.FAVOUR,
         user_id: userID,
         target_id: articleID,
+        create_time: new Date(),
+        update_time: new Date(),
     };
 
     UserFavourArticle.update(condition, update, {upsert: true}, function (err, result) {
@@ -141,7 +148,10 @@ exports.cancelFavourToArticle = function (userID, articleID, callback) {
     };
 
     let update = {
-        status: UserFavourArticle.STATUS.UNFAVOUR,
+        $set:{
+            status: UserFavourArticle.STATUS.UNFAVOUR,
+            update_time: new Date(),
+        }
     };
 
     UserFavourArticle.update(condition, update, function (err, result) {
@@ -167,6 +177,8 @@ exports.createFavourToAnswerComment = function (userID, commentID, callback) {
         status: UserFavourAnswerComment.STATUS.FAVOUR,
         user_id: userID,
         target_id: commentID,
+        create_time: new Date(),
+        update_time: new Date(),
     };
 
     UserFavourAnswerComment.update(condition, update, {upsert: true}, function (err, result) {
@@ -191,7 +203,10 @@ exports.cancelFavourToAnswerComment = function (userID, commentID, callback) {
     };
 
     let update = {
-        status: UserFavourAnswerComment.STATUS.UNFAVOUR,
+        $set:{
+            status: UserFavourAnswerComment.STATUS.UNFAVOUR,
+            update_time: new Date(),
+        }
     };
 
     UserFavourAnswerComment.update(condition, update, function (err, result) {

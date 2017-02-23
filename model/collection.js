@@ -80,7 +80,9 @@ exports.addAnswerToCollection = function (userID, questionID, answerID, callback
         type: UserCollection.TYPES.ANSWER,
         user_id: userID,
         answer_id: answerID,
-        question_id: questionID
+        question_id: questionID,
+        create_time: new Date(),
+        update_time: new Date(),
     };
 
     UserCollection.update(condition, update, {upsert: true}, function (err, result) {
@@ -105,7 +107,10 @@ exports.removeAnswerFromCollection = function (userID, answerID, callback) {
     };
 
     let update = {
-        status: UserCollection.STATUS.UNCOLLECTED,
+        $set:{
+            status: UserCollection.STATUS.UNCOLLECTED,
+            update_time: new Date(),
+        }
     };
 
     UserCollection.update(condition, update, function (err, result) {
@@ -132,7 +137,9 @@ exports.addArticleToCollection = function (userID, subjectID, articleID, callbac
         type: UserCollection.TYPES.ANSWER,
         user_id: userID,
         article_id: articleID,
-        subject_id: subjectID
+        subject_id: subjectID,
+        create_time: new Date(),
+        update_time: new Date(),
     };
 
     UserCollection.update(condition, update, {upsert: true}, function (err, result) {
@@ -157,8 +164,12 @@ exports.removeArticleFromCollection = function (userID, articleID, callback) {
     };
 
     let update = {
-        status: UserCollection.STATUS.UNCOLLECTED,
+        $set: {
+            status: UserCollection.STATUS.UNCOLLECTED,
+            update_time: new Date(),
+        }
     };
+    
 
     UserCollection.update(condition, update, function (err, result) {
         if(err){

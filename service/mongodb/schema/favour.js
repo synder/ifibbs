@@ -42,8 +42,8 @@ UserFavourArticleSchema.statics.STATUS = STATUS;
 //回答===================================================
 const UserFavourAnswerSchema = new Schema({
     status    : {type: Number, required: true},    //点赞状态
-    create_time : {type: Date, required: true, default: Date.now},    //创建时间
-    update_time : {type: Date, required: true, default: Date.now},    //更新时间
+    create_time : {type: Date, required: true},    //创建时间
+    update_time : {type: Date, required: true},    //更新时间
     target_id : {type: ObjectId, required: true, ref: 'QuestionAnswer'}, //点赞对象ID
     user_id   : {type: ObjectId, required: true, ref: 'User'},    //点赞用户ID
 }, {
@@ -66,15 +66,10 @@ UserFavourAnswerSchema.statics.STATUS = STATUS;
 //评论===================================================
 const UserFavourAnswerCommentSchema = new Schema({
     status      : {type: Number, required: true},    //点赞状态
-    create_time : {type: Date, required: true, default: Date.now},    //创建时间
-    update_time : {type: Date, required: true, default: Date.now},    //更新时间
+    create_time : {type: Date,   required: true},    //创建时间
+    update_time : {type: Date,   required: true},    //更新时间
     target_id : {type: ObjectId, required: true, ref: 'AnswerComment'}, //点赞对象ID
     user_id   : {type: ObjectId, required: true, ref: 'User'},    //点赞用户ID
-}, {
-    timestamps: {
-        createdAt: 'create_time',
-        updatedAt: 'update_time',
-    }
 });
 
 UserFavourAnswerCommentSchema.virtual('id', function () {

@@ -13,22 +13,17 @@ const ObjectId = Schema.Types.ObjectId;
 //用户===================================================
 const AnswerCommentSchema = new Schema({
     status          : {type: Number, required: true},    //回答状态
-    content         : {type: String,  required: true},   //评论内容
+    content         : {type: String, required: true},    //评论内容
     comment_count   : {type: Number, required: true},    //评论数量
     favour_count    : {type: Number, required: true},    //点赞数量
     collect_count   : {type: Number, required: true},    //收藏数量
-    create_time     : {type: Date, default: Date.now, required: true},      //创建时间
-    update_time     : {type: Date, default: Date.now, required: true},      //更新时间
+    create_time     : {type: Date,   required: true},      //创建时间
+    update_time     : {type: Date,   required: true},      //更新时间
     question_id     : {type: ObjectId, required: true, ref: 'Question'},        //问题ID
     answer_id       : {type: ObjectId, required: true, ref: 'QuestionAnswer'},  //回答ID
     create_user_id  : {type: ObjectId, required: true, ref: 'User'},            //评论用户
     to_user_id      : {type: ObjectId, required: false, ref: 'User'},           //对那个用户评论
     to_comment_id   : {type: ObjectId, required: false, ref: 'AnswerComment'}   //对那个评论评论
-}, {
-    timestamps: {
-        createdAt: 'create_time',
-        updatedAt: 'update_time',
-    }
 });
 
 AnswerCommentSchema.virtual('id', function () {
