@@ -83,7 +83,7 @@ describe('用户消息推送', function(){
         request(app)
             .post('/user/notification/status')
             .send({
-                notification_ids: JSON.stringify(ids),
+                notification_ids: ids,
             })
             .expect(200)
             .end(function(err, res) {
