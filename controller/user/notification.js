@@ -27,7 +27,7 @@ exports.getUserSystemNotification = function (req, res, next) {
                 title: notification.title,
                 content: notification.content,
                 type: notification.type,
-                add_on: notification.target_id ? notification.target_id : null
+                add_on: notification.target_id
             })
         });
 
@@ -65,7 +65,7 @@ exports.getUserBusinessNotification = function (req, res, next) {
                 title: notification.title,
                 content: notification.content,
                 type: notification.type,
-                add_on: notification.target_id ? notification.target_id : null
+                add_on: notification.target_id
             })
         });
 
@@ -89,8 +89,7 @@ exports.changeNotificationToReaded = function (req, res, next) {
     let userID = req.session.id;
 
     if(!Array.isArray(notificationIDS)){
-        let msg = 'request params error, notification_ids should be array';
-        return next(new Error({code: 400, message: msg}));
+        return next(new BadRequestError('notification_ids should be array'));
     }
 
     notificationModel.changeNotificationToReaded(userID, notificationIDS, function(err, success) {

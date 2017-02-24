@@ -26,7 +26,7 @@ UserNotificationSchema.virtual('id', function () {
     return this._id.toString();
 });
 
-UserNotificationSchema.index({user_id : 1});
+UserNotificationSchema.index({user_id : 1, create_time: 1});
 
 
 //通知状态

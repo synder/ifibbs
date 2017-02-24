@@ -14,9 +14,11 @@ const UserNotification = mongodb.model('UserNotification');
  * 获取用户系统通知
  * */
 exports.getSysNotificationList = function (userId, pageSkip, pageSize, callback) {
+    
     let condition = {
         user_id: userId,
-        category: UserNotification.CATEGORY.SYSTEM
+        category: UserNotification.CATEGORY.SYSTEM,
+        status: UserNotification.STATUS.UNREAD
     };
 
     async.parallel({
@@ -40,7 +42,8 @@ exports.getSysNotificationList = function (userId, pageSkip, pageSize, callback)
 exports.getBusinessNotificationList = function (userId, pageSkip, pageSize, callback) {
     let condition = {
         user_id: userId,
-        category: UserNotification.CATEGORY.BUSINESS
+        category: UserNotification.CATEGORY.BUSINESS,
+        status: UserNotification.STATUS.UNREAD
     };
 
     async.parallel({
@@ -60,20 +63,30 @@ exports.getBusinessNotificationList = function (userId, pageSkip, pageSize, call
 /*
  * 修改通知阅读状态
  * */
-exports.changeNotificationToReaded = function (userId, notificationIds, callback) {
-    async.forEachSeries( notificationIds, function (id, cb) {
+exports.changeNotificationToReaded = function (userID, notificationIDS, callback) {
+    
+    async.eachLimit(notificationIDS, 10, function(id, cb){
+        
         let condition = {
             _id: id,
-            user_id: userId,
+            user_id: userID,
+            status: UserNotification.STATUS.UNREAD
         };
+
         let update = {
-            status: UserNotification.STATUS.READED
+            $set: {
+                status: UserNotification.STATUS.READED
+            }
         };
 
-        UserNotification.update(condition, update, {upsert: true}, cb)
-
-    }, function (err) {
-        callback(err, true);
+        UserNotification.update(condition, update, cb)
+        
+    }, function(err, result){
+        if(err){
+            return callback(err);
+        }
+        
+        callback(null, true);
     });
 };
 
