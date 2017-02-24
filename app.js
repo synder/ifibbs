@@ -56,11 +56,13 @@ server.middleware(function (app) {
 //=======================================
 
 const businessRouter = require('./router/business');
+const deviceRouter = require('./router/device');
 const informationRouter = require('./router/information');
 const userRouter = require('./router/user');
 
 server.route(function(app){
     businessRouter.map(app);
+    deviceRouter.map(app);
     informationRouter.map(app);
     userRouter.map(app);
 });
