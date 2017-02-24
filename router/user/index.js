@@ -75,7 +75,7 @@ exports.map = function(app){
     app.get('/user/history/browses', authority.check, history.getUserBrowseHistory);  //获取用户浏览历史记录
     
     //用户通知
-    app.post('/user/notification/status',authority.check,notification.changeNotificationToReaded);        //修改通知阅读状态
+    app.put('/user/notification/status',authority.check,notification.changeNotificationToReaded);        //修改通知阅读状态
     app.get('/user/notification/systems', authority.check, notification.getUserSystemNotification);       //获取系统通知
     app.get('/user/notification/businesses', authority.check, notification.getUserBusinessNotification);  //获取业务通知
     

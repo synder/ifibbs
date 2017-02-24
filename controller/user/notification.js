@@ -89,13 +89,8 @@ exports.changeNotificationToReaded = function (req, res, next) {
     let userID = req.session.id;
 
     if(!Array.isArray(notificationIDS)){
-        return res.json({
-            flag: '0000',
-            msg: '请传入数组',
-            result: {
-
-            }
-        });
+        let msg = 'request params error, notification_ids should be array';
+        return next(new Error({code: 400, message: msg}));
     }
 
     notificationModel.changeNotificationToReaded(userID, notificationIDS, function(err, success) {

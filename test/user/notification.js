@@ -81,7 +81,7 @@ describe('用户消息推送', function(){
     it('#推送消息阅读状态修改', function(done) {
         let ids=['58ae4f5c3b5c9e08208541eb','58ae52b8e9ba180864cc283a'];
         request(app)
-            .post('/user/notification/status')
+            .put('/user/notification/status')
             .send({
                 notification_ids: ids,
             })
