@@ -138,7 +138,7 @@ describe('获取问题回答列表', function () {
 
 describe('获取问题回答详情', function () {
 
-    let questionID = '58aaae950e95c9205f3db5de';
+    let questionID = '58ae5da34171fd177d387656';
     let answerID = '';
     
     before(function(done) {
