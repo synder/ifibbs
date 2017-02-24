@@ -224,7 +224,7 @@ exports.searchQuestionsByAnswer = function(req, res, next){
     }
 
     questionModel.searchQuestionByAnswer(content, pageSkip, pageSize, function (err, question) {
-        //todo
+        
     });
     
 };

@@ -218,7 +218,7 @@ exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callb
  * */
 exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback) {
     elasticsearch.search({
-        index: elasticsearch.indices.question,
+        index: elasticsearch.indices.answer,
         body: {
             query: {
                 match: {
@@ -227,8 +227,7 @@ exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback
             },
             highlight: {
                 fields: {
-                    title: {},
-                    describe: {}
+                    content: {},
                 }
             }
         }
