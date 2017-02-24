@@ -27,8 +27,8 @@ QuestionAnswerSchema.virtual('id', function () {
 });
 
 QuestionAnswerSchema.index({create_time: 1});
-QuestionAnswerSchema.index({create_user_id : 1});
-QuestionAnswerSchema.index({question_id : 1});
+QuestionAnswerSchema.index({create_user_id : 1, create_time: 1});
+QuestionAnswerSchema.index({question_id : 1, create_time: 1});
 QuestionAnswerSchema.index({comment_count: 1, favour_count: 1, create_time: 1});
 
 
