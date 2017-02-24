@@ -36,7 +36,6 @@ const initMongodbUserCollection = function (callback) {
             user_mobile: '13120975917',  //用户手机
             work_info: Mock.Random.ctitle(10, 20),  //用户性别
             edu_info: Mock.Random.ctitle(10, 20),  //用户性别
-            device_token: Mock.Random.guid(),  //设备Token
         },
         {
             _id: '58aa50177ddbf5507c51f083',
@@ -50,7 +49,6 @@ const initMongodbUserCollection = function (callback) {
             user_mobile: '13120975916',  //用户手机
             work_info: Mock.Random.ctitle(10, 20),  //用户性别
             edu_info: Mock.Random.ctitle(10, 20),  //用户性别
-            device_token: Mock.Random.guid(),  //设备Token
         }
     ];
     

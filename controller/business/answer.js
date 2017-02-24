@@ -8,6 +8,7 @@ const async = require('async');
 
 const answerModel = require('../../model/answer');
 const favourModel = require('../../model/favour');
+const attentionModel = require('../../model/attention');
 const collectionModel = require('../../model/collection');
 
 /**
@@ -161,10 +162,14 @@ exports.getAnswerDetail = function(req, res, next){
             answer_id: answer.id,
             answer_content: answer.content,
             answer_time: answer.create_time,
+            answer_comment_count: answer.comment_count,
+            answer_favour_count: answer.favour_count,
+            answer_collect_count: answer.collect_count,
             user_id: answer.create_user_id ? answer.create_user_id.id : null,
             user_avatar: answer.create_user_id ? answer.create_user_id.user_avatar : null,
             user_name: answer.create_user_id ? answer.create_user_id.user_name : null,
             user_profile: answer.create_user_id ? answer.create_user_id.user_profile : null,
+            is_attention_user: false,
             is_favour: false,
             is_collected: false,
         };
@@ -176,6 +181,8 @@ exports.getAnswerDetail = function(req, res, next){
                 result: result
             });
         }
+        
+        let toUserID =  answer.create_user_id.id;
 
         //用户已经登录，查看关注情况
         async.parallel({
@@ -184,6 +191,9 @@ exports.getAnswerDetail = function(req, res, next){
             },
             isCollected: function (cb) {
                 collectionModel.findUserCollectionAnswerByCollectionID(userID, answerID, cb);
+            },
+            isAttentionUser: function (cb) {
+                attentionModel.findUserAttentionByUserID(userID, toUserID, cb);
             }
         }, function (err, results) {
             if(err){
@@ -192,6 +202,7 @@ exports.getAnswerDetail = function(req, res, next){
             
             result.is_favour = !!results.isFavour;
             result.is_collected = !!results.isCollected;
+            result.is_attention_user = !!results.isAttentionUser;
 
             return res.json({
                 flag: '0000',

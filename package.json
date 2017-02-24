@@ -11,6 +11,7 @@
     "connect-timeout": "*",
     "cookie-parser": "*",
     "elasticsearch": "*",
+    "protobufjs": "^3.8.2",
     "express": "*",
     "lodash": "*",
     "mockjs": "*",

@@ -11,7 +11,7 @@ const UserNotification = mongodb.model('UserNotification');
 
 
 /*
- * 获取用户系统通知
+ * @desc 获取用户系统通知
  * */
 exports.getSysNotificationList = function (userId, pageSkip, pageSize, callback) {
     
@@ -36,7 +36,7 @@ exports.getSysNotificationList = function (userId, pageSkip, pageSize, callback)
 };
 
 /*
- * 获取用户业务通知
+ * @desc 获取用户业务通知
  * */
 
 exports.getBusinessNotificationList = function (userId, pageSkip, pageSize, callback) {
@@ -61,7 +61,7 @@ exports.getBusinessNotificationList = function (userId, pageSkip, pageSize, call
 };
 
 /*
- * 修改通知阅读状态
+ * @desc 修改通知阅读状态
  * */
 exports.changeNotificationToReaded = function (userID, notificationIDS, callback) {
     
@@ -90,3 +90,25 @@ exports.changeNotificationToReaded = function (userID, notificationIDS, callback
     });
 };
 
+/**
+ * @desc 推送通知给手机端
+ * */
+exports.pushNotificationToSingleUser = function (userID, notification, callback) {
+    
+};
+
+
+/**
+ * @desc 推送通知给手机端
+ * */
+exports.pushNotificationToUsers = function (userIDS, notification, callback) {
+
+};
+
+
+/**
+ * @desc 广播通知给所有客户端
+ * */
+exports.broadcastNotification = function (platform, notification, callback) {
+
+};

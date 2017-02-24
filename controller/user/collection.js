@@ -7,7 +7,7 @@
 const collectionModel = require('../../model/collection');
 
 /**
- * 用户收藏列表
+ * @desc 用户收藏列表
  * */
 exports.getUserCollections = function(req, res, next){
     let pageSkip = req.query.page_skip;
