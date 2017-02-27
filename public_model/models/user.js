@@ -18,3 +18,11 @@ exports.getUserInfo = function (userID, userInfo, callback) {
 exports.updateUserInfo = function (userID, userInfo, callback) {
     
 };
+
+
+/**
+ * @desc 更新用户的登录token信息
+ * */
+exports.updateUserLoginToken = function (userID, token, callback) {
+    
+};

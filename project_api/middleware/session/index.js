@@ -5,7 +5,7 @@
  */
 
 
-const redis = require('../../service/redis').client;
+const userModel = require('../../../public_model/user');
 
 const NODE_ENV = process.env.NODE_ENV;
 
@@ -37,57 +37,7 @@ module.exports = function () {
         }
         
         token = token ? token.trim() : null;
-        
-        if(!token){
-            return next();
-        }
 
-        //从redis用户信息
-        redis.get(token, function (err, session) {
-            if(err){
-                return next(err);
-            }
-            
-            if(!session){
-                return next();
-            }
-
-            if(session && session.id){
-                
-                let temp = session.expire - now;
-                
-                
-                if(temp < 0){
-                    return next();
-                }
-
-                req.session = {
-                    id: session.id,
-                    username: session.user_name,
-                    expire: session.expire,
-                };
-
-
-                if(temp > 70000000){
-                    return next();
-                }
-                
-                //更新token
-                let expire = new Date();
-                expire.setDate(expire.getDate() + 30);
-
-                session.expire = expire;
-
-                let ttl = (expire.valueOf() - now) / 1000;
-
-                redis.setex(token, session, ttl, function (err, result) {
-                    if(err){
-                        logger.error(err.stack);
-                    }
-                    
-                    next();
-                });
-            }
-        });
+        next();
     }
 };
