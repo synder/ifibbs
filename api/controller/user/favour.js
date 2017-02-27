@@ -42,7 +42,7 @@ exports.addAnswerToFavour = function(req, res, next){
  * @desc 用户取消对回答点赞
  * */
 exports.removeAnswerFromFavour = function(req, res, next){
-    let answerID = req.body.answer_id;
+    let answerID = req.query.answer_id;
     
     let userID = req.session.id;
 
@@ -102,7 +102,7 @@ exports.addArticleToFavour = function(req, res, next){
  * @desc 用户取消对文章点赞
  * */
 exports.removeArticleFromFavour = function(req, res, next){
-    let articleID = req.body.article_id;
+    let articleID = req.query.article_id;
     let userID = req.session.id;
 
     if(!articleID){
@@ -161,7 +161,7 @@ exports.addAnswerCommentToFavour = function(req, res, next){
  * @desc 用户取消对回答评论点赞
  * */
 exports.removeAnswerCommentFromFavour = function(req, res, next){
-    let commentID = req.body.comment_id;
+    let commentID = req.query.comment_id;
 
     let userID = req.session.id;
 

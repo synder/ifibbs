@@ -65,7 +65,7 @@ exports.addNewCommentToAnswer = function (req, res, next) {
  * @desc 删除回答评论
  * */
 exports.removeUserComments = function (req, res, next) {
-    let commentID = req.body.comment_id;
+    let commentID = req.query.comment_id;
     
     let userID = req.session.id;
 

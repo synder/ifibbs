@@ -55,7 +55,7 @@ exports.getUserQuestions = function(req, res, next){
  * @desc 删除用户提问
  * */
 exports.removeUserQuestion = function(req, res, next){
-    let questionID = req.body.question_id;
+    let questionID = req.query.question_id;
     let userID = req.session.id;
 
     if(!questionID){

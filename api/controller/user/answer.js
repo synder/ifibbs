@@ -85,7 +85,7 @@ exports.createNewAnswer = function(req, res, next){
  * @desc 删除我的回答
  * */
 exports.removeUserAnswer = function (req, res, next) {
-    let answerID = req.body.answer_id;
+    let answerID = req.query.answer_id;
     let userID = req.session.id;
 
     if(!answerID){

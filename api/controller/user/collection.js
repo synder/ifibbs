@@ -94,7 +94,7 @@ exports.addAnswerToCollection = function(req, res, next){
  * @desc 用户取消收藏回答
  * */
 exports.removeAnswerFromCollection = function(req, res, next){
-    let answerID = req.body.answer_id;
+    let answerID = req.query.answer_id;
     let userID = req.session.id;
 
     if(!answerID){
@@ -147,7 +147,7 @@ exports.addArticleToCollection = function(req, res, next){
  * @desc 用户取消收藏回答
  * */
 exports.removeArticleFromCollection = function(req, res, next){
-    let articleID = req.body.article_id;
+    let articleID = req.query.article_id;
     let userID = req.session.id;
 
     if(!articleID){

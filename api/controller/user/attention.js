@@ -165,7 +165,7 @@ exports.addQuestionToAttention = function (req, res, next) {
  * @desc 取消关注问题
  * */
 exports.removeQuestionFromAttention = function (req, res, next) {
-    let questionID = req.body.question_id;
+    let questionID = req.query.question_id;
     let userID = req.session.id;
 
     if(!questionID){
@@ -220,7 +220,7 @@ exports.addSubjectToAttention = function (req, res, next) {
  * @desc 取消关注专题
  * */
 exports.removeSubjectFromAttention = function (req, res, next) {
-    let subjectID = req.body.subject_id;
+    let subjectID = req.query.subject_id;
     let userID = req.session.id;
 
     if(!subjectID){
@@ -275,7 +275,7 @@ exports.addUserToAttention = function (req, res, next) {
  * @desc 取消关注用户
  * */
 exports.removeUserFromAttention = function (req, res, next) {
-    let toUserID = req.body.user_id;
+    let toUserID = req.query.user_id;
     let userID = req.session.id;
 
     if(!toUserID){
