@@ -7,11 +7,40 @@ const Mock = require('mockjs');
 const app = require('../../app').app;
 
 describe('用户新增问题回答', function(){
+    
+    let questionID = null;
+    
+    before(function(done) {
+        request(app)
+            .put('/user/question')
+            .send({
+                title: Mock.Random.ctitle(3, 20),
+                describe: Mock.Random.cparagraph(10, 50),
+                tags: []
+            })
+            .expect(200)
+            .end(function(err, res) {
+                if (err) {
+                    throw err;
+                }
+
+                chai.expect(res.body).to.have.property('flag', '0000');
+                chai.expect(res.body).to.have.property('msg', '');
+
+                chai.expect(res.body).to.have.ownProperty('result');
+                chai.expect(res.body.result).to.have.ownProperty('question_id');
+
+                questionID = res.body.result.question_id;
+
+                done();
+            });
+    });
+    
     it('#用户新增问题回答状态', function(done) {
         request(app)
             .put('/user/question/answer')
             .send({
-                question_id: '58aaae950e95c9205f3db5de',
+                question_id: questionID,
                 answer_content: Mock.Random.cparagraph(5, 10),
             })
             .expect(200)
