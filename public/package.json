@@ -1,0 +1,13 @@
+{
+  "name": "ifibbs-public",
+  "version": "0.0.1",
+  "dependencies": {
+    "async":"*",
+    "mongoose": "*",
+    "mysql": "*",
+    "redis": "*",
+    "elasticsearch": "*",
+    "amqplib": "*",
+    "protobufjs": "^3.8.2"
+  }
+}
