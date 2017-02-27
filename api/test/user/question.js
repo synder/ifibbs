@@ -107,7 +107,7 @@ describe('用户新增提问', function(){
             .send({
                 title: Mock.Random.ctitle(3, 20),
                 describe: Mock.Random.cparagraph(10, 50),
-                tags: []
+                tags: ['58aa50177ddbf5507c51f082', '58aa50177ddbf5507c51f083']
             })
             .expect(200)
             .end(function(err, res) {

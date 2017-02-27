@@ -6,6 +6,7 @@
 
 const async = require('async');
 const mongodb = require('../service/mongodb').db;
+const rabbit = require('../service/rabbit');
 
 const UserNotification = mongodb.model('UserNotification');
 
@@ -63,7 +64,7 @@ exports.getBusinessNotificationList = function (userId, pageSkip, pageSize, call
 /*
  * @desc 修改通知阅读状态
  * */
-exports.changeNotificationToReaded = function (userID, notificationIDS, callback) {
+exports.changeNotificationToRead = function (userID, notificationIDS, callback) {
     
     async.eachLimit(notificationIDS, 10, function(id, cb){
         
@@ -75,7 +76,7 @@ exports.changeNotificationToReaded = function (userID, notificationIDS, callback
 
         let update = {
             $set: {
-                status: UserNotification.STATUS.READED
+                status: UserNotification.STATUS.READ
             }
         };
 
@@ -90,25 +91,138 @@ exports.changeNotificationToReaded = function (userID, notificationIDS, callback
     });
 };
 
-/**
- * @desc 推送通知给手机端
+/*
+ * @desc 修改通知阅读状态
  * */
-exports.pushNotificationToSingleUser = function (userID, notification, callback) {
+exports.changeNotificationToNotified = function (userID, notificationIDS, callback) {
+
+    async.eachLimit(notificationIDS, 10, function(id, cb){
+
+        let condition = {
+            _id: id,
+            user_id: userID,
+            status: UserNotification.STATUS.UN_NOTIFIED
+        };
+
+        let update = {
+            $set: {
+                status: UserNotification.STATUS.NOTIFIED
+            }
+        };
+
+        UserNotification.update(condition, update, cb)
+
+    }, function(err, result){
+        if(err){
+            return callback(err);
+        }
+
+        callback(null, true);
+    });
+};
+
+
+
+
+
+
+
+/**
+ * @desc 用户因某个用户回答了我发布的问题而被推送通知
+ * */
+exports.pushNotificationForQuestionBeenAnswered = function (userID, clientID, answerUserName, questionTitle, callback) {
     
+    let notification = {
+        status      : UserNotification.STATUS.UN_NOTIFIED,
+        category    : UserNotification.CATEGORY.BUSINESS,
+        type        : UserNotification.TYPE.QUESTION_BEEN_ANSWERED,
+        title       : answerUserName + '回答了您的问题',
+        content     : questionTitle,
+        user_id     : userID,
+        client_id   : clientID,
+        create_time : new Date(),
+        update_time : new Date(),
+    };
+    
+    UserNotification.create(notification, function (err, doc) {
+        if(err){
+            return callback(err);
+        }
+        
+        let msg = doc._id.toString();
+        
+        rabbit.client.produceMessage(rabbit.queues.BUSINESS.QUESTION_BEEN_ANSWERED, msg, function (err, ch) {
+            if(err){
+                return callback(err);
+            }
+            
+            return callback(null, doc._id);
+        });
+    });
 };
 
-
 /**
- * @desc 推送通知给手机端
+ * @desc 用户因某个用户对我的回答进行的点赞而被推送通知
  * */
-exports.pushNotificationToUsers = function (userIDS, notification, callback) {
+exports.pushNotificationForAnswerBeenFavoured = function (userID, clientID, favourUserName, questionTitle, callback) {
+    let notification = {
+        status      : UserNotification.STATUS.UN_NOTIFIED,
+        category    : UserNotification.CATEGORY.BUSINESS,
+        type        : UserNotification.TYPE.ANSWER_BEEN_FAVOURED,
+        title       : favourUserName + '赞了您的回答',
+        content     : questionTitle,
+        user_id     : userID,
+        client_id   : clientID,
+        create_time : new Date(),
+        update_time : new Date(),
+    };
 
+    UserNotification.create(notification, function (err, doc) {
+        if(err){
+            return callback(err);
+        }
+
+        let msg = doc._id.toString();
+
+        rabbit.client.produceMessage(rabbit.queues.BUSINESS.ANSWER_BEEN_FAVOURED, msg, function (err, ch) {
+            if(err){
+                return callback(err);
+            }
+
+            return callback(null, doc._id);
+        });
+    });
 };
 
-
 /**
- * @desc 广播通知给所有客户端
+ * @desc 用户因某个用户分享了我发布的问题而被推送通知
  * */
-exports.broadcastNotification = function (platform, notification, callback) {
+exports.pushNotificationForQuestionBeenShared = function (userID, clientID, sharedUserName, questionTitle, callback) {
+    let notification = {
+        status      : UserNotification.STATUS.UN_NOTIFIED,
+        category    : UserNotification.CATEGORY.BUSINESS,
+        type        : UserNotification.TYPE.QUESTION_BEEN_SHARED,
+        title       : sharedUserName + '分享您的问题',
+        content     : questionTitle,
+        user_id     : userID,
+        client_id   : clientID,
+        create_time : new Date(),
+        update_time : new Date(),
+    };
 
+    UserNotification.create(notification, function (err, doc) {
+        if(err){
+            return callback(err);
+        }
+
+        let msg = doc._id.toString();
+
+        rabbit.client.produceMessage(rabbit.queues.BUSINESS.QUESTION_BEEN_SHARED, msg, function (err, ch) {
+            if(err){
+                return callback(err);
+            }
+
+            return callback(null, doc._id);
+        });
+    });
 };

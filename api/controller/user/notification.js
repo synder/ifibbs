@@ -84,7 +84,7 @@ exports.getUserBusinessNotification = function (req, res, next) {
 /**
  * @desc 标记通知为已读
  * */
-exports.changeNotificationToReaded = function (req, res, next) {
+exports.changeNotificationToRead = function (req, res, next) {
     let notificationIDS = req.body.notification_ids;
     let userID = req.session.id;
 
@@ -92,7 +92,7 @@ exports.changeNotificationToReaded = function (req, res, next) {
         return next(new BadRequestError('notification_ids should be array'));
     }
 
-    notificationModel.changeNotificationToReaded(userID, notificationIDS, function(err, success) {
+    notificationModel.changeNotificationToRead(userID, notificationIDS, function(err, success) {
         if (err) {
             return next(err);
         }
