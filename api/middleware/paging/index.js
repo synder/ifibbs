@@ -29,6 +29,6 @@ module.exports = function () {
             req.query.page_skip = req.query.page_size * (req.query.page_index - 1);
         }
         
-        return next();
+        next();
     }
 };
