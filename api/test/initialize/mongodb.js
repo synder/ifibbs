@@ -9,8 +9,8 @@ const chai = require('chai');
 const request = require('supertest');
 const Mock = require('mockjs');
 
-const mongodb = require('../../service/mongodb').db;
-const elasticsearch = require('../../service/elasticsearch').client;
+const mongodb = require('../../../public/service/mongodb').db;
+const elasticsearch = require('../../../public/service/elasticsearch').client;
 
 const QuestionTag = mongodb.model('QuestionTag');
 const User = mongodb.model('User');

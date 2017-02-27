@@ -5,7 +5,7 @@ const Mock = require('mockjs');
 
 const app = require('../../app').app;
 
-const mongodb = require('../../service/mongodb');
+const mongodb = require('../../../public/service/mongodb');
 
 
 

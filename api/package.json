@@ -21,9 +21,9 @@
     "winston-mongodb": "*"
   },
   "devDependencies": {
+    "supertest": "*",
     "mocha": "*",
     "chai": "*",
-    "supertest": "*",
     "gulp": "*",
     "gulp-rev": "*",
     "gulp-git": "*",
