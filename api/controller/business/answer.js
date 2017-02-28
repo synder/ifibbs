@@ -142,6 +142,29 @@ exports.getQuestionAnswerList = function(req, res, next){
 
 
 /**
+ * @desc 根据当前回答ID，获取前n个answerID和后n个answerID
+ * */
+exports.getAnswerNextAndPrevIDS = function (req, res, next) {
+
+    let answerID = req.query.answer_id;
+    
+    answerModel.getPrevAndNextAnswerIDSByAnswerID(answerID, function (err, ids) {
+        if(err){
+            return next(err);
+        }
+        
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                count: ids.length,
+                list: ids
+            }
+        });
+    });
+};
+
+/**
  * @desc 回答详情
  * */
 exports.getAnswerDetail = function(req, res, next){

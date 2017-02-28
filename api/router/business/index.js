@@ -24,6 +24,7 @@ exports.map = function (app) {
    
     //问题回答
     app.get('/question/answer', answer.getAnswerDetail);
+    app.get('/question/answer/ids', answer.getAnswerNextAndPrevIDS);
     app.get('/question/answers', answer.getQuestionAnswerList);
     app.get('/question/answers/hottest', answer.getHottestAnswer);
     app.get('/question/answers/latest', answer.getLatestAnswer);

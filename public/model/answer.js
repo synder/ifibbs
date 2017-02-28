@@ -77,6 +77,62 @@ exports.getQuestionAnswerList = function (questionID, pageSkip, pageSize, callba
 };
 
 /**
+ * @desc 根据当前回答ID，获取签名的回答ID和后面的回答ID
+ * */
+exports.getPrevAndNextAnswerIDSByAnswerID = function (answerID, callback) {
+    
+    QuestionAnswer.findOne({_id: answerID}, function (err, answer) {
+        if(err){
+            return callback(err);
+        }
+        
+        if(!answer){
+            return callback(null, []);
+        }
+        
+        let currentAnswerCreateTime = answer.create_time;
+
+        async.parallel({
+            next: function(cb) {
+                QuestionAnswer.find({create_time: {$gt: currentAnswerCreateTime}})
+                    .sort('create_time')
+                    .limit(10)
+                    .exec(cb)
+            },
+            prev: function(cb) {
+                QuestionAnswer.find({create_time: {$lt: currentAnswerCreateTime}})
+                    .sort('-create_time')
+                    .limit(10)
+                    .exec(cb)
+            },
+        }, function (err, results) {
+
+            if(err){
+                return ;
+            }
+
+            let next = results.next;
+            let prev = results.prev;
+
+            let answerIDS = [];
+
+            prev.forEach(function (answer) {
+                answerIDS.push(answer._id.toString());
+            });
+            
+            answerIDS.push(answerID);
+
+            next.forEach(function (answer) {
+                answerIDS.push(answer._id.toString());
+            });
+            
+            callback(null, answerIDS);
+        });
+    });
+};
+
+
+/**
  * @desc 获取用户的回答列表
  * */
 exports.getUserAnswerList = function (userID, pageSkip, pageSize, callback) {
