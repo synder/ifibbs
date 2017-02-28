@@ -89,12 +89,12 @@ exports.addNewUserQuestion = function(req, res, next){
     
     let createUserId = req.session.id;
 
-    if(!title){
-        return next(new BadRequestError('title is needed'));
+    if(!describe){
+        describe = '';
     }
 
-    if(!describe){
-        return next(new BadRequestError('describe is needed'));
+    if(!title){
+        return next(new BadRequestError('title is needed'));
     }
     
     if(!Array.isArray(tags)){

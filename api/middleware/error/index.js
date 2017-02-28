@@ -24,7 +24,7 @@ exports.serverErrorHandler = function () {
             err.message = 'server error, please try again later';
         }
 
-        res.status(err.code).json({
+        res.status(200).json({
             flag: '0' + err.code,
             msg: err.message,
             result: null
