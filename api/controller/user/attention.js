@@ -73,7 +73,7 @@ exports.getUserAttentionUserList = function (req, res, next) {
                 users.push({
                     user_id: user.to_user_id._id,
                     user_avatar: user.to_user_id.user_avatar,
-                    user_name: user.to_user_id.user_avatar,
+                    user_name: user.to_user_id.user_name,
                     user_profile: user.to_user_id.user_profile,
                 });
             }

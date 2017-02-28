@@ -32,7 +32,6 @@ exports.getUserBrowseHistory = function (req, res, next) {
                 user_id: history.user_id ? history.user_id._id : null,
                 user_name: history.user_id ? history.user_id.user_name : null,
                 user_avatar: history.user_id ? history.user_id.user_avatar : null,
-                collect_count: history.collect_count,
                 type: history.type
             }
         });

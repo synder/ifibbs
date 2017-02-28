@@ -145,35 +145,41 @@ exports.getQuestionAnswerList = function(req, res, next){
  * @desc 回答详情
  * */
 exports.getAnswerDetail = function(req, res, next){
-    let questionID = req.query.question_id;
+    let questionID = req.query.question_id; //问题ID
     let answerID = req.query.answer_id;
     let userID = req.session.id;
 
     if(!answerID){
         return next(new BadRequestError('answer_id is needed'));
     }
-    
+
+    if(!questionID){
+        return next(new BadRequestError('question_id is needed'));
+    }
+
     answerModel.getQuestionAnswerDetail(answerID, function (err, answer) {
-        if(err){
-            return next(err);
-        }
+        
+        let current = answer.curr;
         
         let result = {
-            answer_id: answer.id,
-            answer_content: answer.content,
-            answer_time: answer.create_time,
-            answer_comment_count: answer.comment_count,
-            answer_favour_count: answer.favour_count,
-            answer_collect_count: answer.collect_count,
-            user_id: answer.create_user_id ? answer.create_user_id.id : null,
-            user_avatar: answer.create_user_id ? answer.create_user_id.user_avatar : null,
-            user_name: answer.create_user_id ? answer.create_user_id.user_name : null,
-            user_profile: answer.create_user_id ? answer.create_user_id.user_profile : null,
+            question_id: current.question_id,
+            answer_id: current.id,
+            answer_content: current.content,
+            answer_time: current.create_time,
+            answer_comment_count: current.comment_count,
+            answer_favour_count: current.favour_count,
+            answer_collect_count: current.collect_count,
+            user_id: current.create_user_id ? current.create_user_id.id : null,
+            user_avatar: current.create_user_id ? current.create_user_id.user_avatar : null,
+            user_name: current.create_user_id ? current.create_user_id.user_name : null,
+            user_profile: current.create_user_id ? current.create_user_id.user_profile : null,
             is_attention_user: false,
             is_favour: false,
             is_collected: false,
+            next_answer_id: answer.next._id,
+            prev_answer_id: answer.prev._id
         };
-        
+
         if(!userID){
             return res.json({
                 flag: '0000',
@@ -181,7 +187,7 @@ exports.getAnswerDetail = function(req, res, next){
                 result: result
             });
         }
-        
+
         let toUserID =  answer.create_user_id.id;
 
         //用户已经登录，查看关注情况
@@ -199,7 +205,7 @@ exports.getAnswerDetail = function(req, res, next){
             if(err){
                 return next(err);
             }
-            
+
             result.is_favour = !!results.isFavour;
             result.is_collected = !!results.isCollected;
             result.is_attention_user = !!results.isAttentionUser;

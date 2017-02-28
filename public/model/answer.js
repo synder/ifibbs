@@ -108,9 +108,53 @@ exports.getQuestionAnswerDetail = function (answerID, callback) {
         _id: answerID
     };
 
-    QuestionAnswer.findOne(condition)
+    QuestionAnswer.findOne({_id: answerID})
         .populate('create_user_id question_id')
-        .exec(callback);
+        .exec(function (err, current) {
+            
+            if(err){
+                return callback(err);
+            }
+            
+            if(!current){
+                return callback(null, null);
+            }
+            
+            let currentCreateTime = current.create_time;
+            
+            async.parallel({
+                next: function(cb) {
+                    QuestionAnswer.find({create_time: {$gt: currentCreateTime}})
+                        .populate('create_user_id question_id')
+                        .sort('create_time')
+                        .limit(1)
+                        .exec(cb)
+                },
+                prev: function(cb) {
+                    QuestionAnswer.find({create_time: {$lt: currentCreateTime}})
+                        .populate('create_user_id question_id')
+                        .sort('-create_time')
+                        .limit(1)
+                        .exec(cb)
+                },
+            }, function (err, results) {
+
+                if(err){
+                    return ;
+                }
+
+                let curr = current;
+                let next = results.next;
+                let prev = results.prev;
+                
+                callback(null, {
+                    curr: curr,
+                    next: next,
+                    prev: prev
+                });
+
+            });
+        });
 };
 
 
