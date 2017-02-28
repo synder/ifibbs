@@ -101,7 +101,6 @@ exports.cancelFavourToAnswer = function (userID, answerID, callback) {
         status: UserFavourAnswer.STATUS.FAVOUR,
         user_id: userID,
         answer_id: answerID,
-        qestion_id: questionID,
     };
     
     let update = {
