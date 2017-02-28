@@ -122,24 +122,19 @@ exports.changeNotificationToNotified = function (userID, notificationIDS, callba
 };
 
 
-
-
-
-
-
 /**
  * @desc 用户因某个用户回答了我发布的问题而被推送通知
  * */
 exports.pushNotificationForQuestionBeenAnswered = function (userID, clientID, answerUserName, questionTitle, callback) {
     
     let notification = {
+        user_id     : userID,
         status      : UserNotification.STATUS.UN_NOTIFIED,
         category    : UserNotification.CATEGORY.BUSINESS,
         type        : UserNotification.TYPE.QUESTION_BEEN_ANSWERED,
-        title       : answerUserName + '回答了您的问题',
-        content     : questionTitle,
-        user_id     : userID,
-        client_id   : clientID,
+        push_title       : answerUserName + '回答了您的问题',
+        push_content     : questionTitle,
+        push_client_id   : clientID,
         create_time : new Date(),
         update_time : new Date(),
     };
@@ -166,13 +161,13 @@ exports.pushNotificationForQuestionBeenAnswered = function (userID, clientID, an
  * */
 exports.pushNotificationForAnswerBeenFavoured = function (userID, clientID, favourUserName, questionTitle, callback) {
     let notification = {
+        user_id     : userID,
         status      : UserNotification.STATUS.UN_NOTIFIED,
         category    : UserNotification.CATEGORY.BUSINESS,
         type        : UserNotification.TYPE.ANSWER_BEEN_FAVOURED,
-        title       : favourUserName + '赞了您的回答',
-        content     : questionTitle,
-        user_id     : userID,
-        client_id   : clientID,
+        push_title       : favourUserName + '赞了您的回答',
+        push_content     : questionTitle,
+        push_client_id   : clientID,
         create_time : new Date(),
         update_time : new Date(),
     };
@@ -199,13 +194,13 @@ exports.pushNotificationForAnswerBeenFavoured = function (userID, clientID, favo
  * */
 exports.pushNotificationForQuestionBeenShared = function (userID, clientID, sharedUserName, questionTitle, callback) {
     let notification = {
+        user_id     : userID,
         status      : UserNotification.STATUS.UN_NOTIFIED,
         category    : UserNotification.CATEGORY.BUSINESS,
         type        : UserNotification.TYPE.QUESTION_BEEN_SHARED,
-        title       : sharedUserName + '分享您的问题',
-        content     : questionTitle,
-        user_id     : userID,
-        client_id   : clientID,
+        push_title       : sharedUserName + '分享您的问题',
+        push_content     : questionTitle,
+        push_client_id   : clientID,
         create_time : new Date(),
         update_time : new Date(),
     };

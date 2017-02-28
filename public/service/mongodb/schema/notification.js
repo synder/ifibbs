@@ -11,15 +11,17 @@ const ObjectId = Schema.Types.ObjectId;
 
 //用户===================================================
 const UserNotificationSchema = new Schema({
-    status      : {type: Number, required: true},      //通知状态
-    category    : {type: Number, required: true},      //通知类别
-    type        : {type: Number, required: true},      //通知类型
-    title       : {type: String, required: true},      //通知标题
-    content     : {type: String, required: true},      //通知内容
-    user_id     : {type: ObjectId, required: true},    //用户ID
-    client_id   : {type: String, required: false},     //目标ID
-    create_time : {type: Date,     required: true},    //创建时间
-    update_time : {type: Date,     required: true},    //更新时间
+    status       : {type: Number, required: true},      //通知状态
+    category     : {type: Number, required: true},      //通知类别
+    type         : {type: Number, required: true},      //通知类型
+    push_title        : {type: String, required: true},      //通知标题
+    push_content      : {type: String, required: true},      //通知内容
+    push_client_id    : {type: String, required: false},     //客户端ID，详见个推文档
+    push_task_id      : {type: String, required: false},     //任务ID，详见个推文档
+    push_time         : {type: Date,     required: false},   //推送时间
+    create_time       : {type: Date,     required: true},    //创建时间
+    update_time       : {type: Date,     required: true},    //更新时间
+    user_id           : {type: ObjectId, required: true, ref: 'User'},    //用户ID
 });
 
 UserNotificationSchema.virtual('id', function () {

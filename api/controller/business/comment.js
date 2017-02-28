@@ -34,7 +34,7 @@ exports.getAnswerCommentList = function (req, res, next) {
 
         results.comments.forEach(function (comment) {
             
-            if(comment.question_id && comment.answer_id && comment.create_user_id && comment.to_user_id){
+            if(comment.question_id && comment.answer_id && comment.create_user_id){
                 comments.push({
                     question_id: comment.question_id._id,
                     answer_id: comment.answer_id._id,
