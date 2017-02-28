@@ -27,7 +27,6 @@ exports.getUserSystemNotification = function (req, res, next) {
                 title: notification.title,
                 content: notification.content,
                 type: notification.type,
-                add_on: notification.target_id
             })
         });
 
@@ -65,7 +64,6 @@ exports.getUserBusinessNotification = function (req, res, next) {
                 title: notification.title,
                 content: notification.content,
                 type: notification.type,
-                add_on: notification.target_id
             })
         });
 
