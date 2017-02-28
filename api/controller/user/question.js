@@ -36,7 +36,7 @@ exports.getUserQuestions = function(req, res, next){
                 favour_count: question.favour_count,
                 attention_count: question.attention_count,
                 collect_count: question.collect_count,
-                create_time: question.create_time,
+                create_time: question.create_time.valueOf(),
             }
         });
         

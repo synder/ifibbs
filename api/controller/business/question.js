@@ -37,7 +37,7 @@ exports.getRecommendQuestions = function (req, res, next) {
                 favour_count: question.favour_count,
                 attention_count: question.attention_count,
                 collect_count: question.collect_count,
-                create_time: question.create_time,
+                create_time: question.create_time.valueOf(),
                 type: 1
             };
         });
@@ -92,7 +92,7 @@ exports.getQuestionDetail = function(req, res, next){
             attention_count: question.attention_count,
             collect_count: question.collect_count,
             create_user_id: question.create_user_id,
-            create_time: question.create_time,
+            create_time: question.create_time.valueOf(),
         };
         
         if(!userID){

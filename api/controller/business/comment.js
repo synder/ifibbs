@@ -46,7 +46,7 @@ exports.getAnswerCommentList = function (req, res, next) {
                     comment_id: comment._id,
                     content: comment.comment_count,
                     comment_favour_count: comment.favour_count,
-                    comment_publish_time: comment.create_time
+                    comment_publish_time: comment.create_time.valueOf()
                 });
             }
         });

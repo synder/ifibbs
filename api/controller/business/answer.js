@@ -171,7 +171,7 @@ exports.getAnswerDetail = function(req, res, next){
             question_id: answer.question_id ? answer.question_id._id : null,
             answer_id: answer.id,
             answer_content: answer.content,
-            answer_time: answer.create_time,
+            answer_time: answer.create_time.valueOf(),
             answer_comment_count: answer.comment_count,
             answer_favour_count: answer.favour_count,
             answer_collect_count: answer.collect_count,
