@@ -146,9 +146,18 @@ exports.getQuestionAnswerList = function(req, res, next){
  * */
 exports.getAnswerNextAndPrevIDS = function (req, res, next) {
 
+    let questionID = req.query.question_id;
     let answerID = req.query.answer_id;
+
+    if(!questionID){
+        return next(new BadRequestError('question_id is needed'));
+    }
+
+    if(!answerID){
+        return next(new BadRequestError('question_id is needed'));
+    }
     
-    answerModel.getPrevAndNextAnswerIDSByAnswerID(answerID, function (err, ids) {
+    answerModel.getPrevAndNextAnswerIDSByAnswerID(questionID, answerID, function (err, ids) {
         if(err){
             return next(err);
         }

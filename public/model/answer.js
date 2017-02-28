@@ -79,7 +79,7 @@ exports.getQuestionAnswerList = function (questionID, pageSkip, pageSize, callba
 /**
  * @desc 根据当前回答ID，获取签名的回答ID和后面的回答ID
  * */
-exports.getPrevAndNextAnswerIDSByAnswerID = function (answerID, callback) {
+exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, callback) {
     
     QuestionAnswer.findOne({_id: answerID}, function (err, answer) {
         if(err){
@@ -94,13 +94,13 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (answerID, callback) {
 
         async.parallel({
             next: function(cb) {
-                QuestionAnswer.find({create_time: {$gt: currentAnswerCreateTime}})
+                QuestionAnswer.find({question_id: questionID, create_time: {$gt: currentAnswerCreateTime}})
                     .sort('create_time')
                     .limit(10)
                     .exec(cb)
             },
             prev: function(cb) {
-                QuestionAnswer.find({create_time: {$lt: currentAnswerCreateTime}})
+                QuestionAnswer.find({question_id: questionID, create_time: {$lt: currentAnswerCreateTime}})
                     .sort('-create_time')
                     .limit(10)
                     .exec(cb)
