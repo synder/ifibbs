@@ -123,6 +123,11 @@ exports.findUserAttentionBySubjectID = function (userID, subjectID, callback) {
  * @desc 查询获取用户关注的用户(根据用户ID和otherUserID)
  * */
 exports.findUserAttentionByUserID = function (userID, otherUserID, callback) {
+    
+    if(!otherUserID){
+        return callback(null, null);
+    }
+    
     let condition = {
         status: AttentionUser.STATUS.ATTENTION,
         user_id: userID,

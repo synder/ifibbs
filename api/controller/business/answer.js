@@ -188,7 +188,7 @@ exports.getAnswerDetail = function(req, res, next){
             });
         }
 
-        let toUserID =  answer.create_user_id.id;
+        let toUserID =  current.create_user_id ? current.create_user_id.id : null;
 
         //用户已经登录，查看关注情况
         async.parallel({
