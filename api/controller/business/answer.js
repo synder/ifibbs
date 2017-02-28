@@ -168,7 +168,7 @@ exports.getAnswerDetail = function(req, res, next){
         }
         
         let result = {
-            question_id: answer.question_id,
+            question_id: answer.question_id ? answer.question_id._id : null,
             answer_id: answer.id,
             answer_content: answer.content,
             answer_time: answer.create_time,
