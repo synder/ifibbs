@@ -152,15 +152,13 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
         let answerIDS = [];
 
         prev.forEach(function (answer) {
-            let id = answer._id.toString();
-            answerIDS.push(id)
+            answerIDS.push(answer._id)
         });
 
         answerIDS.push(answerID);
 
         next.forEach(function (answer) {
-            let id = answer._id.toString();
-            answerIDS.push(id);
+            answerIDS.push(answer._id);
         });
 
         callback(null, answerIDS);
