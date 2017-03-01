@@ -102,6 +102,7 @@ exports.getLatestAnswer = function(req, res, next){
 exports.getQuestionAnswerList = function(req, res, next){
     let pageSkip = req.query.page_skip;
     let pageSize = req.query.page_size;
+    let lastAnswerID = req.query.last_id; //最后一个ID, 用于快速分页
     
     let questionID = req.query.question_id;
     
@@ -109,7 +110,7 @@ exports.getQuestionAnswerList = function(req, res, next){
         return next(new BadRequestError('question_id is needed'));
     }
     
-    answerModel.getQuestionAnswerList(questionID, pageSkip, pageSize, function (err, result) {
+        answerModel.getQuestionAnswerList(questionID, lastAnswerID, pageSkip, pageSize, function (err, result) {
         if(err){
             return next(err);
         }

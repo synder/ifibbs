@@ -13,7 +13,71 @@ const mongodb = require('../../../public/service/mongodb').db;
 const elasticsearch = require('../../../public/service/elasticsearch').client;
 
 const QuestionTag = mongodb.model('QuestionTag');
+const Question = mongodb.model('Question');
+const QuestionAnswer = mongodb.model('QuestionAnswer');
 const User = mongodb.model('User');
+
+const USER_ID = "58aa50177ddbf5507c51f082";
+const USER_ID_OTHER = "58aa50177ddbf5507c51f083";
+const QUESTION_ID = "58ae5da34171fd177d387656";
+
+const initQuestion = function (callback) {
+    let questions = [];
+    
+    questions.push({
+        "_id": QUESTION_ID,
+        "status" : 1,
+        "title" : Mock.Random.ctitle(5, 20),
+        "describe" : Mock.Random.ctitle(50, 100),
+        "answer_count" : 0,
+        "favour_count" : 0,
+        "attention_count" : 1,
+        "collect_count" : 0,
+        "create_user_id" : USER_ID,
+        "create_time" : new Date(),
+        "update_time" : new Date(),
+        "tags" : [],
+    });
+    
+    for(let i = 0; i < 100; i++){
+        questions.push({
+            "status" : 1,
+            "title" : Mock.Random.ctitle(5, 20),
+            "describe" : Mock.Random.ctitle(50, 100),
+            "answer_count" : 0,
+            "favour_count" : 0,
+            "attention_count" : 1,
+            "collect_count" : 0,
+            "create_user_id" : USER_ID,
+            "create_time" : new Date(),
+            "update_time" : new Date(),
+            "tags" : [],
+        });
+    }
+    
+    Question.create(questions, callback);
+};
+
+const initQuestionAnswer = function (callback) {
+    
+    let answers = [];
+    
+    for(let i = 0; i < 100; i++){
+        answers.push({
+            "status" : 1,
+            "content" : Mock.Random.ctitle(20, 50),
+            "comment_count" : 0,
+            "favour_count" : 0,
+            "collect_count" : 0,
+            "question_id" : QUESTION_ID,
+            "create_user_id" : USER_ID,
+            "create_time" : new Date(),
+            "update_time" : new Date(),
+        });
+    }
+
+    QuestionAnswer.create(answers, callback);
+};
 
 
 /**
@@ -25,7 +89,7 @@ const initMongodbUserCollection = function (callback) {
 
     let userDoc = [
         {
-            _id: '58aa50177ddbf5507c51f082',
+            _id: USER_ID,
             status: User.STATUS.NORMAL, //用户状态
             user_name: 'synder',   //用户名
             user_profile: Mock.Random.ctitle(10, 20),   //用户简介
@@ -38,7 +102,7 @@ const initMongodbUserCollection = function (callback) {
             edu_info: Mock.Random.ctitle(10, 20),  //用户性别
         },
         {
-            _id: '58aa50177ddbf5507c51f083',
+            _id: USER_ID_OTHER,
             status: User.STATUS.NORMAL,   //用户状态
             user_name: 'sam',   //用户名
             user_profile: Mock.Random.ctitle(10, 20),   //用户简介
@@ -141,6 +205,15 @@ const initMongodbQuestionTagsCollection = function (callback) {
 
 exports.init = function (callback) {
     async.parallel([
+        
+        function (cb) {
+            initQuestion(cb);  
+        },
+        
+        function (cb) {
+            initQuestionAnswer(cb);
+        },
+        
         function (cb) {
             initMongodbUserCollection(cb);
         },

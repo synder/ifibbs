@@ -14,7 +14,7 @@ exports.addNewCommentToAnswer = function (req, res, next) {
     //必填参数
     let questionId = req.body.question_id;
     let answerId = req.body.answer_id;
-    let commentContent = req.body.content;
+    let commentContent = req.body.comment_content;
 
     //可以为空
     let toUserId = req.body.to_user_id;

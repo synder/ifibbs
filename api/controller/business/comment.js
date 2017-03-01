@@ -13,6 +13,7 @@ const commentModel = require('../../../public/model/comment');
 exports.getAnswerCommentList = function (req, res, next) {
     let pageSize = req.query.page_size;
     let pageSkip = req.query.page_skip;
+    let lastCommentID = req.query.last_id;
     let questionID = req.query.question_id;
     let answerID = req.query.answer_id;
 
@@ -24,7 +25,7 @@ exports.getAnswerCommentList = function (req, res, next) {
         return next(new BadRequestError('answer_id is needed'));
     }
 
-    commentModel.getAnswerCommentList(answerID, pageSkip, pageSize, function (err, results) {
+    commentModel.getAnswerCommentList(answerID, lastCommentID, pageSkip, pageSize, function (err, results) {
         if(err){
             return next(err);
         }
