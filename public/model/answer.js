@@ -122,7 +122,7 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
             };
 
             QuestionAnswer.find(ltCondition)
-                .sort('-create_time -_id')
+                .sort('-_id')
                 .limit(10)
                 .exec(cb)
         },
@@ -135,7 +135,7 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
             };
 
             QuestionAnswer.find(gtCondition)
-                .sort('-create_time -_id')
+                .sort('-_id')
                 .limit(10)
                 .exec(cb)
         },
