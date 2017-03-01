@@ -61,7 +61,7 @@ describe('专题相关接口', function () {
                     chai.expect(result).to.have.ownProperty('describe');
                     chai.expect(result).to.have.ownProperty('icon');
                     chai.expect(result).to.have.ownProperty('cover');
-                    chai.expect(result).to.have.ownProperty('is_attented');
+                    chai.expect(result).to.have.ownProperty('is_attention');
                 }
 
                 done();

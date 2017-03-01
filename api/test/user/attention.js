@@ -114,7 +114,7 @@ describe('用户取消关注问题', function() {
 
         request(app)
             .delete('/user/attention/question')
-            .send({
+            .query({
                 question_id: questionID
             })
             .expect(200)
@@ -189,7 +189,7 @@ describe('用户取消关注专题', function() {
 
         request(app)
             .delete('/user/attention/subject')
-            .send({
+            .query({
                 subject_id: subjectID
             })
             .expect(200)
@@ -262,7 +262,7 @@ describe('用户取消关注用户', function() {
 
         request(app)
             .delete('/user/attention/user')
-            .send({
+            .query({
                 user_id: '58aaae950e95c9205f3db5de'
             })
             .expect(200)

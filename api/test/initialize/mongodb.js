@@ -21,6 +21,26 @@ const USER_ID = "58aa50177ddbf5507c51f082";
 const USER_ID_OTHER = "58aa50177ddbf5507c51f083";
 const QUESTION_ID = "58ae5da34171fd177d387656";
 
+const emptyCollection = function (callback) {
+    async.parallel([
+        function (cb) {
+            QuestionTag.remove({}, cb);
+        },
+
+        function (cb) {
+            Question.remove({}, cb);
+        },
+
+        function (cb) {
+            QuestionAnswer.remove({}, cb);
+        },
+
+        function (cb) {
+            User.remove({}, cb);
+        },
+    ], callback);
+};
+
 const initQuestion = function (callback) {
     let questions = [];
     
@@ -115,10 +135,8 @@ const initMongodbUserCollection = function (callback) {
             edu_info: Mock.Random.ctitle(10, 20),  //用户性别
         }
     ];
-    
-    User.remove({}, function () {
-        User.create(userDoc, callback);
-    });
+
+    User.create(userDoc, callback);
     
 };
 
@@ -160,72 +178,67 @@ const initMongodbQuestionTagsCollection = function (callback) {
         });
     }
 
-    QuestionTag.remove({}, function () {
-
-        elasticsearch.deleteByQuery({
-            index: elasticsearch.indices.tags,
-            body: {
-                query: {
-                    match_all: ''
-                }
+    elasticsearch.deleteByQuery({
+        index: elasticsearch.indices.tags,
+        body: {
+            query: {
+                match_all: ''
             }
-        }, function (error, response) {
+        }
+    }, function (error, response) {
+        QuestionTag.create(tags, function (err, tags) {
+            if (err) {
+                return callback(err);
+            }
 
-            
-            
-            QuestionTag.create(tags, function (err, tags) {
-                if (err) {
-                    return callback(err);
-                }
-                
-                let elasticTagsDocuments = [];
-                
-                tags.forEach(function (tag) {
-                    elasticTagsDocuments.push({ 
-                        "index" : { 
-                            "_index" : elasticsearch.indices.tags,
-                            "_type" : elasticsearch.indices.tags, 
-                            "_id" : tag._id.toString() 
-                        } 
-                    });
-                    elasticTagsDocuments.push({
-                        icon: tag.icon,
-                        title: tag.title,
-                        describe: tag.describe,
-                    });
+            let elasticTagsDocuments = [];
+
+            tags.forEach(function (tag) {
+                elasticTagsDocuments.push({
+                    "index" : {
+                        "_index" : elasticsearch.indices.tags,
+                        "_type" : elasticsearch.indices.tags,
+                        "_id" : tag._id.toString()
+                    }
                 });
-
-                elasticsearch.bulk({
-                    body: elasticTagsDocuments
-                }, callback);
+                elasticTagsDocuments.push({
+                    icon: tag.icon,
+                    title: tag.title,
+                    describe: tag.describe,
+                });
             });
+
+            elasticsearch.bulk({
+                body: elasticTagsDocuments
+            }, callback);
         });
     });
 };
 
-initQuestionAnswer(function () {
-    
-})
-
 exports.init = function (callback) {
-    async.parallel([
+    
+    emptyCollection(function () {
         
-        function (cb) {
-            initQuestion(cb);  
-        },
-        
-        function (cb) {
-            initQuestionAnswer(cb);
-        },
-        
-        function (cb) {
-            initMongodbUserCollection(cb);
-        },
+        async.parallel([
 
-        function (cb) {
-            initMongodbQuestionTagsCollection(cb);
-        }
+            function (cb) {
+                initQuestion(cb);
+            },
+
+            function (cb) {
+                initQuestionAnswer(cb);
+            },
+
+            function (cb) {
+                initMongodbUserCollection(cb);
+            },
+
+            function (cb) {
+                initMongodbQuestionTagsCollection(cb);
+            }
+
+        ], callback);
         
-    ], callback);
+    });
 };
 

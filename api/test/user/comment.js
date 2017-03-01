@@ -63,7 +63,7 @@ describe('用户新增回答评论', function () {
                                 to_comment_id: null,
                                 question_id: questionID,
                                 answer_id: answerID,
-                                content: Mock.Random.ctitle(10, 20)
+                                comment_content: Mock.Random.ctitle(10, 20)
                             })
                             .expect(200)
                             .end(function (err, res) {
@@ -145,7 +145,7 @@ describe('用户删除回答评论', function () {
                         to_comment_id: null,
                         question_id: questionID,
                         answer_id: answer_id,
-                        content: Mock.Random.ctitle(10, 20)
+                        comment_content: Mock.Random.ctitle(10, 20)
                     })
                     .expect(200)
                     .end(function (err, res) {
@@ -165,7 +165,7 @@ describe('用户删除回答评论', function () {
 
         request(app)
             .delete('/user/question/answer/comment')
-            .send({
+            .query({
                 comment_id: commentID,
                 answer_id: answerID
             })
@@ -245,13 +245,23 @@ describe('用户获取自己的回答评论列表', function () {
                         to_comment_id: null,
                         question_id: questionID,
                         answer_id: answer_id,
-                        content: Mock.Random.ctitle(10, 20)
+                        comment_content: Mock.Random.ctitle(10, 20)
                     })
                     .expect(200)
                     .end(cb)
             }
 
-        ], done);
+        ], function (err, res) {
+            if(err){
+                return done(err);
+            }
+            
+            if(res.body.flag !== '0000'){
+                return done(new Error(res.body.msg))
+            }
+            
+            done();
+        });
 
     });
 
@@ -287,7 +297,7 @@ describe('用户获取自己的回答评论列表', function () {
                     chai.expect(list[0]).to.have.ownProperty('to_user_id');
                     chai.expect(list[0]).to.have.ownProperty('to_user_name');
                     chai.expect(list[0]).to.have.ownProperty('comment_id');
-                    chai.expect(list[0]).to.have.ownProperty('content');
+                    chai.expect(list[0]).to.have.ownProperty('comment_content');
                 }
 
                 done();

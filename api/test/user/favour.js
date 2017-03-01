@@ -114,7 +114,7 @@ describe('用户取消对回答点赞', function() {
 
         request(app)
             .delete('/user/favour/answer')
-            .send({
+            .query({
                 answer_id: answerID
             })
             .expect(200)
@@ -166,7 +166,7 @@ describe('用户取消对回答评论点赞', function() {
 
         request(app)
             .delete('/user/favour/comment')
-            .send({
+            .query({
                 comment_id: comment_id
             })
             .expect(200)
@@ -216,7 +216,7 @@ describe('用户取消对文章点赞', function() {
 
         request(app)
             .delete('/user/favour/article')
-            .send({
+            .query({
                 article_id: article_id
             })
             .expect(200)

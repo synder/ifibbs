@@ -62,7 +62,7 @@ describe('用户取消收藏答案', function() {
 
         request(app)
             .delete('/user/collection/answer')
-            .send({
+            .query({
                 answer_id: '58aaae950e95c9205f3db5db'
             })
             .expect(200)
@@ -87,7 +87,7 @@ describe('用户取消收藏文章', function() {
 
         request(app)
             .delete('/user/collection/article')
-            .send({
+            .query({
                 article_id: '58aaae950e95c9205f3db5db'
             })
             .expect(200)

@@ -78,7 +78,7 @@ describe('用户删除提问', function () {
 
                 request(app)
                     .delete('/user/question')
-                    .send({
+                    .query({
                         question_id: res.body.result.question_id
                     })
                     .expect(200)

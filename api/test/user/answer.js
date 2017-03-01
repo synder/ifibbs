@@ -1,4 +1,3 @@
-
 const async = require('async');
 const chai = require('chai');
 const request = require('supertest');
@@ -6,11 +5,11 @@ const Mock = require('mockjs');
 
 const app = require('../../app').app;
 
-describe('用户新增问题回答', function(){
-    
+describe('用户新增问题回答', function () {
+
     let questionID = null;
-    
-    before(function(done) {
+
+    before(function (done) {
         request(app)
             .put('/user/question')
             .send({
@@ -19,7 +18,7 @@ describe('用户新增问题回答', function(){
                 tags: []
             })
             .expect(200)
-            .end(function(err, res) {
+            .end(function (err, res) {
                 if (err) {
                     throw err;
                 }
@@ -35,8 +34,8 @@ describe('用户新增问题回答', function(){
                 done();
             });
     });
-    
-    it('#用户新增问题回答状态', function(done) {
+
+    it('#用户新增问题回答状态', function (done) {
         request(app)
             .put('/user/question/answer')
             .send({
@@ -44,7 +43,7 @@ describe('用户新增问题回答', function(){
                 answer_content: Mock.Random.cparagraph(5, 10),
             })
             .expect(200)
-            .end(function(err, res) {
+            .end(function (err, res) {
                 if (err) {
                     throw err;
                 }
@@ -61,9 +60,11 @@ describe('用户新增问题回答', function(){
     });
 });
 
-describe('删除用户的问题回答', function(){
-    it('#返回删除状态', function(done) {
+describe('删除用户的问题回答', function () {
+    
+    let answerID = null;
 
+    before(function (done) {
         request(app)
             .put('/user/question')
             .send({
@@ -72,7 +73,7 @@ describe('删除用户的问题回答', function(){
                 tags: []
             })
             .expect(200)
-            .end(function(err, res) {
+            .end(function (err, res) {
                 if (err) {
                     throw err;
                 }
@@ -82,7 +83,7 @@ describe('删除用户的问题回答', function(){
 
                 chai.expect(res.body).to.have.ownProperty('result');
                 chai.expect(res.body.result).to.have.ownProperty('question_id');
-                
+
                 let questionID = res.body.result.question_id;
 
                 request(app)
@@ -92,7 +93,7 @@ describe('删除用户的问题回答', function(){
                         answer_content: Mock.Random.cparagraph(5, 10),
                     })
                     .expect(200)
-                    .end(function(err, res) {
+                    .end(function (err, res) {
                         if (err) {
                             throw err;
                         }
@@ -104,42 +105,23 @@ describe('删除用户的问题回答', function(){
                         chai.expect(res.body.result).to.have.ownProperty('question_id');
                         chai.expect(res.body.result).to.have.ownProperty('answer_id');
 
-                        request(app)
-                            .delete('/user/question/answer')
-                            .send({
-                                answer_id: res.body.result.answer_id,
-                            })
-                            .expect(200)
-                            .end(function(err, res) {
-                                if (err) {
-                                    throw err;
-                                }
+                        answerID = res.body.result.answer_id;
 
-                                chai.expect(res.body).to.have.property('flag', '0000');
-                                chai.expect(res.body).to.have.property('msg', '');
-                                chai.expect(res.body).to.have.ownProperty('result');
+                        done();
 
-                                chai.expect(res.body.result).to.have.property('ok', true);
-
-                                done();
-                            });
                     });
             });
-
-        
     });
-});
 
-describe('获取用户问题回答列表', function(){
-    it('#返回用户问题回答列表', function(done) {
+    it('#返回删除状态', function (done) {
+        
         request(app)
-            .get('/user/question/answers')
+            .delete('/user/question/answer')
             .query({
-                page_index: 1,
-                page_size: 20
+                answer_id: answerID,
             })
             .expect(200)
-            .end(function(err, res) {
+            .end(function (err, res) {
                 if (err) {
                     throw err;
                 }
@@ -147,13 +129,38 @@ describe('获取用户问题回答列表', function(){
                 chai.expect(res.body).to.have.property('flag', '0000');
                 chai.expect(res.body).to.have.property('msg', '');
                 chai.expect(res.body).to.have.ownProperty('result');
-                
+
+                chai.expect(res.body.result).to.have.ownProperty('ok');
+
+                done();
+            });
+    });
+});
+
+describe('获取用户问题回答列表', function () {
+    it('#返回用户问题回答列表', function (done) {
+        request(app)
+            .get('/user/question/answers')
+            .query({
+                page_index: 1,
+                page_size: 20
+            })
+            .expect(200)
+            .end(function (err, res) {
+                if (err) {
+                    throw err;
+                }
+
+                chai.expect(res.body).to.have.property('flag', '0000');
+                chai.expect(res.body).to.have.property('msg', '');
+                chai.expect(res.body).to.have.ownProperty('result');
+
                 chai.expect(res.body.result).to.have.ownProperty('count');
                 chai.expect(res.body.result).to.have.ownProperty('list');
-                
+
                 let list = res.body.result.list;
-                
-                if(list.length > 0){
+
+                if (list.length > 0) {
                     chai.expect(list[0]).to.have.ownProperty('answer_id');
                     chai.expect(list[0]).to.have.ownProperty('answer_content');
                     chai.expect(list[0]).to.have.ownProperty('question_id');

@@ -62,7 +62,7 @@ describe('获取回答评论列表', function () {
                                 to_comment_id: null,
                                 question_id: questionID,
                                 answer_id: answerID,
-                                content: Mock.Random.ctitle(10, 20)
+                                comment_content: Mock.Random.ctitle(10, 20)
                             })
                             .expect(200)
                             .end(function (err, res) {
@@ -118,7 +118,7 @@ describe('获取回答评论列表', function () {
                     chai.expect(list[0]).to.have.ownProperty('to_user_id');
                     chai.expect(list[0]).to.have.ownProperty('to_user_name');
                     chai.expect(list[0]).to.have.ownProperty('comment_id');
-                    chai.expect(list[0]).to.have.ownProperty('content');
+                    chai.expect(list[0]).to.have.ownProperty('comment_content');
                 }
 
                 done();
