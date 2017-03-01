@@ -126,9 +126,11 @@ exports.getQuestionList = function (userID, pageSkip, pageSize, callback) {
 /**
  * @desc 获取推荐问题列表
  * */
-exports.getRecommenedQuestionList = function (pageSkip, pageSize, callback) {
+exports.getRecommendQuestionList = function (pageSkip, pageSize, callback) {
 
-    let condition = {};
+    let condition = {
+        status: Question.STATUS.NORMAL
+    };
 
     async.parallel({
         count: function (cb) {
