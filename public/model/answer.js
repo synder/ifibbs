@@ -111,84 +111,55 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
  * @desc 根据当前回答ID，获取签名的回答ID和后面的回答ID
  * */
 exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, callback) {
-    
-    QuestionAnswer.findOne({_id: answerID}, function (err, answer) {
+
+    async.parallel({
+
+        prev: function(cb) {
+
+            let ltCondition = {
+                question_id: questionID,
+                _id: {$gt: answerID}
+            };
+
+            QuestionAnswer.find(ltCondition)
+                .sort('-create_time -_id')
+                .limit(10)
+                .exec(cb)
+        },
+
+        next: function(cb) {
+
+            let gtCondition = {
+                question_id: questionID,
+                _id: {$lte: answerID}
+            };
+
+            QuestionAnswer.find(gtCondition)
+                .sort('-create_time -_id')
+                .limit(11)
+                .exec(cb)
+        },
+    }, function (err, results) {
+
         if(err){
-            return callback(err);
+            return ;
         }
-        
-        if(!answer){
-            return callback(null, []);
-        }
-        
-        let currentAnswerCreateTime = answer.create_time;
 
-        async.parallel({
 
-            prev: function(cb) {
+        let prev = results.prev;
+        let next = results.next;
 
-                let ltCondition = {
-                    question_id: questionID,
-                    create_time: {$gt: currentAnswerCreateTime},
-                };
+        let answerIDS = [];
 
-                QuestionAnswer.find(ltCondition)
-                    .sort('-create_time -_id')
-                    .limit(10)
-                    .exec(cb)
-            },
-
-            curr: function (cb) {
-                let gtCondition = {
-                    question_id: questionID,
-                    create_time: {$eq: currentAnswerCreateTime},
-                };
-
-                QuestionAnswer.find(gtCondition)
-                    .sort('-_id')
-                    .limit(10)
-                    .exec(cb)
-            },
-            
-            next: function(cb) {
-                
-                let gtCondition = {
-                    question_id: questionID, 
-                    create_time: {$lt: currentAnswerCreateTime},
-                };
-                
-                QuestionAnswer.find(gtCondition)
-                    .sort('-create_time -_id')
-                    .limit(10)
-                    .exec(cb)
-            },
-        }, function (err, results) {
-
-            if(err){
-                return ;
-            }
-
-            
-            let prev = results.prev;
-            let curr = results.curr;
-            let next = results.next;
-
-            let answerIDS = [];
-
-            prev.forEach(function (answer) {
-                answerIDS.push(answer._id.toString());
-            });
-
-            curr.forEach(function (answer) {
-                answerIDS.push(answer._id.toString());
-            });
-
-            next.forEach(function (answer) {
-                answerIDS.push(answer._id.toString());
-            });
-            
-            callback(null, answerIDS);
+        prev.forEach(function (answer) {
+            answerIDS.push(answer._id.toString());
         });
+
+        next.forEach(function (answer) {
+            answerIDS.push(answer._id.toString());
+        });
+
+        callback(null, answerIDS);
     });
 };
 
