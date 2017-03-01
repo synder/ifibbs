@@ -32,7 +32,7 @@ exports.addNewCommentToAnswer = function (req, res, next) {
     }
 
     if(!commentContent){
-        return next(new BadRequestError('content is needed'));
+        return next(new BadRequestError('comment_content is needed'));
     }
 
     commentModel.createNewAnswerComment(userID, answerId, {
