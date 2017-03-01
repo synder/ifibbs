@@ -44,7 +44,7 @@ exports.getAnswerCommentList = function (req, res, next) {
                     to_user_id: comment.to_user_id ? comment.to_user_id.user_name : null,
                     to_user_name: comment.to_user_id ? comment.to_user_id.user_name : null,
                     comment_id: comment._id,
-                    content: comment.comment_count,
+                    comment_count: comment.content,
                     comment_favour_count: comment.favour_count,
                     comment_publish_time: comment.create_time.valueOf()
                 });
