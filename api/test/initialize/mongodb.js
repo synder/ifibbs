@@ -203,6 +203,10 @@ const initMongodbQuestionTagsCollection = function (callback) {
     });
 };
 
+initQuestionAnswer(function () {
+    
+})
+
 exports.init = function (callback) {
     async.parallel([
         
