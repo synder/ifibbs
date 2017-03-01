@@ -13,11 +13,15 @@ exports.notFoundHandler = function () {
 
 exports.serverErrorHandler = function () {
     return function (err, req, res, next) {
-
-        logger.error(err.stack);
-
+        
         if (!err.code) {
             err.code = 500;
+        }
+        
+        if(err.code < 500){
+            logger.error(err);
+        }else{
+            logger.error(err.stack);
         }
 
         if (!err.message) {
