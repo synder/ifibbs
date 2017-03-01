@@ -80,7 +80,7 @@ exports.getSubjectDetail = function(req, res, next){
             describe : subject.describe,
             icon : subject.icon,
             cover : subject.cover,
-            is_attented: false //是否关注
+            is_attention: false //是否关注
         };
         
         if(!userID){
@@ -96,7 +96,7 @@ exports.getSubjectDetail = function(req, res, next){
                 return next(err);
             }
 
-            result.is_attented = !!attention;
+            result.is_attention = !!attention;
 
             res.json({
                 flag: '0000',
