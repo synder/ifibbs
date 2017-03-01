@@ -29,7 +29,7 @@ exports.getUserAttentionQuestionList = function (userID, pageSkip, pageSize, cal
         questions: function (cb) {
             AttentionQuestion.find(conditoin)
                 .populate('question_id question_user_id')
-                .sort('create_time')
+                .sort('create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);
@@ -55,7 +55,7 @@ exports.getUserAttentionUserList = function (userID, pageSkip, pageSize, callbac
         users: function (cb) {
             AttentionUser.find(conditoin)
                 .populate('to_user_id')
-                .sort('create_time')
+                .sort('create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);
@@ -81,7 +81,7 @@ exports.getUserAttentionSubjectList = function (userID, pageSkip, pageSize, call
         subjects: function (cb) {
             AttentionSubject.find(conditoin)
                 .populate('subject_id')
-                .sort('create_time')
+                .sort('create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);

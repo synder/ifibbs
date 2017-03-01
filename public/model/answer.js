@@ -45,7 +45,7 @@ exports.getLatestAnswerList = function (pageSkip, pageSize, callback) {
         answers: function (cb) {
             QuestionAnswer.find({})
                 .populate('create_user_id question_id')
-                .sort('create_time')
+                .sort('-create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);
@@ -69,7 +69,7 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
             if(!lastAnswerID){
                 QuestionAnswer.find(condition)
                     .populate('create_user_id question_id')
-                    .sort('create_time')
+                    .sort('-create_time _id')
                     .skip(pageSkip)
                     .limit(pageSize)
                     .exec(cb);
@@ -82,7 +82,7 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
                     if(!QuestionAnswer){
                         return QuestionAnswer.find(condition)
                             .populate('create_user_id question_id')
-                            .sort('create_time')
+                            .sort('-create_time _id')
                             .skip(pageSkip)
                             .limit(pageSize)
                             .exec(cb);
@@ -98,7 +98,7 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
 
                     QuestionAnswer.find(pageCondition)
                         .populate('create_user_id question_id')
-                        .sort('create_time')
+                        .sort('-create_time _id')
                         .limit(pageSize)
                         .exec(cb);
                 });
@@ -178,7 +178,7 @@ exports.getUserAnswerList = function (userID, pageSkip, pageSize, callback) {
         answers: function (cb) {
             QuestionAnswer.find(condition)
                 .populate('create_user_id question_id')
-                .sort('create_time')
+                .sort('-create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);

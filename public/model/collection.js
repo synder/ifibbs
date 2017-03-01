@@ -30,7 +30,7 @@ exports.getUserCollectionList = function (userID, pageSkip, pageSize, callback) 
         collections: function (cb) {
             UserCollection.find(condition)
                 .populate('answer_id article_id user_id')
-                .sort('create_time')
+                .sort('create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);

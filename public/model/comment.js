@@ -109,7 +109,7 @@ exports.getAnswerCommentList = function (answerID, lastCommentID, pageSkip, page
             if(!lastCommentID){
                 AnswerComment.find(condition)
                     .populate('question_id answer_id create_user_id to_user_id')
-                    .sort('create_time')
+                    .sort('-create_time _id')
                     .skip(pageSkip)
                     .limit(pageSize)
                     .exec(cb);
@@ -123,7 +123,7 @@ exports.getAnswerCommentList = function (answerID, lastCommentID, pageSkip, page
                     if(!comment){
                         return AnswerComment.find(condition)
                             .populate('question_id answer_id create_user_id to_user_id')
-                            .sort('create_time')
+                            .sort('-create_time _id')
                             .skip(pageSkip)
                             .limit(pageSize)
                             .exec(cb);
@@ -140,7 +140,7 @@ exports.getAnswerCommentList = function (answerID, lastCommentID, pageSkip, page
 
                     AnswerComment.find(pageCondition)
                         .populate('question_id answer_id create_user_id to_user_id')
-                        .sort('create_time')
+                        .sort('-create_time _id')
                         .limit(pageSize)
                         .exec(cb);
                 });
@@ -168,7 +168,7 @@ exports.getUserAnswerCommentsList = function (userID, pageSkip, pageSize, callba
         comments: function (cb) {
             AnswerComment.find(condition)
                 .populate('question_id answer_id create_user_id to_user_id')
-                .sort('create_time')
+                .sort('-create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);

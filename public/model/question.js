@@ -116,7 +116,7 @@ exports.getQuestionList = function (userID, pageSkip, pageSize, callback) {
         questions: function (cb) {
             Question
                 .find(condition)
-                .sort('create_time')
+                .sort('create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize).exec(cb);
         }

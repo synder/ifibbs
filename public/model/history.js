@@ -23,7 +23,7 @@ exports.getUserBrowseHistoryList = function (userID, pageSkip, pageSize, callbac
         histories: function (cb) {
             UserHistory.find({})
                 .populate('user_id question_id article_id')
-                .sort('create_time')
+                .sort('-create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);
