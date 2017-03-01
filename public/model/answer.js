@@ -129,7 +129,7 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
 
                 let ltCondition = {
                     question_id: questionID,
-                    create_time: {$lt: currentAnswerCreateTime},
+                    create_time: {$gt: currentAnswerCreateTime},
                 };
 
                 QuestionAnswer.find(ltCondition)
@@ -154,7 +154,7 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
                 
                 let gtCondition = {
                     question_id: questionID, 
-                    create_time: {$gt: currentAnswerCreateTime},
+                    create_time: {$lt: currentAnswerCreateTime},
                 };
                 
                 QuestionAnswer.find(gtCondition)
