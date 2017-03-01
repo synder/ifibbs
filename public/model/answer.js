@@ -117,13 +117,13 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
 
         prev: function(cb) {
 
-            let ltCondition = {
+            let gtCondition = {
                 question_id: questionID,
                 _id: {$gt: answerID},
                 status: QuestionAnswer.STATUS.NORMAL
             };
 
-            QuestionAnswer.find(ltCondition)
+            QuestionAnswer.find(gtCondition)
                 .sort('_id')
                 .limit(10)
                 .exec(cb)
@@ -131,13 +131,13 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
 
         next: function(cb) {
 
-            let gtCondition = {
+            let ltCondition = {
                 question_id: questionID,
                 _id: {$lt: answerID},
                 status: QuestionAnswer.STATUS.NORMAL
             };
 
-            QuestionAnswer.find(gtCondition)
+            QuestionAnswer.find(ltCondition)
                 .sort('-_id')
                 .limit(10)
                 .exec(cb)
@@ -153,10 +153,10 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
         let next = results.next;
 
         let answerIDS = [];
-
-        prev.forEach(function (answer) {
-            answerIDS.push(answer._id)
-        });
+        
+        for(let i = prev.length - 1; i > -1; i--){
+            answerIDS.push(prev[i]._id)
+        }
 
         answerIDS.push(answerID);
 
