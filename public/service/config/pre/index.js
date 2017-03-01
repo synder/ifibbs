@@ -19,7 +19,7 @@ module.exports =  {
      * mongodb 配置文件
      * */
     mongodb: {
-        url: 'mongodb://localhost:27017/ifibbs',
+        url: 'mongodb://192.168.1.193:27017/ifibbs',
         password: '',
         db: ''
     },

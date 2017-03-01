@@ -28,7 +28,7 @@ exports.getSysNotificationList = function (userId, pageSkip, pageSize, callback)
         },
         notifications: function (cb) {
             UserNotification.find(condition)
-                .sort('-create_time _id')
+                .sort('-create_time -_id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);
@@ -53,7 +53,7 @@ exports.getBusinessNotificationList = function (userId, pageSkip, pageSize, call
         },
         notifications: function (cb) {
             UserNotification.find(condition)
-                .sort('-create_time _id')
+                .sort('-create_time -_id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb)

@@ -14,16 +14,18 @@ const UserHistory = mongodb.model('UserHistory');
  * @desc 获取用户浏览历史记录
  * */
 exports.getUserBrowseHistoryList = function (userID, pageSkip, pageSize, callback) {
-    let condition = {};
+    let condition = {
+        user_id: userID
+    };
 
     async.parallel({
         count: function (cb) {
             UserHistory.count(condition, cb);
         },
         histories: function (cb) {
-            UserHistory.find({})
+            UserHistory.find(condition)
                 .populate('user_id question_id article_id')
-                .sort('-create_time _id')
+                .sort('-create_time -_id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);

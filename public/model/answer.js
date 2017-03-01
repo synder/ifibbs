@@ -45,7 +45,7 @@ exports.getLatestAnswerList = function (pageSkip, pageSize, callback) {
         answers: function (cb) {
             QuestionAnswer.find({})
                 .populate('create_user_id question_id')
-                .sort('-create_time _id')
+                .sort('-create_time -_id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);
@@ -69,7 +69,7 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
             if(!lastAnswerID){
                 QuestionAnswer.find(condition)
                     .populate('create_user_id question_id')
-                    .sort('-create_time _id')
+                    .sort('-create_time -_id')
                     .skip(pageSkip)
                     .limit(pageSize)
                     .exec(cb);
@@ -82,7 +82,7 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
                     if(!QuestionAnswer){
                         return QuestionAnswer.find(condition)
                             .populate('create_user_id question_id')
-                            .sort('-create_time _id')
+                            .sort('-create_time -_id')
                             .skip(pageSkip)
                             .limit(pageSize)
                             .exec(cb);
@@ -98,7 +98,7 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
 
                     QuestionAnswer.find(pageCondition)
                         .populate('create_user_id question_id')
-                        .sort('-create_time _id')
+                        .sort('-create_time -_id')
                         .limit(pageSize)
                         .exec(cb);
                 });
@@ -125,14 +125,28 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
 
         async.parallel({
             next: function(cb) {
-                QuestionAnswer.find({question_id: questionID, create_time: {$gt: currentAnswerCreateTime}})
-                    .sort('create_time _id')
+                
+                let gtCondition = {
+                    question_id: questionID, 
+                    create_time: {$gte: currentAnswerCreateTime},
+                    _id: {$ne: answerID},
+                };
+                
+                QuestionAnswer.find(gtCondition)
+                    .sort('-create_time -_id')
                     .limit(10)
                     .exec(cb)
             },
             prev: function(cb) {
-                QuestionAnswer.find({question_id: questionID, create_time: {$lt: currentAnswerCreateTime}})
-                    .sort('-create_time _id')
+
+                let ltCondition = {
+                    question_id: questionID,
+                    create_time: {$lte: currentAnswerCreateTime},
+                    _id: {$ne: answerID},
+                };
+                
+                QuestionAnswer.find(ltCondition)
+                    .sort('-create_time -_id')
                     .limit(10)
                     .exec(cb)
             },
@@ -178,7 +192,7 @@ exports.getUserAnswerList = function (userID, pageSkip, pageSize, callback) {
         answers: function (cb) {
             QuestionAnswer.find(condition)
                 .populate('create_user_id question_id')
-                .sort('-create_time _id')
+                .sort('-create_time -_id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);
