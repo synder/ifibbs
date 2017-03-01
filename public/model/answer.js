@@ -128,8 +128,7 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
                 
                 let gtCondition = {
                     question_id: questionID, 
-                    create_time: {$gte: currentAnswerCreateTime},
-                    _id: {$ne: answerID},
+                    create_time: {$gt: currentAnswerCreateTime},
                 };
                 
                 QuestionAnswer.find(gtCondition)
@@ -137,12 +136,24 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
                     .limit(10)
                     .exec(cb)
             },
+            
+            curr: function (cb) {
+                let gtCondition = {
+                    question_id: questionID,
+                    create_time: {$eq: currentAnswerCreateTime},
+                };
+
+                QuestionAnswer.find(gtCondition)
+                    .sort('-_id')
+                    .limit(10)
+                    .exec(cb)
+            },
+            
             prev: function(cb) {
 
                 let ltCondition = {
                     question_id: questionID,
-                    create_time: {$lte: currentAnswerCreateTime},
-                    _id: {$ne: answerID},
+                    create_time: {$lt: currentAnswerCreateTime},
                 };
                 
                 QuestionAnswer.find(ltCondition)
@@ -156,16 +167,24 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
                 return ;
             }
 
-            let next = results.next;
+            
             let prev = results.prev;
+            let curr = results.curr;
+            let next = results.next;
+            
+            console.log(results.prev);
+            console.log(results.curr);
+            console.log(results.next);
 
             let answerIDS = [];
 
             prev.forEach(function (answer) {
                 answerIDS.push(answer._id.toString());
             });
-            
-            answerIDS.push(answerID);
+
+            curr.forEach(function (answer) {
+                answerIDS.push(answer._id.toString());
+            });
 
             next.forEach(function (answer) {
                 answerIDS.push(answer._id.toString());
