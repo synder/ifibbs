@@ -124,7 +124,7 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
             };
 
             QuestionAnswer.find(ltCondition)
-                .sort('-_id')
+                .sort('_id')
                 .limit(10)
                 .exec(cb)
         },
