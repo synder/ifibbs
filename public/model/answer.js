@@ -126,13 +126,13 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
         async.parallel({
             next: function(cb) {
                 QuestionAnswer.find({question_id: questionID, create_time: {$gt: currentAnswerCreateTime}})
-                    .sort('create_time')
+                    .sort('create_time _id')
                     .limit(10)
                     .exec(cb)
             },
             prev: function(cb) {
                 QuestionAnswer.find({question_id: questionID, create_time: {$lt: currentAnswerCreateTime}})
-                    .sort('-create_time')
+                    .sort('-create_time _id')
                     .limit(10)
                     .exec(cb)
             },
