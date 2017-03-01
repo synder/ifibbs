@@ -58,7 +58,8 @@ exports.getLatestAnswerList = function (pageSkip, pageSize, callback) {
  * */
 exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pageSize, callback) {
     let condition = {
-        question_id: questionID
+        question_id: questionID,
+        status: QuestionAnswer.STATUS.NORMAL
     };
 
     async.parallel({
@@ -119,6 +120,7 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
             let ltCondition = {
                 question_id: questionID,
                 _id: {$gt: answerID},
+                status: QuestionAnswer.STATUS.NORMAL
             };
 
             QuestionAnswer.find(ltCondition)
@@ -132,6 +134,7 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
             let gtCondition = {
                 question_id: questionID,
                 _id: {$lt: answerID},
+                status: QuestionAnswer.STATUS.NORMAL
             };
 
             QuestionAnswer.find(gtCondition)
@@ -171,7 +174,8 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
  * */
 exports.getUserAnswerList = function (userID, pageSkip, pageSize, callback) {
     let condition = {
-        create_user_id: userID
+        create_user_id: userID,
+        status: QuestionAnswer.STATUS.NORMAL
     };
     
     async.parallel({
@@ -195,7 +199,8 @@ exports.getUserAnswerList = function (userID, pageSkip, pageSize, callback) {
  * */
 exports.getQuestionAnswerDetail = function (answerID, callback) {
     let condition = {
-        _id: answerID
+        _id: answerID,
+        status: QuestionAnswer.STATUS.NORMAL
     };
     
     QuestionAnswer.findOne(condition)
