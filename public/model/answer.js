@@ -56,7 +56,7 @@ exports.getLatestAnswerList = function (pageSkip, pageSize, callback) {
 /**
  * @desc 获取问题回答列表
  * */
-exports.getQuestionAnswerList = function (questionID, pageSkip, pageSize, callback) {
+exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pageSize, callback) {
     let condition = {
         question_id: questionID
     };
@@ -66,12 +66,43 @@ exports.getQuestionAnswerList = function (questionID, pageSkip, pageSize, callba
             QuestionAnswer.count(condition, cb);
         },
         answers: function (cb) {
-            QuestionAnswer.find(condition)
-                .populate('create_user_id question_id')
-                .sort('create_time')
-                .skip(pageSkip)
-                .limit(pageSize)
-                .exec(cb);
+            if(!lastAnswerID){
+                QuestionAnswer.find(condition)
+                    .populate('create_user_id question_id')
+                    .sort('create_time')
+                    .skip(pageSkip)
+                    .limit(pageSize)
+                    .exec(cb);
+            }else{
+                QuestionAnswer.findOne({ _id : lastAnswerID}, function (err, answer) {
+                    if(err){
+                        return cb(err);
+                    }
+                    
+                    if(!QuestionAnswer){
+                        return QuestionAnswer.find(condition)
+                            .populate('create_user_id question_id')
+                            .sort('create_time')
+                            .skip(pageSkip)
+                            .limit(pageSize)
+                            .exec(cb);
+                    }
+                    
+                    let lastAnswerCreateTime = answer.create_time;
+                    
+                    let pageCondition = {
+                        question_id: questionID,
+                        _id: {$ne: lastAnswerID},
+                        create_time: {$gte: lastAnswerCreateTime}
+                    };
+
+                    QuestionAnswer.find(pageCondition)
+                        .populate('create_user_id question_id')
+                        .sort('create_time')
+                        .limit(pageSize)
+                        .exec(cb);
+                });
+            }
         }
     }, callback);
 };

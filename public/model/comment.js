@@ -93,7 +93,7 @@ exports.removeAnswerComment = function (userID, commentID, callback) {
 /**
  * @desc 获取回答的评论列表
  * */
-exports.getAnswerCommentList = function (answerID, pageSkip, pageSize, callback) {
+exports.getAnswerCommentList = function (answerID, lastCommentID, pageSkip, pageSize, callback) {
     
     let condition = {
         status: AnswerComment.STATUS.NORMAL,
@@ -106,12 +106,45 @@ exports.getAnswerCommentList = function (answerID, pageSkip, pageSize, callback)
         },
         
         comments: function (cb) {
-            AnswerComment.find(condition)
-                .populate('question_id answer_id create_user_id to_user_id')
-                .sort('create_time')
-                .skip(pageSkip)
-                .limit(pageSize)
-                .exec(cb);
+            if(!lastCommentID){
+                AnswerComment.find(condition)
+                    .populate('question_id answer_id create_user_id to_user_id')
+                    .sort('create_time')
+                    .skip(pageSkip)
+                    .limit(pageSize)
+                    .exec(cb);
+            }else{
+                
+                AnswerComment.findOne({_id: lastCommentID}, function (err, comment) {
+                    if(err){
+                        return cb(err);
+                    }
+                    
+                    if(!comment){
+                        return AnswerComment.find(condition)
+                            .populate('question_id answer_id create_user_id to_user_id')
+                            .sort('create_time')
+                            .skip(pageSkip)
+                            .limit(pageSize)
+                            .exec(cb);
+                    }
+                    
+                    let lastCommentCreateTime = comment.create_time;
+                    
+                    let pageCondition = {
+                        status: AnswerComment.STATUS.NORMAL,
+                        answer_id: answerID,
+                        create_time: {$gt: lastCommentCreateTime},
+                        _id: {$ne: lastCommentID}
+                    };
+
+                    AnswerComment.find(pageCondition)
+                        .populate('question_id answer_id create_user_id to_user_id')
+                        .sort('create_time')
+                        .limit(pageSize)
+                        .exec(cb);
+                });
+            }
         }
     }, callback);
     
