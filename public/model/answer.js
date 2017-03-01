@@ -124,19 +124,20 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
         let currentAnswerCreateTime = answer.create_time;
 
         async.parallel({
-            next: function(cb) {
-                
-                let gtCondition = {
-                    question_id: questionID, 
-                    create_time: {$gt: currentAnswerCreateTime},
+
+            prev: function(cb) {
+
+                let ltCondition = {
+                    question_id: questionID,
+                    create_time: {$lt: currentAnswerCreateTime},
                 };
-                
-                QuestionAnswer.find(gtCondition)
+
+                QuestionAnswer.find(ltCondition)
                     .sort('-create_time -_id')
                     .limit(10)
                     .exec(cb)
             },
-            
+
             curr: function (cb) {
                 let gtCondition = {
                     question_id: questionID,
@@ -149,14 +150,14 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
                     .exec(cb)
             },
             
-            prev: function(cb) {
-
-                let ltCondition = {
-                    question_id: questionID,
-                    create_time: {$lt: currentAnswerCreateTime},
+            next: function(cb) {
+                
+                let gtCondition = {
+                    question_id: questionID, 
+                    create_time: {$gt: currentAnswerCreateTime},
                 };
                 
-                QuestionAnswer.find(ltCondition)
+                QuestionAnswer.find(gtCondition)
                     .sort('-create_time -_id')
                     .limit(10)
                     .exec(cb)
@@ -171,10 +172,6 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
             let prev = results.prev;
             let curr = results.curr;
             let next = results.next;
-            
-            console.log(results.prev);
-            console.log(results.curr);
-            console.log(results.next);
 
             let answerIDS = [];
 
