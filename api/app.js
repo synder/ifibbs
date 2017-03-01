@@ -26,7 +26,6 @@ server.config(function(app){
     app.set('trust proxy', true);
 });
 
-
 //======================================
 const body = require('body-parser');
 const cookie = require('cookie-parser');
