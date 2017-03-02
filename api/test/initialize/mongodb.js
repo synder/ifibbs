@@ -198,7 +198,6 @@ const initRecommend = function (callback) {
     
     async.eachLimit(recommends, 10, function(recommend, cb){
         
-        
         async.series([
             function(cb) {
                 User.create(recommend.user, cb);

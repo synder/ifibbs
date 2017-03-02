@@ -36,7 +36,6 @@ exports.getRecommendList = function(req, res, next){
                         id : recommend.question.question_id._id,
                         type: recommend.type, //类型
                         title: recommend.question.question_id.title,          //问题或者资讯或者活动封面
-                        describe: recommend.question.question_id.describe,       //描述
                         tags: recommend.question.question_id.tags || [],             //问题标签
                         cover: null,          //资讯或者活动封面
                         favour_count: recommend.question.question_id.favour_count,      //点赞数
@@ -63,7 +62,6 @@ exports.getRecommendList = function(req, res, next){
                         id : recommend.activity.activity_id._id,
                         type: recommend.type, //类型
                         title: recommend.activity.activity_id.title,          //问题或者资讯或者活动封面
-                        describe: recommend.activity.activity_id.describe,       //描述
                         tags: null,             //问题标签
                         cover: recommend.activity.activity_id.cover,          //资讯或者活动封面
                         favour_count: recommend.activity.activity_id.favour_count,      //点赞数
@@ -90,7 +88,6 @@ exports.getRecommendList = function(req, res, next){
                         id : recommend.article.article_id._id,
                         type: recommend.type, //类型
                         title: recommend.article.article_id.title,          //问题或者资讯或者活动封面
-                        describe: recommend.article.article_id.summary,       //描述
                         tags: null,             //问题标签
                         cover: recommend.article.article_id.cover,          //资讯或者活动封面
                         favour_count: recommend.article.article_id.favour_count,      //点赞数
