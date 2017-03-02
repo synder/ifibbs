@@ -20,6 +20,8 @@ const Question = db.model('Question');
 const QuestionAnswer = db.model('QuestionAnswer');
 const User = db.model('User');
 const Recommend = db.model('Recommend');
+const Activity = db.model('Activity');
+const Article = db.model('Article');
 
 const USER_ID = "58aa50177ddbf5507c51f082";
 const USER_ID_OTHER = "58aa50177ddbf5507c51f083";
@@ -128,6 +130,8 @@ const initRecommend = function (callback) {
         let userID = new mongodb.ObjectId();
         let questionID = new mongodb.ObjectId();
         let answerID = new mongodb.ObjectId();
+        let activityID = new mongodb.ObjectId();
+        let articleID = new mongodb.ObjectId();
         
         let user = {
             _id: userID,
@@ -171,7 +175,43 @@ const initRecommend = function (callback) {
             "update_time" : new Date(),
         };
         
-        let recommend = {
+        let activity = {
+            _id: activityID,
+            status          : Article.STATUS.DISPLAY,   //回答状态
+            title           : Mock.Random.ctitle(10, 20),   //回答内容
+            cover           : avatar,   //封面图片URL
+            describe        : Mock.Random.ctitle(10, 20),   //封面图片URL
+            url             : 'http://www.baidu.com',  //活动地址URL
+            favour_count    : 0,   //点赞数量
+            comment_count   : 0,   //评论数量
+            collect_count   : 0,   //收藏数量
+            create_time     : new Date(),   //创建时间
+            update_time     : new Date(),   //更新时间
+        };
+
+        let article = {
+            _id: articleID,
+            status          : Article.STATUS.PUBLISHED,    //文章状态
+            top             : false,    //是否置顶
+            title           : Mock.Random.ctitle(10, 20),    //文章标题
+            summary         : Mock.Random.ctitle(10, 20),    //文章摘要
+            icon            : avatar,    //文章图标
+            cover           : avatar,    //封面图片
+            tags            : ['基金'],    //文章标签
+            content         : Mock.Random.ctitle(100, 200),    //文章内容
+            browse_count    : 0,    //浏览次数
+            favour_count    : 0,    //被赞次数
+            comment_count   : 0,    //被评论次数
+            collect_count   : 0,    //被收藏次数
+            create_time     : new Date(),    //创建时间
+            update_time     : new Date(),    //更新时间
+            subject_id      : null,  //文章所属主题
+            create_user_id  : null   //创建人
+        };
+        
+        let tempRecommends = [];
+
+        tempRecommends.push({
             status      : Recommend.STATUS.NORMAL,   //状态
             order       : Mock.Random.natural(1, 100),   //排序方式
             type        : Recommend.TYPE.QUESTION,   //排序方式
@@ -184,13 +224,42 @@ const initRecommend = function (callback) {
             },  //推荐问题
             activity    : null,  //推荐活动
             article     : null,  //推荐文章
-        };
+        });
+
+        tempRecommends.push({
+            status      : Recommend.STATUS.NORMAL,   //状态
+            order       : Mock.Random.natural(1, 100),   //排序方式
+            type        : Recommend.TYPE.ACTIVITY,   //排序方式
+            create_time : new Date(),     //排序方式
+            update_time : new Date(),     //排序方式
+            question    : null,  //推荐问题
+            activity    : {
+                activity_id: activityID
+            },  //推荐活动
+            article     : null,  //推荐文章
+        });
+
+        tempRecommends.push({
+                status      : Recommend.STATUS.NORMAL,   //状态
+                order       : Mock.Random.natural(1, 100),   //排序方式
+                type        : Recommend.TYPE.ARTICLE,   //排序方式
+                create_time : new Date(),     //排序方式
+                update_time : new Date(),     //排序方式
+                question    : null,  //推荐问题
+                activity    : null,  //推荐活动
+                article     : {
+                    article_id : articleID
+                },  //推荐文章
+        });
+        
 
         let temp = {
             user: user,
             question: question,
             answer: answer,
-            recommend: recommend
+            activity: activity,
+            article: article,
+            recommends: tempRecommends
         };
 
         recommends.push(temp);
@@ -212,7 +281,15 @@ const initRecommend = function (callback) {
             },
 
             function(cb) {
-                Recommend.create(recommend.recommend, cb);
+                Activity.create(recommend.activity, cb);
+            },
+
+            function(cb) {
+                Article.create(recommend.article, cb);
+            },
+
+            function(cb) {
+                Recommend.create(recommend.recommends, cb);
             },
         ], cb);
         
