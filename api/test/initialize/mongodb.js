@@ -9,13 +9,17 @@ const chai = require('chai');
 const request = require('supertest');
 const Mock = require('mockjs');
 
-const mongodb = require('../../../public/service/mongodb').db;
+
+const mongodb = require('../../../public/service/mongodb');
 const elasticsearch = require('../../../public/service/elasticsearch').client;
 
-const QuestionTag = mongodb.model('QuestionTag');
-const Question = mongodb.model('Question');
-const QuestionAnswer = mongodb.model('QuestionAnswer');
-const User = mongodb.model('User');
+const db = mongodb.db;
+
+const QuestionTag = db.model('QuestionTag');
+const Question = db.model('Question');
+const QuestionAnswer = db.model('QuestionAnswer');
+const User = db.model('User');
+const Recommend = db.model('Recommend');
 
 const USER_ID = "58aa50177ddbf5507c51f082";
 const USER_ID_OTHER = "58aa50177ddbf5507c51f083";
@@ -38,9 +42,16 @@ const emptyCollection = function (callback) {
         function (cb) {
             User.remove({}, cb);
         },
+
+        function (cb) {
+            Recommend.remove({}, cb);
+        },
     ], callback);
 };
 
+/**
+ * @desc 初始化问题数据
+ * */
 const initQuestion = function (callback) {
     let questions = [];
     
@@ -78,6 +89,10 @@ const initQuestion = function (callback) {
     Question.create(questions, callback);
 };
 
+
+/**
+ * @desc 初始化问题回答数据
+ * */
 const initQuestionAnswer = function (callback) {
     
     let answers = [];
@@ -97,6 +112,112 @@ const initQuestionAnswer = function (callback) {
     }
 
     QuestionAnswer.create(answers, callback);
+};
+
+
+/**
+ * @desc 初始化推荐数据
+ * */
+const initRecommend = function (callback) {
+    let recommends = [];
+
+    let avatar = 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518';
+    
+    for(let i = 0; i < 100; i++){
+        
+        let userID = new mongodb.ObjectId();
+        let questionID = new mongodb.ObjectId();
+        let answerID = new mongodb.ObjectId();
+        
+        let user = {
+            _id: userID,
+            status: User.STATUS.NORMAL, //用户状态
+            user_name: Mock.Random.ctitle(4, 6),   //用户名
+            user_profile: Mock.Random.ctitle(10, 20),   //用户简介
+            user_avatar: avatar,   //用户头像
+            create_time: new Date(),     //创建时间
+            update_time: new Date(),     //更新时间
+            user_gender: false, //用户性别
+            user_mobile: '13120975917',  //用户手机
+            work_info: Mock.Random.ctitle(10, 20),  //用户性别
+            edu_info: Mock.Random.ctitle(10, 20),  //用户性别
+        };
+        
+        let question = {
+            "_id": questionID,
+            "status" : 1,
+            "title" : Mock.Random.ctitle(5, 20),
+            "describe" : Mock.Random.ctitle(50, 100),
+            "answer_count" : 0,
+            "favour_count" : 0,
+            "attention_count" : 1,
+            "collect_count" : 0,
+            "create_user_id" : userID,
+            "create_time" : new Date(),
+            "update_time" : new Date(),
+            "tags" : [],
+        };
+        
+        let answer = {
+            "_id": answerID,
+            "status" : 1,
+            "content" : Mock.Random.ctitle(20, 50),
+            "comment_count" : 0,
+            "favour_count" : 0,
+            "collect_count" : 0,
+            "question_id" : questionID,
+            "create_user_id" : userID,
+            "create_time" : new Date(),
+            "update_time" : new Date(),
+        };
+        
+        let recommend = {
+            status      : Recommend.STATUS.NORMAL,   //状态
+            order       : Mock.Random.natural(1, 100),   //排序方式
+            type        : Recommend.TYPE.QUESTION,   //排序方式
+            create_time : new Date(),     //排序方式
+            update_time : new Date(),     //排序方式
+            question    : {
+                question_id: questionID,
+                answer_id: answerID,
+                answer_user_id: userID,
+            },  //推荐问题
+            activity    : null,  //推荐活动
+            article     : null,  //推荐文章
+        };
+
+        let temp = {
+            user: user,
+            question: question,
+            answer: answer,
+            recommend: recommend
+        };
+
+        recommends.push(temp);
+    }
+    
+    async.eachLimit(recommends, 10, function(recommend, cb){
+        
+        
+        async.series([
+            function(cb) {
+                User.create(recommend.user, cb);
+            },
+            
+            function(cb) { 
+                Question.create(recommend.question, cb);
+            },
+
+            function(cb) {
+                QuestionAnswer.create(recommend.answer, cb);
+            },
+
+            function(cb) {
+                Recommend.create(recommend.recommend, cb);
+            },
+        ], cb);
+        
+    }, callback);
 };
 
 
@@ -231,6 +352,10 @@ exports.init = function (callback) {
 
             function (cb) {
                 initMongodbUserCollection(cb);
+            },
+
+            function (cb) {
+                initRecommend(cb);
             },
 
             function (cb) {

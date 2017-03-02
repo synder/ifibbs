@@ -11,47 +11,6 @@ const attentionModel = require('../../../public/model/attention');
 const tagsModel = require('../../../public/model/tags');
 const historyModel = require('../../../public/model/history');
 
-/**
- * @desc 首页获取推荐问题列表，会加入一些活动
- * */
-exports.getRecommendQuestions = function (req, res, next) {
-
-    let pageSize = req.query.page_size;
-    let pageSkip = req.query.page_skip;
-    
-    questionModel.getRecommenedQuestionList(pageSkip, pageSize, function (err, results) {
-        if(err){
-            return next(err);
-        }
-        
-        let count = results.count;
-        let questions = results.questions;
-
-        questions = questions.map(function (question) {
-            return {
-                id : question.id,
-                title: question.title,
-                describe: question.describe,
-                tags: question.tags,
-                answer_count: question.answer_count,
-                favour_count: question.favour_count,
-                attention_count: question.attention_count,
-                collect_count: question.collect_count,
-                create_time: question.create_time.valueOf(),
-                type: 1
-            };
-        });
-        
-        res.json({
-            flag: '0000',
-            msg: '',
-            result: {
-                count: count,
-                list: questions
-            }
-        });
-    });
-};
 
 /**
  * @desc 获取问题详情
