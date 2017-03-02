@@ -37,7 +37,6 @@ describe('首页获取推荐列表', function () {
                     chai.expect(list[0]).to.have.ownProperty('id');
                     chai.expect(list[0]).to.have.ownProperty('type');
                     chai.expect(list[0]).to.have.ownProperty('title');
-                    chai.expect(list[0]).to.have.ownProperty('describe');
                     chai.expect(list[0]).to.have.ownProperty('tags');
                     chai.expect(list[0]).to.have.ownProperty('cover');
                     chai.expect(list[0]).to.have.ownProperty('answer_count');

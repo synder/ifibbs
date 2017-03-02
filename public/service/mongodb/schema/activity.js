@@ -15,7 +15,7 @@ const ActivitySchema = new Schema({
     title           : {type: String, required: true},   //回答内容
     cover           : {type: String, required: true},   //封面图片URL
     describe        : {type: String, required: true},   //封面图片URL
-    url             : {type: String, required: false},  //活动地址URL
+    url             : {type: String, required: true},  //活动地址URL
     favour_count    : {type: Number, required: true},   //点赞数量
     comment_count   : {type: Number, required: true},   //评论数量
     collect_count   : {type: Number, required: true},   //收藏数量

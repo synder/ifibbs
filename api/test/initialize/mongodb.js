@@ -176,8 +176,8 @@ const initRecommend = function (callback) {
         };
         
         let activity = {
-            _id: activityID,
-            status          : Article.STATUS.DISPLAY,   //回答状态
+            _id             : activityID,
+            status          : Activity.STATUS.DISPLAY,   //回答状态
             title           : Mock.Random.ctitle(10, 20),   //回答内容
             cover           : avatar,   //封面图片URL
             describe        : Mock.Random.ctitle(10, 20),   //封面图片URL
@@ -190,7 +190,7 @@ const initRecommend = function (callback) {
         };
 
         let article = {
-            _id: articleID,
+            _id             : articleID,
             status          : Article.STATUS.PUBLISHED,    //文章状态
             top             : false,    //是否置顶
             title           : Mock.Random.ctitle(10, 20),    //文章标题
