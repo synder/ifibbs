@@ -109,13 +109,7 @@ exports.userLoginWithPhone = function (req, res, next) {
 /**
  * @desc 修改密码接口
  * */
+exports.modifyUserPassword = function (req, res, next) {
+    
+};
 
-
-/**
- * @desc 忘记密码接口
- * */
-
-
-/**
- * @desc 忘记密码接口
- * */
