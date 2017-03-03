@@ -3,7 +3,7 @@
  */
 
 
-var Node = function (value) {
+const Node = function (value) {
     this.__value = value;
     this.__next = null;
     this.__prev = null;
@@ -46,7 +46,7 @@ Node.prototype.prev = function (prev) {
 
 
 //---单向链表---------------------------------------------------
-var SinglyLinkedList = function () {
+const SinglyLinkedList = function () {
     this.__head = null;
     this.__tail = null;
 };
@@ -61,7 +61,7 @@ SinglyLinkedList.prototype.tail = function () {
 
 SinglyLinkedList.prototype.add = function (element) {
 
-    var node = new Node(element);
+    let node = new Node(element);
 
     if(!this.__head){
         this.__head = node;
@@ -76,7 +76,7 @@ SinglyLinkedList.prototype.find = function (element) {
         return null;
     }
 
-    var current = this.__head;
+    let current = this.__head;
 
     while (current && current.value() !== element){
         current = current.next();
@@ -86,13 +86,13 @@ SinglyLinkedList.prototype.find = function (element) {
 };
 
 SinglyLinkedList.prototype.insert = function (element, base) {
-    var baseNode = this.find(base);
+    let baseNode = this.find(base);
 
     if(!baseNode){
         return false;
     }
 
-    var newNode = new Node(element);
+    let newNode = new Node(element);
 
     newNode.next(baseNode.next());
     baseNode.next(newNode);
@@ -103,7 +103,7 @@ SinglyLinkedList.prototype.insert = function (element, base) {
 };
 
 SinglyLinkedList.prototype.remove = function (element) {
-    var current = this.__head;
+    let current = this.__head;
 
     while (current && current.next() && current.next().value() !== element){
         current = current.next();
@@ -125,7 +125,7 @@ SinglyLinkedList.prototype.remove = function (element) {
 };
 
 SinglyLinkedList.prototype.forEach = function (callback) {
-    var current = this.__head;
+    let current = this.__head;
 
     while (current){
         callback(current.value());
@@ -137,7 +137,7 @@ SinglyLinkedList.prototype.forEach = function (callback) {
 
 
 //---双向链表---------------------------------------------------
-var DoublyLinkedList = function () {
+let DoublyLinkedList = function () {
     this.__head = null;
     this.__tail = null;
 
@@ -154,7 +154,7 @@ DoublyLinkedList.prototype.tail = function () {
 
 DoublyLinkedList.prototype.add = function (element) {
 
-    var node = new Node(element);
+    let node = new Node(element);
 
     if(!this.__head){
         this.__head = node;
@@ -170,7 +170,7 @@ DoublyLinkedList.prototype.find = function (element) {
         return null;
     }
 
-    var current = this.__head;
+    let current = this.__head;
 
     while (current && current.value() !== element){
         current = current.next();
@@ -180,13 +180,13 @@ DoublyLinkedList.prototype.find = function (element) {
 };
 
 DoublyLinkedList.prototype.insert = function (element, base) {
-    var baseNode = this.find(base);
+    let baseNode = this.find(base);
 
     if(!baseNode){
         return false;
     }
 
-    var newNode = new Node(element);
+    let newNode = new Node(element);
 
     newNode.next(baseNode.next());
     baseNode.next().prev(newNode);
@@ -199,7 +199,7 @@ DoublyLinkedList.prototype.insert = function (element, base) {
 };
 
 DoublyLinkedList.prototype.remove = function (element) {
-    var current = this.find(element);
+    let current = this.find(element);
 
     if(!current){
         return false;
@@ -222,7 +222,7 @@ DoublyLinkedList.prototype.remove = function (element) {
 };
 
 DoublyLinkedList.prototype.forEach = function (callback) {
-    var current = this.__head;
+    let current = this.__head;
 
     while (current){
         callback(current.value());
@@ -232,7 +232,7 @@ DoublyLinkedList.prototype.forEach = function (callback) {
 
 
 //---环形链表---------------------------------------------------
-var CircularLinkedList = function (element) {
+let CircularLinkedList = function (element) {
     this.__header = element;
     this.__head = new Node(element);
     this.__head.next(this.__head);
@@ -240,7 +240,7 @@ var CircularLinkedList = function (element) {
 
 CircularLinkedList.prototype.find = function (element) {
 
-    var current = this.__head;
+    let current = this.__head;
 
     while (current.value() !== element && current.value() !== this.__header){
         current = current.next();
@@ -250,13 +250,13 @@ CircularLinkedList.prototype.find = function (element) {
 };
 
 CircularLinkedList.prototype.insert = function (element, base) {
-    var baseNode = this.find(base);
+    let baseNode = this.find(base);
 
     if(!baseNode){
         return false;
     }
 
-    var newNode = new Node(element);
+    let newNode = new Node(element);
 
     newNode.next(baseNode.next());
     baseNode.next(newNode);
@@ -266,7 +266,7 @@ CircularLinkedList.prototype.insert = function (element, base) {
 
 CircularLinkedList.prototype.remove = function (element) {
 
-    var current = this.__head;
+    let current = this.__head;
 
     while (current.next().value() !== element && current.next().value() !== this.__header){
         current = current.next();
@@ -276,7 +276,7 @@ CircularLinkedList.prototype.remove = function (element) {
 };
 
 CircularLinkedList.prototype.forEach = function (callback) {
-    var current = this.__head;
+    let current = this.__head;
 
     while (current.next().value() !== this.__header){
         callback(current.value());

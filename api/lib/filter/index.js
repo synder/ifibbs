@@ -14,7 +14,7 @@ const RELIGIOUS = require('./resource/religious');
 const SOCIETY = require('./resource/society');
 
 
-var Filter = function (keywords) {
+const Filter = function (keywords) {
     this.__tree = new WordTree(keywords);
 };
 
@@ -28,7 +28,7 @@ Filter.prototype.keywords = function () {
 
 Filter.prototype.search = function (text) {
 
-    var result = {
+    let result = {
         text:{
             invisible: 0,
             mathed: 0,
@@ -36,30 +36,30 @@ Filter.prototype.search = function (text) {
         indexs: []
     };
 
-    var rootNode = this.__tree.root;
+    let rootNode = this.__tree.root;
 
     if(!rootNode){
         throw new Error('there is no keywords append into the filter');
     }
 
-    var start = 0;
+    let start = 0;
 
     //the　firts　loop　param
-    var firstLoweredCharCodeTemp = -1;
+    let firstLoweredCharCodeTemp = -1;
 
     //the　follow　loop　param
-    var　followLoweredCharCodeTemp　=　-1;
+    let　followLoweredCharCodeTemp　=　-1;
 
-    var nextNode　=　null;
+    let nextNode　=　null;
 
     //this first char matched, check the first match char is chinese or alpha
-    var isChinese = false;
-    var isAlpha = false;
+    let isChinese = false;
+    let isAlpha = false;
 
     //the　first　loop
     while (start < text.length){
 
-        var charCode = text[start].charCodeAt(0);
+        let charCode = text[start].charCodeAt(0);
 
         if(judge.isInvisibleChar(charCode)){
             start++;
@@ -90,7 +90,7 @@ Filter.prototype.search = function (text) {
         }
 
         //this first char matched, match the next chars
-        var offset = 1;
+        let offset = 1;
 
         while ((start + offset) < text.length){
 

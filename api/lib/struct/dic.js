@@ -3,7 +3,7 @@
  */
 
 
-var Dictionary = function () {
+const Dictionary = function () {
     this.__data = [];
 };
 
@@ -25,7 +25,7 @@ Dictionary.prototype.size = function () {
 };
 
 Dictionary.prototype.clear = function () {
-    for(var key in Object.keys(this.__data)) {
+    for(let key in Object.keys(this.__data)) {
         delete this.__data[key];
     }
 };
@@ -36,9 +36,9 @@ Dictionary.prototype.keys = function () {
 };
 
 Dictionary.prototype.values = function () {
-    var temp = [];
+    let temp = [];
 
-    for(var key in Object.keys(this.__data)) {
+    for(let key in Object.keys(this.__data)) {
         temp.push(this.__data[key]);
     }
 
@@ -46,9 +46,9 @@ Dictionary.prototype.values = function () {
 };
 
 Dictionary.prototype.entities = function () {
-    var temp = {};
+    let temp = {};
 
-    for(var key in Object.keys(this.__data)) {
+    for(let key in Object.keys(this.__data)) {
         temp[key] = this.__data[key];
     }
 

@@ -53,7 +53,7 @@ class ForbiddenError extends HttpError {
 class NotFoundError extends HttpError {
     constructor(msg) {
         super(msg, 404);
-        this.message = msg || 'resurce not found';
+        this.message = 'resource "' + msg + '" not found';
     }
 }
 

@@ -23,12 +23,12 @@
 //其他 显示第一个 + . 和 c - (n - 4) / 2 到 c + (n - 4) / 2 之间的数据 和 . + 最后一个
 
 
-var paging = function (limit, total, current) {
-    var result = [];
-    var apostrophe = '.';
+const paging = function (limit, total, current) {
+    let result = [];
+    let apostrophe = '.';
 
     if(limit >= total){
-        for(var h = 0; h < total; h++){
+        for(let h = 0; h < total; h++){
             result.push({
                 text: h + 1,
                 index: h
@@ -39,7 +39,7 @@ var paging = function (limit, total, current) {
     }
 
     if(current < Math.round(limit / 2)){
-        for(var i = 0; i < limit - 2; i++){
+        for(let i = 0; i < limit - 2; i++){
             result.push({
                 text: i + 1,
                 index: i
@@ -62,7 +62,7 @@ var paging = function (limit, total, current) {
             text:  apostrophe,
             index: 1
         });
-        for(var j = total - (limit - 2); j < total; j++){
+        for(let j = total - (limit - 2); j < total; j++){
             result.push({
                 text: j + 1,
                 index: j
@@ -77,7 +77,7 @@ var paging = function (limit, total, current) {
             text:  apostrophe,
             index: 1
         });
-        for(var k = current - Math.round((limit - 4) / 2); k < current + Math.round((limit - 4) / 2); k++){
+        for(let k = current - Math.round((limit - 4) / 2); k < current + Math.round((limit - 4) / 2); k++){
             result.push({
                 text: k + 1,
                 index: k

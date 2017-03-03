@@ -3,7 +3,7 @@
  */
 
 
-var Queue = function () {
+const Queue = function () {
     this.data = [];
 };
 
