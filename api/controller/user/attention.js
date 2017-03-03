@@ -114,7 +114,7 @@ exports.getUserAttentionSubjectList = function (req, res, next) {
                     subject_id: subject.subject_id._id,
                     subject_icon: subject.subject_id.icon,
                     subject_title: subject.subject_id.title,
-                    subject_describle: subject.subject_id.describle,
+                    subject_describe: subject.subject_id.describe,
                     subject_article_count: subject.subject_id.article_count,
                 });
             }

@@ -65,7 +65,7 @@ exports.getRecommendList = function(req, res, next){
                         tags: null,
                         cover: recommend.activity.activity_id.cover,
                         favour_count: recommend.activity.activity_id.favour_count,
-                        attention_count: recommend.activity.activity_id.attention_count,
+                        attention_count: 0,
                         comment_count: recommend.activity.activity_id.comment_count,
                         collect_count: recommend.activity.activity_id.collect_count, 
                         answer_count: 0,

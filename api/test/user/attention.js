@@ -477,7 +477,7 @@ describe('用户关注问的专题列表', function(){
                     chai.expect(list[0]).to.have.ownProperty('subject_id');
                     chai.expect(list[0]).to.have.ownProperty('subject_icon');
                     chai.expect(list[0]).to.have.ownProperty('subject_title');
-                    chai.expect(list[0]).to.have.ownProperty('subject_describle');
+                    chai.expect(list[0]).to.have.ownProperty('subject_describe');
                 }
 
                 done();
