@@ -27,12 +27,15 @@ const UserSchema = new Schema({
     user_name    : {type: String,  required: true},   //用户名
     user_profile : {type: String,  required: true},   //用户简介
     user_avatar  : {type: String,  required: true,},  //用户头像
+    user_password: {type: String,  required: true,},  //用户密码
+    verification : {type: String,  required: true,},  //密码验证字符串
     create_time  : {type: Date,    required: true},   //创建时间
     update_time  : {type: Date,    required: true},   //更新时间
     user_gender  : {type: Boolean, required: false},  //用户性别
     user_mobile  : {type: String,  required: false},  //用户手机
     work_info    : {type: String,  required: false},  //用户性别
     edu_info     : {type: String,  required: false},  //用户性别
+
     bind_tencent_qq      : ThirdBindSchema,                  //qq绑定
     bind_tencent_wechat  : ThirdBindSchema,                  //微信绑定
     bind_sina_weibo      : ThirdBindSchema,                  //微博绑定
@@ -49,5 +52,12 @@ UserSchema.statics.STATUS = {
     LOCK : 0,   //账户被锁定
     NORMAL : 1  //账户正常
 };
+
+//用户性别
+UserSchema.statics.GENDER = {
+    MALE : true,
+    FEMALE : false
+};
+
 
 exports.UserSchema = UserSchema;

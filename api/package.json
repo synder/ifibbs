@@ -9,6 +9,7 @@
     "compression": "*",
     "connect-timeout": "*",
     "cookie-parser": "*",
+    "crypto": "0.0.3",
     "express": "*",
     "lodash": "*",
     "mockjs": "*",
@@ -18,7 +19,8 @@
     "supertest": "*",
     "winston": "*",
     "winston-mail": "*",
-    "winston-mongodb": "*"
+    "winston-mongodb": "*",
+    "uuid": "*"
   },
   "devDependencies": {
     "supertest": "*",
