@@ -136,8 +136,15 @@ exports.userRegisterWithPhone = function (userInfo, callback) {
             return callback(err)
         }
 
-        req.session.id = result._id;
+        let session = {
+            userId: result._id,
+            sessionID: uuid,
+        };
 
-        callback(null, uuid)
+        callback(null, session)
     });
 };
+
+/*
+ * @desc 用户登录
+ * */
