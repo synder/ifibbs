@@ -30,9 +30,7 @@ exports.getUserInfo = function (req, res, next) {
         res.json({
             flag: '0000',
             msg: '',
-            result: {
-                user_info: userInfo
-            }
+            result: userInfo
         })
     })
 
@@ -43,8 +41,18 @@ exports.getUserInfo = function (req, res, next) {
  * @desc 修改用户信息
  * */
 exports.updateUserInfo = function (req, res, next) {
+   
+    let userInfo = {
+        userName: req.body.user_name,
+        userProfile: req.body.user_profile,
+        userAvatar: req.body.user_avatar,
+        userGender: req.body.user_gender,
+        userMobile: req.body.user_mobile,
+        workInfo: req.body.work_info,
+        eduInfo: req.body.edu_info,
+    };
+
     let userId = req.session.id;
-    let userInfo = req.body;
 
     userModel.updateUserInfo(userId, userInfo, function (err, success) {
         if (err) {
@@ -67,15 +75,19 @@ exports.updateUserInfo = function (req, res, next) {
  * */
 exports.verifyPhoneHasRegistered = function (req, res, next) {
     
-    let phoneNumber = req.body.mobile;
+    let phone = req.query.phone;
+    
+    if(!phone){
+        return next(new BadRequestError('phone is need'));
+    }
 
-    let phoneReg = /^1[34578]\d{9}$/;
+    let regex = /^1[34578]\d{9}$/;
 
-    if (!phoneReg.test(phoneNumber.toString())) {
+    if (!regex.test(phone.toString())) {
         return next(new BadRequestError('phone is illegal'));
     }
 
-    userModel.verifyPhoneHasRegistered(phoneNumber, function (err, success) {
+    userModel.findUserByMobile(phone, function (err, user) {
         if (err) {
             return next(err)
         }
@@ -84,10 +96,10 @@ exports.verifyPhoneHasRegistered = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: !!success
+                ok: !!user
             }
         })
-    })
+    });
 };
 
 /**
@@ -95,6 +107,8 @@ exports.verifyPhoneHasRegistered = function (req, res, next) {
  * */
 exports.userRegisterWithPhone = function (req, res, next) {
     let userInfo = req.body;
+    
+    
 };
 
 

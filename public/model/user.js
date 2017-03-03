@@ -6,17 +6,46 @@
 
 const async = require('async');
 const crypto = require('crypto');
-const UUID = require('uuid/v4');
 
 const mongodb = require('../service/mongodb').db;
-
-
 const User = mongodb.model('User');
+
+/**
+ * @desc 密码加密
+ * */
+const hashUserPassword = function (salt, password) {
+    salt = salt.trim();
+    password = password.trim();
+    return crypto.createHash('md5').update(`${salt}&${password}`).digest('hex');
+};
+
+/**
+ * @desc 创建新的用户
+ * */
+exports.createNewUser = function (mobile, password, callback) {
+
+    let salt = Math.random().toString();
+    let now = new Date();
+
+    let userDoc = {
+        status: User.STATUS.NORMAL,
+        user_name: '',
+        user_profile: '',
+        user_avatar: '',
+        user_mobile: mobile,
+        user_password: hashUserPassword(salt, password),
+        create_time: now,
+        update_time: now,
+        pass_salt_str: salt,
+    };
+
+    User.create(userDoc, callback);
+};
 
 /**
  * @desc 获取用户信息
  * */
-exports.getUserInfo = function (userID, callback) {
+exports.getUserInfoByID = function (userID, callback) {
     let condition = {
         status: User.STATUS.NORMAL,
         id: userID,
@@ -26,27 +55,90 @@ exports.getUserInfo = function (userID, callback) {
 };
 
 /**
+ * @desc 根据手机号获取
+ * */
+exports.getUserByMobile = function (phone, callback) {
+
+    let condition = {
+        user_mobile: {$exists: true, $eq: phone}
+    };
+
+    User.findOne(condition, callback);
+};
+
+
+/**
+ * @desc 根据用户手机和密码查找用户
+ * */
+exports.getUserByMobileAndPassword = function (phone, pass, callback) {
+    
+    let condition = {
+        user_mobile: {$exists: true, $eq: phone}
+    };
+    
+    User.findOne(condition, function (err, user) {
+        if(err){
+            return callback(err);
+        }
+        
+        if(!user){
+            return callback(null, null);
+        }
+        
+        let salt = user.pass_salt_str;
+        let realPassword = user.user_password;
+        let enPassword = hashUserPassword(salt, pass);
+        
+        if(realPassword !== enPassword){
+            return callback(null, null);
+        }
+        
+        callback(null, user);
+    });
+};
+
+/**
  * @desc 更新用户信息
  * */
 exports.updateUserInfo = function (userID, userInfo, callback) {
+    
     let condition = {
         id: userID
     };
+    
+    let updateSets = {update_time: new Date()};
+    
+    if(userInfo.userName){
+        updateSets.user_name = userInfo.userName;
+    }
 
-    let sex = userInfo.sex ? userInfo.sex == 1 : null;  //不能用'==='，传入sex不能为字符串
-    let now = new Date();
+    if(userInfo.userProfile){
+        updateSets.user_profile = userInfo.userProfile;
+    }
+
+    if(userInfo.userAvatar){
+        updateSets.user_avatar = userInfo.userAvatar;
+    }
+
+    if(userInfo.userGender){
+        //不能用'==='，传入sex可能为字符串;
+        updateSets.user_gender = userInfo.userGender ? userInfo.userGender == 1 : null;
+    }
+
+    if(userInfo.userMobile){
+        updateSets.user_mobile = userInfo.userMobile;
+    }
+
+    if(userInfo.workInfo){
+        updateSets.work_info = userInfo.workInfo;
+    }
+
+    if(userInfo.eduInfo){
+        updateSets.edu_info = userInfo.eduInfo;
+    }
 
     let update = {
-        $set: {
-            user_name: userInfo.username,
-            user_profile: userInfo.signature,
-            user_avatar: userInfo.headPic,
-            user_gender: sex,
-            user_mobile: userInfo.user_mobile ? userInfo.user_mobile : null,
-            work_info: userInfo.work_info ? userInfo.work_info : null,
-            edu_info: userInfo.edu_info ? userInfo.edu_info : null,
-            update_time: now,
-        }
+        $set: updateSets
     };
 
     User.update(condition, update, function (err, result) {
@@ -54,7 +146,7 @@ exports.updateUserInfo = function (userID, userInfo, callback) {
             return callback(err);
         }
 
-        callback(null, true);
+        callback(null, result.nModified === 1);
     })
 };
 
@@ -62,17 +154,17 @@ exports.updateUserInfo = function (userID, userInfo, callback) {
 /**
  * @desc 更新用户的登录token信息
  * */
-exports.updateUserLoginToken = function (userID, token, callback) {
+exports.updateUserLoginToken = function (userID, token, expire, callback) {
+    
     let condition = {
         id: userID
     };
 
-    let now = new Date();
-
     let update = {
         $set: {
-            login_token: token,
-            update_time: now,
+            update_time: new Date(),
+            'login_token.token': token,
+            'login_token.expire': expire,
         }
     };
 
@@ -81,70 +173,74 @@ exports.updateUserLoginToken = function (userID, token, callback) {
             return callback(err);
         }
 
-        callback(null, true);
+        callback(null, result.nModified === 1);
     })
 };
 
-/**
- * @desc 验证手机号是否使用
- * */
-exports.verifyPhoneHasRegistered = function (phoneNumber, callback) {
-    let condition = {
-        user_mobile: phoneNumber
-    };
-
-
-    User.findOne(condition, function (err, result) {
-        if (err) {
-            return callbackhasRegistered(err);
-        }
-        let hasRegistered = result.length > 0;
-
-        callback(null, hasRegistered) //todo 如果没有使用应该调取发送验证码接口
-    })
-};
 
 /**
- * @desc 用户注册
+ * @desc 更新用户密码
  * */
-exports.userRegisterWithPhone = function (userInfo, callback) {
-    let mobile = userInfo.user_mobile;
-    let code = userInfo.code;
-    let password = userInfo.user_password;
-    let verification = Math.random();
-    let now = new Date();
-    let uuid = UUID();
-    //首先校验手机和验证码
-
-    let md5 = crypto.createHash('md5');
-
+exports.updateUserPassword = function (userID, password, callback) {
     let condition = {
-        status: User.STATUS.NORMAL,
-        user_name: ' ',
-        user_profile: ' ',
-        user_avatar: ' ',
-        user_mobile: mobile,
-        user_password: md5.update(`${verification}${password}`).digest('hex'),
-        create_time: now,
-        update_time: now,
-        verification: verification,
-        login_token: uuid,
+        id: userID
     };
-
-    User.create(condition, function (err, result) {
-        if (err) {
-            return callback(err)
+    
+    User.findOne(condition, function (err, user) {
+        if(err){
+            return callback(err);
         }
+        
+        if(!user){
+            return callback(null, false);
+        }
+        
+        let salt = user.pass_salt_str;
 
-        let session = {
-            userId: result._id,
-            sessionID: uuid,
+        let update = {
+            $set: {
+                user_password: hashUserPassword(salt, password)
+            }
         };
-
-        callback(null, session)
+        
+        User.update(condition, update, function (err, result) {
+            if(err){
+                return callback(err);
+            }
+            
+            callback(null, result.nModified === 1);
+        });
     });
 };
 
-/*
- * @desc 用户登录
+
+/**
+ * @desc 绑定手机号
  * */
+exports.updateUserPhone = function (userID, phone) {
+    
+};
+
+
+/**
+ * @desc 绑定微信
+ * */
+exports.updateUserTencentWechat= function (userID) {
+    
+};
+
+
+/**
+ * @desc 绑定QQ
+ * */
+exports.updateUserTencentQQ = function (userID) {
+
+};
+
+
+/**
+ * @desc 绑定新浪微博
+ * */
+exports.updateUserSinaWeibo = function (userID) {
+
+};

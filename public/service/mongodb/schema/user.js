@@ -17,25 +17,23 @@ const ThirdBindSchema = {
 
 const LoginSchema = {
     token      : {type: String, sparse: true, unique: true},
-    time       : {type: Date},
     expire     : {type: Date}
 };
 
 //用户===================================================
 const UserSchema = new Schema({
     status       : {type: Number,  required: true},   //用户状态
-    user_name    : {type: String,  required: true},   //用户名
-    user_profile : {type: String,  required: true},   //用户简介
-    user_avatar  : {type: String,  required: true,},  //用户头像
-    user_password: {type: String,  required: true,},  //用户密码
-    verification : {type: String,  required: true,},  //密码验证字符串
     create_time  : {type: Date,    required: true},   //创建时间
     update_time  : {type: Date,    required: true},   //更新时间
+    user_name    : {type: String,  required: false},   //用户名
+    user_profile : {type: String,  required: false},   //用户简介
+    user_avatar  : {type: String,  required: false,},  //用户头像
+    user_password: {type: String,  required: false,},  //用户密码
+    pass_salt_str: {type: String,  required: false,},  //密码盐
     user_gender  : {type: Boolean, required: false},  //用户性别
     user_mobile  : {type: String,  required: false},  //用户手机
     work_info    : {type: String,  required: false},  //用户性别
     edu_info     : {type: String,  required: false},  //用户性别
-
     bind_tencent_qq      : ThirdBindSchema,                  //qq绑定
     bind_tencent_wechat  : ThirdBindSchema,                  //微信绑定
     bind_sina_weibo      : ThirdBindSchema,                  //微博绑定
