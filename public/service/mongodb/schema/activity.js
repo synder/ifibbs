@@ -14,13 +14,13 @@ const ActivitySchema = new Schema({
     status          : {type: Number, required: true},   //回答状态
     title           : {type: String, required: true},   //回答内容
     cover           : {type: String, required: true},   //封面图片URL
-    describle       : {type: String, required: true},   //封面图片URL
-    url             : {type: String, required: false},  //活动地址URL
+    describe        : {type: String, required: true},   //封面图片URL
+    url             : {type: String, required: true},  //活动地址URL
     favour_count    : {type: Number, required: true},   //点赞数量
     comment_count   : {type: Number, required: true},   //评论数量
     collect_count   : {type: Number, required: true},   //收藏数量
-    create_time     : {type: Date,   required: true},     //创建时间
-    update_time     : {type: Date,   required: true},     //更新时间
+    create_time     : {type: Date,   required: true},   //创建时间
+    update_time     : {type: Date,   required: true},   //更新时间
 });
 
 ActivitySchema.virtual('id', function () {

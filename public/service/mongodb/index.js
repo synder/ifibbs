@@ -11,7 +11,7 @@ const config = require('../config');
 mongoose.Promise = global.Promise;
 
 if(!config && !config.mongodb && config.mongodb.url){
-    throw new Error('please provice mongodb config');
+    throw new Error('please provide mongodb config');
 }
 
 
@@ -39,6 +39,7 @@ const history = require('./schema/history');
 const notification = require('./schema/notification');
 const getui = require('./schema/getui');
 const question = require('./schema/question');
+const recommend = require('./schema/recommend');
 const subject = require('./schema/subject');
 const tag = require('./schema/tag');
 const user = require('./schema/user');
@@ -61,6 +62,7 @@ db.model('UserHistory', history.UserHistorySchema, 'user_history');
 db.model('UserNotification', notification.UserNotificationSchema, 'user_notification');
 db.model('UserGeTuiMapping', getui.UserGeTuiMappingSchema, 'user_getui_mapping');
 db.model('Question', question.QuestionSchema, 'question');
+db.model('Recommend', recommend.RecommendSchema, 'recommend');
 db.model('QuestionTag', tag.QuestionTagSchema, 'question_tag');
 db.model('Subject', subject.SubjectSchema, 'subject');
 db.model('User', user.UserSchema, 'user');

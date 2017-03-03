@@ -9,13 +9,19 @@ const chai = require('chai');
 const request = require('supertest');
 const Mock = require('mockjs');
 
-const mongodb = require('../../../public/service/mongodb').db;
+
+const mongodb = require('../../../public/service/mongodb');
 const elasticsearch = require('../../../public/service/elasticsearch').client;
 
-const QuestionTag = mongodb.model('QuestionTag');
-const Question = mongodb.model('Question');
-const QuestionAnswer = mongodb.model('QuestionAnswer');
-const User = mongodb.model('User');
+const db = mongodb.db;
+
+const QuestionTag = db.model('QuestionTag');
+const Question = db.model('Question');
+const QuestionAnswer = db.model('QuestionAnswer');
+const User = db.model('User');
+const Recommend = db.model('Recommend');
+const Activity = db.model('Activity');
+const Article = db.model('Article');
 
 const USER_ID = "58aa50177ddbf5507c51f082";
 const USER_ID_OTHER = "58aa50177ddbf5507c51f083";
@@ -38,9 +44,16 @@ const emptyCollection = function (callback) {
         function (cb) {
             User.remove({}, cb);
         },
+
+        function (cb) {
+            Recommend.remove({}, cb);
+        },
     ], callback);
 };
 
+/**
+ * @desc 初始化问题数据
+ * */
 const initQuestion = function (callback) {
     let questions = [];
     
@@ -78,6 +91,10 @@ const initQuestion = function (callback) {
     Question.create(questions, callback);
 };
 
+
+/**
+ * @desc 初始化问题回答数据
+ * */
 const initQuestionAnswer = function (callback) {
     
     let answers = [];
@@ -97,6 +114,186 @@ const initQuestionAnswer = function (callback) {
     }
 
     QuestionAnswer.create(answers, callback);
+};
+
+
+/**
+ * @desc 初始化推荐数据
+ * */
+const initRecommend = function (callback) {
+    let recommends = [];
+
+    let avatar = 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518';
+    
+    for(let i = 0; i < 100; i++){
+        
+        let userID = new mongodb.ObjectId();
+        let questionID = new mongodb.ObjectId();
+        let answerID = new mongodb.ObjectId();
+        let activityID = new mongodb.ObjectId();
+        let articleID = new mongodb.ObjectId();
+        
+        let user = {
+            _id: userID,
+            status: User.STATUS.NORMAL, //用户状态
+            user_name: Mock.Random.ctitle(4, 6),   //用户名
+            user_profile: Mock.Random.ctitle(10, 20),   //用户简介
+            user_avatar: avatar,   //用户头像
+            create_time: new Date(),     //创建时间
+            update_time: new Date(),     //更新时间
+            user_gender: false, //用户性别
+            user_mobile: '13120975917',  //用户手机
+            work_info: Mock.Random.ctitle(10, 20),  //用户性别
+            edu_info: Mock.Random.ctitle(10, 20),  //用户性别
+        };
+        
+        let question = {
+            "_id": questionID,
+            "status" : 1,
+            "title" : Mock.Random.ctitle(5, 20),
+            "describe" : Mock.Random.ctitle(50, 100),
+            "answer_count" : 0,
+            "favour_count" : 0,
+            "attention_count" : 1,
+            "collect_count" : 0,
+            "create_user_id" : userID,
+            "create_time" : new Date(),
+            "update_time" : new Date(),
+            "tags" : [],
+        };
+        
+        let answer = {
+            "_id": answerID,
+            "status" : 1,
+            "content" : Mock.Random.ctitle(20, 50),
+            "comment_count" : 0,
+            "favour_count" : 0,
+            "collect_count" : 0,
+            "question_id" : questionID,
+            "create_user_id" : userID,
+            "create_time" : new Date(),
+            "update_time" : new Date(),
+        };
+        
+        let activity = {
+            _id             : activityID,
+            status          : Activity.STATUS.DISPLAY,   //回答状态
+            title           : Mock.Random.ctitle(10, 20),   //回答内容
+            cover           : avatar,   //封面图片URL
+            describe        : Mock.Random.ctitle(10, 20),   //封面图片URL
+            url             : 'http://www.baidu.com',  //活动地址URL
+            favour_count    : 0,   //点赞数量
+            comment_count   : 0,   //评论数量
+            collect_count   : 0,   //收藏数量
+            create_time     : new Date(),   //创建时间
+            update_time     : new Date(),   //更新时间
+        };
+
+        let article = {
+            _id             : articleID,
+            status          : Article.STATUS.PUBLISHED,    //文章状态
+            top             : false,    //是否置顶
+            title           : Mock.Random.ctitle(10, 20),    //文章标题
+            summary         : Mock.Random.ctitle(10, 20),    //文章摘要
+            icon            : avatar,    //文章图标
+            cover           : avatar,    //封面图片
+            tags            : ['基金'],    //文章标签
+            content         : Mock.Random.ctitle(100, 200),    //文章内容
+            browse_count    : 0,    //浏览次数
+            favour_count    : 0,    //被赞次数
+            comment_count   : 0,    //被评论次数
+            collect_count   : 0,    //被收藏次数
+            create_time     : new Date(),    //创建时间
+            update_time     : new Date(),    //更新时间
+            subject_id      : null,  //文章所属主题
+            create_user_id  : null   //创建人
+        };
+        
+        let tempRecommends = [];
+
+        tempRecommends.push({
+            status      : Recommend.STATUS.NORMAL,   //状态
+            order       : Mock.Random.natural(1, 100),   //排序方式
+            type        : Recommend.TYPE.QUESTION,   //排序方式
+            create_time : new Date(),     //排序方式
+            update_time : new Date(),     //排序方式
+            question    : {
+                question_id: questionID,
+                answer_id: answerID,
+                answer_user_id: userID,
+            },  //推荐问题
+            activity    : null,  //推荐活动
+            article     : null,  //推荐文章
+        });
+
+        tempRecommends.push({
+            status      : Recommend.STATUS.NORMAL,   //状态
+            order       : Mock.Random.natural(1, 100),   //排序方式
+            type        : Recommend.TYPE.ACTIVITY,   //排序方式
+            create_time : new Date(),     //排序方式
+            update_time : new Date(),     //排序方式
+            question    : null,  //推荐问题
+            activity    : {
+                activity_id: activityID
+            },  //推荐活动
+            article     : null,  //推荐文章
+        });
+
+        tempRecommends.push({
+                status      : Recommend.STATUS.NORMAL,   //状态
+                order       : Mock.Random.natural(1, 100),   //排序方式
+                type        : Recommend.TYPE.ARTICLE,   //排序方式
+                create_time : new Date(),     //排序方式
+                update_time : new Date(),     //排序方式
+                question    : null,  //推荐问题
+                activity    : null,  //推荐活动
+                article     : {
+                    article_id : articleID
+                },  //推荐文章
+        });
+        
+
+        let temp = {
+            user: user,
+            question: question,
+            answer: answer,
+            activity: activity,
+            article: article,
+            recommends: tempRecommends
+        };
+
+        recommends.push(temp);
+    }
+    
+    async.eachLimit(recommends, 10, function(recommend, cb){
+        
+        async.series([
+            function(cb) {
+                User.create(recommend.user, cb);
+            },
+            
+            function(cb) { 
+                Question.create(recommend.question, cb);
+            },
+
+            function(cb) {
+                QuestionAnswer.create(recommend.answer, cb);
+            },
+
+            function(cb) {
+                Activity.create(recommend.activity, cb);
+            },
+
+            function(cb) {
+                Article.create(recommend.article, cb);
+            },
+
+            function(cb) {
+                Recommend.create(recommend.recommends, cb);
+            },
+        ], cb);
+        
+    }, callback);
 };
 
 
@@ -231,6 +428,10 @@ exports.init = function (callback) {
 
             function (cb) {
                 initMongodbUserCollection(cb);
+            },
+
+            function (cb) {
+                initRecommend(cb);
             },
 
             function (cb) {
