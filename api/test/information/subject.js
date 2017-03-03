@@ -5,8 +5,6 @@ const Mock = require('mockjs');
 
 const app = require('../../app').app;
 
-const mongodb = require('../../../public/service/mongodb');
-
 
 
 describe('专题相关接口', function () {
@@ -26,6 +24,7 @@ describe('专题相关接口', function () {
                 icon: 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518',   //专题图标URL
                 cover: 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518',   //专题封面图URL
                 status: Subject.STATUS.ENABLE,   //专题状态
+                article_count: 0,
                 display_order: Mock.Random.natural(1, 20),     //专题显示顺序
                 create_time: new Date(),     //创建时间
                 update_time: new Date(),     //更新时间
