@@ -7,7 +7,7 @@
 
 exports.notFoundHandler = function () {
     return function (req, res, next) {
-        next(new NotFoundError());
+        next(new NotFoundError(req.path));
     }
 };
 
@@ -19,7 +19,7 @@ exports.serverErrorHandler = function () {
         }
         
         if(err.code < 500){
-            logger.error(err);
+            logger.error(err.message);
         }else{
             logger.error(err.stack);
         }

@@ -32,7 +32,8 @@ exports.getSmsSecurityCode = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                code_id: captchaID
+                code_id: captchaID,
+                random: ''
             }
         });
     });
