@@ -5,7 +5,7 @@
     "request":"*",
     "async":"*",
     "mongoose": "*",
-    "mysql": "*",
+    "sequelize": "*",
     "redis": "*",
     "elasticsearch": "*",
     "amqplib": "*",
