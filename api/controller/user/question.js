@@ -15,8 +15,11 @@ const tagsModel = require('../../../public/model/tags');
 exports.getUserQuestions = function(req, res, next){
     let pageSize = req.query.page_size;
     let pageSkip = req.query.page_skip;
+    let userID = req.query.user_id;
     
-    let userID = req.session.id;
+    if(!userID){
+        return next(new BadRequestError('user_id is need'));
+    }
     
     questionModel.getQuestionList(userID, pageSkip, pageSize, function (err, results) {
         if(err){

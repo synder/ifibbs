@@ -18,18 +18,30 @@ const statistics = require('../../controller/user/statistics');
 
 
 exports.map = function(app){
+    
     //用户账户非登录下接口
     app.get('/account/phone', account.checkPhoneRegistered);  //检测手机是否登录
     app.put('/account/register', account.userRegisterWithPhone);  //注册账户
     app.put('/account/login', account.userLoginWithSystemAccount);  //账户密码登录
     app.put('/account/login/third', account.userLoginWithThirdPartyAccount);  //第三方账户登录
     app.post('/account/password', account.userLoginWithThirdPartyAccount);  //找回密码
+    
+    
+    //其他用户的相关接口
+    app.get('/other/questions', question.getUserQuestions);     //获取用户所有提问
+    app.get('/other/question/answers', answer.getUserAnswers);    //其他用户的回答列表
+    app.get('/other/question/answer/comments', comment.getUserCommentsList);    //获取其他用户评论列表
+    app.get('/other/collections', collection.getUserCollections);             //获取其他用户的所有收藏
+    app.get('/other/attention/questions', attention.getAttentionQuestionList);     //获取其他用户关注的问题列表
+    app.get('/other/attention/users', attention.getUserAttentionUserList);         //获取其他用户关注的用户列表 
+    app.get('/other/attention/subjects', attention.getUserAttentionSubjectList);   //获取其他用户关注的专题列表
+    app.get('/other/statistics', statistics.getUserStatisticsData);  //获取用户统计数据(关注人数，收藏数，被赞数)
+    
 
     //用户登录后操作
     app.get('/user/account/info', authority.check, account.getUserInfo);     //获取用户信息
     app.post('/user/account/info',authority.check, account.updateUserInfo);  //更新用户信息
     app.post('/user/account/password',authority.check, account.modifyUserPassword);  //修改密码
-    
     
     
     //用户的提问
@@ -39,10 +51,9 @@ exports.map = function(app){
    
     
     //用户的回答
+    app.get('/user/question/answers', authority.check, answer.getUserAnswers);      //获取用户的回答列表
     app.put('/user/question/answer', authority.check, answer.createNewAnswer);      //创建用户提问
     app.delete('/user/question/answer', authority.check, answer.removeUserAnswer);  //删除用户回答
-    app.get('/user/question/answers', authority.check, answer.getUserAnswers);      //获取用户的回答列表
-    
     
     
     //用户回答的评论

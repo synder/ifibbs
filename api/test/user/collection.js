@@ -112,9 +112,10 @@ describe('用户收藏列表', function() {
 
         request(app)
             .get('/user/collections')
-            .send({
+            .query({
                 page_size: 20,
-                page_index: 1
+                page_index: 1,
+                user_id: '58aa50177ddbf5507c51f082'
             })
             .expect(200)
             .end(function(err, res) {

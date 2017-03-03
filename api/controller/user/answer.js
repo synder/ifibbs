@@ -13,8 +13,11 @@ exports.getUserAnswers = function(req, res, next){
     
     let pageSkip = req.query.page_skip;
     let pageSize = req.query.page_size;
-    
-    let userID = req.session.id;
+    let userID = req.query.user_id;
+
+    if(!userID){
+        return next(new BadRequestError('user_id is need'));
+    }
     
     answerModel.getUserAnswerList(userID, pageSkip, pageSize, function (err, results) {
         if(err){

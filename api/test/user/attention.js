@@ -335,6 +335,7 @@ describe('用户关注的问题列表', function(){
             .query({
                 page_size: Mock.Random.natural(3, 20),
                 page_index: 1,
+                user_id: '58aa50177ddbf5507c51f082'
             })
             .expect(200)
             .end(function(err, res) {
@@ -398,6 +399,7 @@ describe('用户关注的用户列表', function(){
             .query({
                 page_size: Mock.Random.natural(3, 20),
                 page_index: 1,
+                user_id: '58aa50177ddbf5507c51f082'
             })
             .expect(200)
             .end(function(err, res) {
@@ -457,6 +459,7 @@ describe('用户关注问的专题列表', function(){
             .query({
                 page_size: Mock.Random.natural(3, 20),
                 page_index: 1,
+                user_id: '58aa50177ddbf5507c51f082'
             })
             .expect(200)
             .end(function(err, res) {

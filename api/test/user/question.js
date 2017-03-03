@@ -20,7 +20,8 @@ describe('获取用户的提问列表', function () {
             .get('/user/questions')
             .query({
                 page_size: pageSize,
-                page_index: pageIndex
+                page_index: pageIndex,
+                user_id: '58aa50177ddbf5507c51f082'
             })
             .expect(200)
             .end(function (err, res) {

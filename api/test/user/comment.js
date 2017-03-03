@@ -271,7 +271,8 @@ describe('用户获取自己的回答评论列表', function () {
             .get('/user/question/answer/comments')
             .query({
                 page_size: pageSize,
-                page_index: pageIndex
+                page_index: pageIndex,
+                user_id: '58aa50177ddbf5507c51f082'
             })
             .expect(200)
             .end(function (err, res) {

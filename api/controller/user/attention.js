@@ -13,8 +13,11 @@ exports.getAttentionQuestionList = function (req, res, next) {
     
     let pageSkip = req.query.page_skip;
     let pageSize = req.query.page_size;
-    
-    let userID = req.session.id;
+    let userID = req.query.user_id;
+
+    if(!userID){
+        return next(new BadRequestError('user_id is need'));
+    }
 
     attentionModel.getUserAttentionQuestionList(userID, pageSkip, pageSize, function (err, results) {
         if(err){
@@ -57,8 +60,11 @@ exports.getUserAttentionUserList = function (req, res, next) {
 
     let pageSkip = req.query.page_skip;
     let pageSize = req.query.page_size;
+    let userID = req.query.user_id;
 
-    let userID = req.session.id;
+    if(!userID){
+        return next(new BadRequestError('user_id is need'));
+    }
 
     attentionModel.getUserAttentionUserList(userID, pageSkip, pageSize, function (err, results) {
         if(err){
@@ -97,8 +103,11 @@ exports.getUserAttentionSubjectList = function (req, res, next) {
 
     let pageSkip = req.query.page_skip;
     let pageSize = req.query.page_size;
+    let userID = req.query.user_id;
 
-    let userID = req.session.id;
+    if(!userID){
+        return next(new BadRequestError('user_id is need'));
+    }
 
     attentionModel.getUserAttentionSubjectList(userID, pageSkip, pageSize, function (err, results) {
         if(err){

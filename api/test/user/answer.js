@@ -143,7 +143,8 @@ describe('获取用户问题回答列表', function () {
             .get('/user/question/answers')
             .query({
                 page_index: 1,
-                page_size: 20
+                page_size: 20,
+                user_id: '58aa50177ddbf5507c51f082'
             })
             .expect(200)
             .end(function (err, res) {
