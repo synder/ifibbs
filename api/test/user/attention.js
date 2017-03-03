@@ -140,7 +140,7 @@ describe('用户关注专题', function() {
         request(app)
             .put('/user/attention/subject')
             .send({
-                subject_id: '58aaae950e95c9205f3db5de'
+                subject_id: '58ae5da34171fd177d387637'
             })
             .expect(200)
             .end(function(err, res) {
