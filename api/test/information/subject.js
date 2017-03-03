@@ -10,38 +10,11 @@ const mongodb = require('../../../public/service/mongodb');
 
 
 describe('专题相关接口', function () {
-
-    let subjectID = new mongodb.ObjectId();
-
-    before(function (done) {
-        
-        //初始化专题数据库
-        let Subject = mongodb.db.model('Subject');
-
-        let mockData = [
-            {
-                _id: subjectID,
-                title: Mock.Random.ctitle(5, 10),   //专题名称
-                describe: Mock.Random.ctitle(20, 30),   //专题描述
-                icon: 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518',   //专题图标URL
-                cover: 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518',   //专题封面图URL
-                status: Subject.STATUS.ENABLE,   //专题状态
-                article_count: 0,
-                display_order: Mock.Random.natural(1, 20),     //专题显示顺序
-                create_time: new Date(),     //创建时间
-                update_time: new Date(),     //更新时间
-            }
-        ];
-
-        //初始化专题数据库
-        Subject.create(mockData, done);
-    });
-
     it('#返回专题获取详情', function (done) {
         request(app)
             .get('/subject')
             .query({
-                subject_id: subjectID.toString(),
+                subject_id: "58ae5da34171fd177d387637",
             })
             .expect(200)
             .end(function (err, res) {
