@@ -40,6 +40,7 @@ const User = db.model('User');
 const USER_ID = "58aa50177ddbf5507c51f082";
 const USER_ID_OTHER = "58aa50177ddbf5507c51f083";
 const QUESTION_ID = "58ae5da34171fd177d387656";
+const SUBJECT_ID = "58ae5da34171fd177d387637";
 
 const emptyCollection = function (callback) {
     async.parallel([
@@ -65,6 +66,44 @@ const emptyCollection = function (callback) {
         function (cb) {Subject.remove({}, cb);},
         function (cb) {User.remove({}, cb);},
     ], callback);
+};
+
+/**
+ * @desc 初始化专题数据
+ * */
+const initSubject = function (callback) {
+    
+    let icon = 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518';
+    let cover = 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518';
+    
+    let docs = [];
+
+    docs.push({
+        _id            : SUBJECT_ID,
+        status         : Subject.STATUS.ENABLE,
+        title          : Mock.Random.ctitle(10,20),
+        describe       : Mock.Random.ctitle(50,100),
+        icon           : icon,
+        cover          : cover,
+        display_order  : Mock.Random.natural(1, 10),
+        create_time    : new Date(),
+        update_time    : new Date(),
+    });
+    
+    for(let i = 0; i< 10; i++){
+        docs.push({
+            status         : Subject.STATUS.ENABLE,
+            title          : Mock.Random.ctitle(10,20),
+            describe       : Mock.Random.ctitle(50,100),
+            icon           : icon,
+            cover          : cover,
+            display_order  : Mock.Random.natural(1, 10),
+            create_time    : new Date(),
+            update_time    : new Date(),
+        });
+    }
+    
+    Subject.create(docs, callback);
 };
 
 /**
@@ -434,6 +473,10 @@ exports.init = function (callback) {
         
         async.parallel([
 
+            function (cb) {
+                initSubject(cb);
+            },
+            
             function (cb) {
                 initQuestion(cb);
             },

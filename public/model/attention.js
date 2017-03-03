@@ -67,18 +67,18 @@ exports.getUserAttentionUserList = function (userID, pageSkip, pageSize, callbac
  * @desc 获取用户关注专题列表
  * */
 exports.getUserAttentionSubjectList = function (userID, pageSkip, pageSize, callback) {
-    let conditoin = {
+    let condition = {
         user_id: userID,
         subject_id : { $exists: true }
     };
 
     async.parallel({
         count: function (cb) {
-            AttentionSubject.count(conditoin, cb);
+            AttentionSubject.count(condition, cb);
         },
 
         subjects: function (cb) {
-            AttentionSubject.find(conditoin)
+            AttentionSubject.find(condition)
                 .populate('subject_id')
                 .sort('create_time _id')
                 .skip(pageSkip)
@@ -168,7 +168,6 @@ exports.addAttentionToUser = function (userID, toUserID, callback) {
  * */
 exports.cancelAttentionToUser = function (userID, toUserID, callback) {
     let condition = {
-        status: AttentionUser.STATUS.ATTENTION,
         user_id: userID,
         to_user_id: toUserID,
     };
@@ -185,7 +184,7 @@ exports.cancelAttentionToUser = function (userID, toUserID, callback) {
             return callback(err);
         }
 
-        callback(null, result.ok === 1);
+        callback(null, result.nModified === 1);
     });
 };
 
@@ -207,7 +206,6 @@ exports.addAttentionToQuestion = function (userID, toQuestionID, callback) {
         let condition = {
             user_id: userID,
             question_id: toQuestionID,
-            status: AttentionQuestion.STATUS.NO_ATTENTION,
         };
 
         let update = {
@@ -225,7 +223,7 @@ exports.addAttentionToQuestion = function (userID, toQuestionID, callback) {
                 return callback(err);
             }
             
-            if(result.upserted == null && result.nModified){
+            if(result.upserted === null && result.nModified === 0){
                 return callback(null, false);
             }
             
@@ -242,7 +240,6 @@ exports.addAttentionToQuestion = function (userID, toQuestionID, callback) {
  * */
 exports.cancelAttentionToQuestion = function (userID, toQuestionID, callback) {
     let condition = {
-        status: AttentionQuestion.STATUS.ATTENTION,
         user_id: userID,
         question_id: toQuestionID,
     };
@@ -302,7 +299,6 @@ exports.addAttentionToSubject = function (userID, toSubjectID, callback) {
  * */
 exports.cancelAttentionToSubject = function (userID, toSubjectID, callback) {
     let condition = {
-        status: AttentionSubject.STATUS.ATTENTION,
         user_id: userID,
         subject_id: toSubjectID,
     };
