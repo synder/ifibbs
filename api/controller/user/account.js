@@ -12,8 +12,8 @@ const userModel = require('../../../public/model/user');
 exports.getUserInfo = function (req, res, next) {
     let userID = req.session.id;
 
-    userModel.getUserInfo(userID,function (err, result) {
-        if(err){
+    userModel.getUserInfo(userID, function (err, result) {
+        if (err) {
             return next(err);
         }
 
@@ -31,11 +31,11 @@ exports.getUserInfo = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                user_info:userInfo
+                user_info: userInfo
             }
         })
     })
-    
+
 };
 
 
@@ -46,8 +46,8 @@ exports.updateUserInfo = function (req, res, next) {
     let userId = req.session.id;
     let userInfo = req.body;
 
-    userModel.updateUserInfo(userId,userInfo,function (err, success) {
-        if(err){
+    userModel.updateUserInfo(userId, userInfo, function (err, success) {
+        if (err) {
             return next(err)
         }
 
@@ -66,20 +66,17 @@ exports.updateUserInfo = function (req, res, next) {
  * @desc 验证手机是否注册接口
  * */
 exports.verifyPhoneHasRegistered = function (req, res, next) {
-    let phoneNumber = req.body.phoneNumber;
+    
+    let phoneNumber = req.body.mobile;
 
     let phoneReg = /^1[34578]\d{9}$/;
 
-    if(!phoneReg.test(phoneNumber)){
-        return res.json({
-            flag: '0400',
-            msg: 'phone number format error',
-            result: {}
-        })
+    if (!phoneReg.test(phoneNumber.toString())) {
+        return next(new BadRequestError('phone is illegal'));
     }
 
-    userModel.verifyPhoneHasRegistered(phoneNumber,function (err, success) {
-        if(err){
+    userModel.verifyPhoneHasRegistered(phoneNumber, function (err, success) {
+        if (err) {
             return next(err)
         }
 
@@ -105,7 +102,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
  * @desc 用户登录接口
  * */
 exports.userLoginWithPhone = function (req, res, next) {
-    
+
 };
 
 
