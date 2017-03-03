@@ -238,20 +238,17 @@ exports.updateUserPasswordWithMobile = function (phone, newPassword, callback) {
         }
 
         let salt = user.pass_salt_str;
-        
-        let update = {
-            $set: {
-                user_password: hashUserPassword(salt, newPassword)
-            }
-        };
 
-        User.update(condition, update, function (err, result) {
+        user.user_password = hashUserPassword(salt, newPassword);
+
+        user.save(function (err, result) {
             if(err){
                 return callback(err);
             }
 
-            callback(null, result.nModified === 1);
+            callback(null, !!result)
         });
+        
     });
 };
 
