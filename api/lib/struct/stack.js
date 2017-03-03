@@ -3,7 +3,7 @@
  */
 
 
-var Stack = function (max) {
+const Stack = function (max) {
     this.__store = null;
     this.__top = 0;
     this.__max = null;

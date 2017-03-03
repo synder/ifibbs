@@ -6,9 +6,9 @@
 /**
  * @desc 获取大于min的最大素数
  * */
-var prime = function (min) {
+const prime = function (min) {
 
-    var isPrime = function (value) {
+    let isPrime = function (value) {
 
         if((value & 1) != 1){
             return false;
@@ -18,7 +18,7 @@ var prime = function (min) {
             return false;
         }
 
-        for(var i = 2, temp = ~~Math.sqrt(value); i < temp; i++){
+        for(let i = 2, temp = ~~Math.sqrt(value); i < temp; i++){
             if(value % i === 0){
                 return false;
             }
@@ -40,7 +40,7 @@ var prime = function (min) {
 
 
 //---HashMap---------------------------------------------------------
-var HashMap = function (capacity) {
+const HashMap = function (capacity) {
     this.__FACTOR = 1;
     this.__CAPACITY = 137;
 
@@ -65,9 +65,9 @@ HashMap.prototype.__hash = function (value) {
 
     value = value + '';
 
-    var hash = value.length;
+    let hash = value.length;
 
-    for (var i = 0; i < value.length; i++){
+    for (let i = 0; i < value.length; i++){
         hash = (hash << 4) ^ (hash >> 28) ^ value.charCodeAt(i);
     }
 
@@ -78,11 +78,11 @@ HashMap.prototype.__rehash = function () {
 
     if(this.__size > this.__threshold){
 
-        var newCap = prime(this.__size);
-        var newMap = new HashMap(newCap);
+        let newCap = prime(this.__size);
+        let newMap = new HashMap(newCap);
 
         this.__table.forEach(function (entry) {
-            for(var key in entry){
+            for(let key in entry){
                 if(entry.hasOwnProperty(key)){
                     newMap.put(key, entry[key]);
                 }
@@ -99,7 +99,7 @@ HashMap.prototype.__rehash = function () {
 
 HashMap.prototype.put = function (key, data) {
 
-    var position = this.__hash(key);
+    let position = this.__hash(key);
 
     if(!this.__table[position]){
         this.__table[position] = {};
@@ -119,7 +119,7 @@ HashMap.prototype.put = function (key, data) {
 
 HashMap.prototype.del = function (key) {
 
-    var position = this.__hash(key);
+    let position = this.__hash(key);
 
     if(!this.__table[position]){
         return false;
@@ -135,7 +135,7 @@ HashMap.prototype.del = function (key) {
 
 HashMap.prototype.get = function (key) {
 
-    var position = this.__hash(key);
+    let position = this.__hash(key);
 
     if(!this.__table[position]){
         return null;
@@ -153,9 +153,9 @@ HashMap.prototype.clear = function () {
 };
 
 HashMap.prototype.keys= function () {
-    var result = [];
+    let result = [];
     this.__table.forEach(function (entry) {
-        for(var key in entry){
+        for(let key in entry){
             if(entry.hasOwnProperty(key)){
                 result.push(key);
             }
@@ -165,9 +165,9 @@ HashMap.prototype.keys= function () {
 };
 
 HashMap.prototype.values = function () {
-    var result = [];
+    let result = [];
     this.__table.forEach(function (entry) {
-        for(var key in entry){
+        for(let key in entry){
             if(entry.hasOwnProperty(key)){
                 result.push(entry[key]);
             }
@@ -178,7 +178,7 @@ HashMap.prototype.values = function () {
 
 HashMap.prototype.forEach = function (callback) {
     this.__table.forEach(function (entry) {
-        for(var key in entry){
+        for(let key in entry){
             if(entry.hasOwnProperty(key)){
                 callback(key, entry[key]);
             }
