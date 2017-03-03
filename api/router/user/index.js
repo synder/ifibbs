@@ -89,5 +89,5 @@ exports.map = function(app){
     app.get('/user/notification/businesses', authority.check, notification.getUserBusinessNotification);  //获取业务通知
     
     //获取用户统计数据
-    app.get('/user/statisticses', authority.check, statistics.getUserStatisticsData);  //获取用户统计数据(关注人数，收藏数，被赞数)
+    app.get('/user/statistics', authority.check, statistics.getUserStatisticsData);  //获取用户统计数据(关注人数，收藏数，被赞数)
 };
