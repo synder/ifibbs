@@ -3,3 +3,9 @@
  * @copyright
  * @desc 短消息服务
  */
+
+const DefaultSMSClient = require('./lib/client').DefaultSMSClient;
+
+const client = new DefaultSMSClient();
+
+exports.client = client;
