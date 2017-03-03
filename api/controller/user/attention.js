@@ -107,15 +107,15 @@ exports.getUserAttentionSubjectList = function (req, res, next) {
 
         let count= results.count;
         let subjects = [];
-
+        
         results.subjects.map(function (subject) {
             if(subject.subject_id){
                 subjects.push({
                     subject_id: subject.subject_id._id,
-                    subject_icon: subject.subject_id.icon,
-                    subject_title: subject.subject_id.title,
-                    subject_describe: subject.subject_id.describe,
-                    subject_article_count: subject.subject_id.article_count,
+                    subject_icon: subject.subject_id.icon || '',
+                    subject_title: subject.subject_id.title || '',
+                    subject_describe: subject.subject_id.describe || '',
+                    subject_article_count: subject.subject_id.article_count || 0,
                 });
             }
         });

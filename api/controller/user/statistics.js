@@ -4,7 +4,9 @@
  * @desc
  */
 
-
+/**
+ * @desc 获取用户统计数据
+ * */
 exports.getUserStatisticsData = function (req, res, next) {
     res.json({
         flag: '0000',

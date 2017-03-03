@@ -14,11 +14,11 @@ exports.map = function (app) {
     //首页推荐
     app.get('/recommends', recommend.getRecommendList);      //获取首页推荐
     
+    
     //问题
     app.get('/question', question.getQuestionDetail);                     //获取问题详情
     app.get('/questions/find', question.searchQuestions);                 //搜索问题
     app.get('/questions/answer/find', question.searchQuestionsByAnswer);  //根据回答搜索
-   
     
     
     //问题标签
