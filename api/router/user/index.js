@@ -18,9 +18,18 @@ const statistics = require('../../controller/user/statistics');
 
 
 exports.map = function(app){
-    //用户账户接口
-    app.get('/user/info', authority.check, account.getUserInfo);      //获取用户信息
-    app.post('/user/info',authority.check, account.updateUserInfo);  //更新用户信息
+    //用户账户非登录下接口
+    app.get('/account/phone', account.checkPhoneRegistered);  //检测手机是否登录
+    app.put('/account/register', account.userRegisterWithPhone);  //注册账户
+    app.put('/account/login', account.userLoginWithSystemAccount);  //账户密码登录
+    app.put('/account/login/third', account.userLoginWithThirdPartyAccount);  //第三方账户登录
+    app.post('/account/password', account.userLoginWithThirdPartyAccount);  //找回密码
+
+    //用户登录后操作
+    app.get('/user/account/info', authority.check, account.getUserInfo);     //获取用户信息
+    app.post('/user/account/info',authority.check, account.updateUserInfo);  //更新用户信息
+    app.post('/user/account/password',authority.check, account.modifyUserPassword);  //修改密码
+    
     
     
     //用户的提问

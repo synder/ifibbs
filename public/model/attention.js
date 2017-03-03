@@ -15,19 +15,18 @@ const AttentionUser = mongodb.model('AttentionUser');
  * @desc 获取用户关注的问题列表
  * */
 exports.getUserAttentionQuestionList = function (userID, pageSkip, pageSize, callback) {
-    let conditoin = {
+    let condition = {
         user_id: userID,
         status: AttentionQuestion.STATUS.ATTENTION,
-        question_id : { $exists: true }
     };
 
     async.parallel({
         count: function (cb) {
-            AttentionQuestion.count(conditoin, cb);
+            AttentionQuestion.count(condition, cb);
         },
 
         questions: function (cb) {
-            AttentionQuestion.find(conditoin)
+            AttentionQuestion.find(condition)
                 .populate('question_id question_user_id')
                 .sort('create_time _id')
                 .skip(pageSkip)

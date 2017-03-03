@@ -103,7 +103,7 @@ exports.getUserByMobileAndPassword = function (phone, pass, callback) {
 exports.updateUserInfo = function (userID, userInfo, callback) {
     
     let condition = {
-        id: userID
+        _id: userID
     };
     
     let updateSets = {update_time: new Date()};
@@ -157,7 +157,7 @@ exports.updateUserInfo = function (userID, userInfo, callback) {
 exports.updateUserLoginToken = function (userID, token, expire, callback) {
     
     let condition = {
-        id: userID
+        _id: userID
     };
 
     let update = {
@@ -177,13 +177,12 @@ exports.updateUserLoginToken = function (userID, token, expire, callback) {
     })
 };
 
-
 /**
  * @desc 更新用户密码
  * */
-exports.updateUserPassword = function (userID, password, callback) {
+exports.updateUserPasswordWithOldPassword = function (userID, oldPassword, newPassword, callback) {
     let condition = {
-        id: userID
+        _id: userID
     };
     
     User.findOne(condition, function (err, user) {
@@ -196,10 +195,17 @@ exports.updateUserPassword = function (userID, password, callback) {
         }
         
         let salt = user.pass_salt_str;
-
+        
+        let dbMd5Pass = hashUserPassword(salt, user.user_password);
+        let oldMd5Pass = hashUserPassword(salt, user.user_password);
+        
+        if(dbMd5Pass !== oldMd5Pass){
+            return callback(null, false);
+        }
+        
         let update = {
             $set: {
-                user_password: hashUserPassword(salt, password)
+                user_password: hashUserPassword(salt, newPassword)
             }
         };
         
@@ -212,6 +218,43 @@ exports.updateUserPassword = function (userID, password, callback) {
         });
     });
 };
+
+
+/**
+ * @desc 更新用户密码
+ * */
+exports.updateUserPasswordWithMobile = function (phone, newPassword, callback) {
+    let condition = {
+        user_mobile: {$exists:true, $eq: phone}
+    };
+
+    User.findOne(condition, function (err, user) {
+        if(err){
+            return callback(err);
+        }
+
+        if(!user){
+            return callback(null, false);
+        }
+
+        let salt = user.pass_salt_str;
+        
+        let update = {
+            $set: {
+                user_password: hashUserPassword(salt, newPassword)
+            }
+        };
+
+        User.update(condition, update, function (err, result) {
+            if(err){
+                return callback(err);
+            }
+
+            callback(null, result.nModified === 1);
+        });
+    });
+};
+
 
 
 /**

@@ -73,7 +73,7 @@ exports.updateUserInfo = function (req, res, next) {
 /**
  * @desc 验证手机是否注册接口
  * */
-exports.verifyPhoneHasRegistered = function (req, res, next) {
+exports.checkPhoneRegistered = function (req, res, next) {
     
     let phone = req.query.phone;
     
@@ -102,28 +102,100 @@ exports.verifyPhoneHasRegistered = function (req, res, next) {
     });
 };
 
+
 /**
  * @desc 用户注册接口
  * */
 exports.userRegisterWithPhone = function (req, res, next) {
-    let userInfo = req.body;
-    
     
 };
 
 
 /**
- * @desc 用户登录接口
+ * @desc 用户系统手机账户登录接口
  * */
-exports.userLoginWithPhone = function (req, res, next) {
+exports.userLoginWithSystemAccount = function (req, res, next) {
 
 };
 
 
 /**
- * @desc 修改密码接口
+ * @desc 用户使用第三方账户登录
+ * */
+exports.userLoginWithThirdPartyAccount = function (req, res, next) {
+    
+};
+
+
+/**
+ * @desc 修改密码接口，根据老密码修改或者找回密码
  * */
 exports.modifyUserPassword = function (req, res, next) {
+    let oldPassword = req.body.old_password;
+    let newPassword = req.body.new_password;
+    
+    let userID = req.session.id;
+    
+    if(!newPassword){
+        return next(new BadRequestError('new_password is need'));
+    }
+    
+    if(!oldPassword){
+        return next(new BadRequestError('old_password is need'));
+    }
+    
+    userModel.updateUserPasswordWithOldPassword(userID, oldPassword, newPassword, function (err, success) {
+        if(err){
+            return next(err);
+        }
+        
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                ok: !!success
+            }
+        });
+    });
     
 };
 
+
+/**
+ * @desc 重置密码
+ * */
+exports.resetUserPassword = function (req, res, next) {
+    
+    let mobileNumber = req.body.mobile_number;
+    let newPassword = req.body.new_password;
+    let securityCode = req.body.security_code;
+
+    if(!mobileNumber){
+        return next(new BadRequestError('mobile_number is need'));
+    }
+
+    if(!newPassword){
+        return next(new BadRequestError('new_password is need'));
+    }
+
+    if(!securityCode){
+        return next(new BadRequestError('security_code is need'));
+    }
+    
+    //验证验证码
+
+    userModel.updateUserPasswordWithMobile(mobileNumber, newPassword, function (err, success) {
+        if(err){
+            return next(err);
+        }
+
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                ok: !!success
+            }
+        });
+    });
+
+};

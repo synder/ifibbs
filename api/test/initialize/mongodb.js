@@ -15,13 +15,27 @@ const elasticsearch = require('../../../public/service/elasticsearch').client;
 
 const db = mongodb.db;
 
-const QuestionTag = db.model('QuestionTag');
-const Question = db.model('Question');
-const QuestionAnswer = db.model('QuestionAnswer');
-const User = db.model('User');
-const Recommend = db.model('Recommend');
 const Activity = db.model('Activity');
+const QuestionAnswer = db.model('QuestionAnswer');
 const Article = db.model('Article');
+const AttentionQuestion = db.model('AttentionQuestion');
+const AttentionSubject = db.model('AttentionSubject');
+const AttentionUser = db.model('AttentionUser');
+const SecurityCode = db.model('SecurityCode');
+const UserCollection = db.model('UserCollection');
+const AnswerComment = db.model('AnswerComment');
+const UserDevice = db.model('UserDevice');
+const UserFavourAnswer = db.model('UserFavourAnswer');
+const UserFavourArticle = db.model('UserFavourArticle');
+const UserFavourAnswerComment = db.model('UserFavourAnswerComment');
+const UserHistory = db.model('UserHistory');
+const UserNotification = db.model('UserNotification');
+const UserGeTuiMapping = db.model('UserGeTuiMapping');
+const Question = db.model('Question');
+const Recommend = db.model('Recommend');
+const QuestionTag = db.model('QuestionTag');
+const Subject = db.model('Subject');
+const User = db.model('User');
 
 const USER_ID = "58aa50177ddbf5507c51f082";
 const USER_ID_OTHER = "58aa50177ddbf5507c51f083";
@@ -29,25 +43,27 @@ const QUESTION_ID = "58ae5da34171fd177d387656";
 
 const emptyCollection = function (callback) {
     async.parallel([
-        function (cb) {
-            QuestionTag.remove({}, cb);
-        },
-
-        function (cb) {
-            Question.remove({}, cb);
-        },
-
-        function (cb) {
-            QuestionAnswer.remove({}, cb);
-        },
-
-        function (cb) {
-            User.remove({}, cb);
-        },
-
-        function (cb) {
-            Recommend.remove({}, cb);
-        },
+        function (cb) {Activity.remove({}, cb);},
+        function (cb) {QuestionAnswer.remove({}, cb);},
+        function (cb) {Article.remove({}, cb);},
+        function (cb) {AttentionQuestion.remove({}, cb);},
+        function (cb) {AttentionSubject.remove({}, cb);},
+        function (cb) {AttentionUser.remove({}, cb);},
+        function (cb) {SecurityCode.remove({}, cb);},
+        function (cb) {UserCollection.remove({}, cb);},
+        function (cb) {AnswerComment.remove({}, cb);},
+        function (cb) {UserDevice.remove({}, cb);},
+        function (cb) {UserFavourAnswer.remove({}, cb);},
+        function (cb) {UserFavourArticle.remove({}, cb);},
+        function (cb) {UserFavourAnswerComment.remove({}, cb);},
+        function (cb) {UserHistory.remove({}, cb);},
+        function (cb) {UserNotification.remove({}, cb);},
+        function (cb) {UserGeTuiMapping.remove({}, cb);},
+        function (cb) {Question.remove({}, cb);},
+        function (cb) {Recommend.remove({}, cb);},
+        function (cb) {QuestionTag.remove({}, cb);},
+        function (cb) {Subject.remove({}, cb);},
+        function (cb) {User.remove({}, cb);},
     ], callback);
 };
 
