@@ -54,8 +54,9 @@ RecommendSchema.statics.STATUS = {
 //推荐类型
 RecommendSchema.statics.TYPE = {
     QUESTION : 1, //问题
-    ACTIVITY: 2,  //资讯
-    ARTICLE : 3   //文章
+    ACTIVITY : 2,  //活动
+    ARTICLE : 3,  //文章
+    SUBJECT : 4,  //专题
 };
 
 exports.RecommendSchema = RecommendSchema;

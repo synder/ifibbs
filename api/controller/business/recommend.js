@@ -34,21 +34,21 @@ exports.getRecommendList = function(req, res, next){
 
                     let temp = {
                         id : recommend.question.question_id._id,
-                        type: recommend.type, //类型
-                        title: recommend.question.question_id.title,          //问题或者资讯或者活动封面
-                        tags: recommend.question.question_id.tags || [],             //问题标签
-                        cover: null,          //资讯或者活动封面
-                        favour_count: recommend.question.question_id.favour_count,      //点赞数
-                        attention_count: recommend.question.question_id.attention_count,   //关注数
-                        collect_count: recommend.question.question_id.collect_count,     //收藏数
-                        answer_count: recommend.question.question_id.answer_count,      //回答数
-                        comment_count: 0,     //收藏数
-                        create_time: recommend.question.question_id.create_time,    //创建时间
-                        eg_answer_id: recommend.question.answer_id._id,        //问题的实例回答ID
-                        eg_answer_time: recommend.question.answer_id.create_time,      //问题的实例回答ID
-                        eg_answer_content: recommend.question.answer_id.content,   //问题的实例回答ID
-                        eg_answer_user_id: recommend.question.answer_user_id._id,   //问题的实例回答ID
-                        eg_answer_user_name: recommend.question.answer_user_id.user_name, //问题的实例回答ID
+                        type: recommend.type,
+                        title: recommend.question.question_id.title,
+                        tags: recommend.question.question_id.tags || [],
+                        cover: null,
+                        favour_count: recommend.question.question_id.favour_count,
+                        attention_count: recommend.question.question_id.attention_count,
+                        collect_count: recommend.question.question_id.collect_count,
+                        answer_count: recommend.question.question_id.answer_count,
+                        comment_count: 0,
+                        create_time: recommend.question.question_id.create_time,
+                        eg_answer_id: recommend.question.answer_id._id,
+                        eg_answer_time: recommend.question.answer_id.create_time,
+                        eg_answer_content: recommend.question.answer_id.content,
+                        eg_answer_user_id: recommend.question.answer_user_id._id,
+                        eg_answer_user_name: recommend.question.answer_user_id.user_name,
                     };
                     
                     recommends.push(temp);
@@ -60,21 +60,21 @@ exports.getRecommendList = function(req, res, next){
 
                     let temp = {
                         id : recommend.activity.activity_id._id,
-                        type: recommend.type, //类型
-                        title: recommend.activity.activity_id.title,          //问题或者资讯或者活动封面
-                        tags: null,             //问题标签
-                        cover: recommend.activity.activity_id.cover,          //资讯或者活动封面
-                        favour_count: recommend.activity.activity_id.favour_count,      //点赞数
-                        attention_count: recommend.activity.activity_id.attention_count,   //关注数
-                        comment_count: recommend.activity.activity_id.comment_count,   //关注数
-                        collect_count: recommend.activity.activity_id.collect_count,     //收藏数 
-                        answer_count: 0,      //回答数
-                        create_time: recommend.activity.activity_id.create_time,    //创建时间
-                        eg_answer_id: null,        //问题的实例回答ID
-                        eg_answer_time: null,      //问题的实例回答ID
-                        eg_answer_content: null,   //问题的实例回答ID
-                        eg_answer_user_id: null,   //问题的实例回答ID
-                        eg_answer_user_name: null, //问题的实例回答ID
+                        type: recommend.type,
+                        title: recommend.activity.activity_id.title,
+                        tags: null,
+                        cover: recommend.activity.activity_id.cover,
+                        favour_count: recommend.activity.activity_id.favour_count,
+                        attention_count: recommend.activity.activity_id.attention_count,
+                        comment_count: recommend.activity.activity_id.comment_count,
+                        collect_count: recommend.activity.activity_id.collect_count, 
+                        answer_count: 0,
+                        create_time: recommend.activity.activity_id.create_time,
+                        eg_answer_id: null,
+                        eg_answer_time: null,
+                        eg_answer_content: null,
+                        eg_answer_user_id: null,
+                        eg_answer_user_name: null,
                     };
 
                     recommends.push(temp);
@@ -86,21 +86,46 @@ exports.getRecommendList = function(req, res, next){
 
                     let temp = {
                         id : recommend.article.article_id._id,
-                        type: recommend.type, //类型
-                        title: recommend.article.article_id.title,          //问题或者资讯或者活动封面
-                        tags: null,             //问题标签
-                        cover: recommend.article.article_id.cover,          //资讯或者活动封面
-                        favour_count: recommend.article.article_id.favour_count,      //点赞数
-                        attention_count: 0,   //关注数
-                        comment_count: recommend.article.article_id.comment_count,   //关注数
-                        collect_count: recommend.article.article_id.collect_count,     //收藏数 
-                        answer_count: 0,      //回答数
-                        create_time: recommend.article.article_id.create_time,    //创建时间
-                        eg_answer_id: null,        //问题的实例回答ID
-                        eg_answer_time: null,      //问题的实例回答ID
-                        eg_answer_content: null,   //问题的实例回答ID
-                        eg_answer_user_id: null,   //问题的实例回答ID
-                        eg_answer_user_name: null, //问题的实例回答ID
+                        type: recommend.type,
+                        title: recommend.article.article_id.title,
+                        tags: null,
+                        cover: recommend.article.article_id.cover,
+                        favour_count: recommend.article.article_id.favour_count,
+                        attention_count: 0,
+                        comment_count: recommend.article.article_id.comment_count,
+                        collect_count: recommend.article.article_id.collect_count,
+                        answer_count: 0,
+                        create_time: recommend.article.article_id.create_time,
+                        eg_answer_id: null,
+                        eg_answer_time: null,
+                        eg_answer_content: null,
+                        eg_answer_user_id: null,
+                        eg_answer_user_name: null,
+                    };
+
+                    recommends.push(temp);
+                }
+            }else if(recommend.type === 4){
+                if(recommend.subject &&
+                    recommend.subject.subject_id){
+
+                    let temp = {
+                        id : recommend.subject.subject_id._id,
+                        type: recommend.type,
+                        title: recommend.subject.subject_id.title,
+                        tags: null,
+                        cover: recommend.subject.subject_id.cover,
+                        favour_count: 0,
+                        attention_count: 0,
+                        comment_count: 0,
+                        collect_count: 0,
+                        answer_count: 0,
+                        create_time: recommend.article.article_id.create_time,
+                        eg_answer_id: null,
+                        eg_answer_time: null,
+                        eg_answer_content: null,
+                        eg_answer_user_id: null,
+                        eg_answer_user_name: null,
                     };
 
                     recommends.push(temp);
