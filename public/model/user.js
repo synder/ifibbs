@@ -197,31 +197,27 @@ exports.updateUserPasswordWithOldPassword = function (userID, oldPassword, newPa
         let salt = user.pass_salt_str;
         
         let dbMd5Pass = hashUserPassword(salt, user.user_password);
-        let oldMd5Pass = hashUserPassword(salt, user.user_password);
+        let oldMd5Pass = hashUserPassword(salt, oldPassword);
         
         if(dbMd5Pass !== oldMd5Pass){
             return callback(null, false);
         }
-        
-        let update = {
-            $set: {
-                user_password: hashUserPassword(salt, newPassword)
-            }
-        };
-        
-        User.update(condition, update, function (err, result) {
+
+        user.user_password = hashUserPassword(salt, newPassword);
+
+        user.save(function (err, result) {
             if(err){
                 return callback(err);
             }
-            
-            callback(null, result.nModified === 1);
+
+            callback(null, !!result)
         });
     });
 };
 
 
 /**
- * @desc 更新用户密码
+ * @desc 更新用户的密码
  * */
 exports.updateUserPasswordWithMobile = function (phone, newPassword, callback) {
     let condition = {
@@ -248,7 +244,6 @@ exports.updateUserPasswordWithMobile = function (phone, newPassword, callback) {
 
             callback(null, !!result)
         });
-        
     });
 };
 
