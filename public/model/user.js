@@ -221,7 +221,7 @@ exports.updateUserPasswordWithOldPassword = function (userID, oldPassword, newPa
 
 
 /**
- * @desc 更新用户密码
+ * @desc 更新用户的密码
  * */
 exports.updateUserPasswordWithMobile = function (phone, newPassword, callback) {
     let condition = {
