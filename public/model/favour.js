@@ -9,7 +9,9 @@ const async = require('async');
 const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
 
+const User = mongodb.model('User');
 const Article = mongodb.model('Article');
+const Question = mongodb.model('Question');
 const QuestionAnswer = mongodb.model('QuestionAnswer');
 const AnswerComment = mongodb.model('AnswerComment');
 const UserFavourAnswer = mongodb.model('UserFavourAnswer');

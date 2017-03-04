@@ -7,6 +7,11 @@
 const async = require('async');
 const mongodb = require('../service/mongodb').db;
 
+const User = mongodb.model('User');
+const Question = mongodb.model('Question');
+const Activity = mongodb.model('Activity');
+const Article = mongodb.model('Article');
+const QuestionAnswer = mongodb.model('QuestionAnswer');
 const Recommend = mongodb.model('Recommend');
 
 
@@ -22,13 +27,41 @@ exports.getUserRecommend = function (userID, pageSkip, pageSize, callback) {
         },
         recommends: function(cb) { 
             Recommend.find(condition)
-                .populate(
-                    'question.question_id ' +
-                    'question.answer_id ' +
-                    'question.answer_user_id ' +
-                    'activity.activity_id ' +
-                    'article.article_id'
-                )
+                .populate({
+                    path: 'user',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'question',
+                    match: {
+                        _id: {$exists : true},
+                        status: Question.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'answer',
+                    match: {
+                        _id: {$exists : true},
+                        status: QuestionAnswer.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'activity',
+                    match: {
+                        _id: {$exists : true},
+                        status: Activity.STATUS.DISPLAY
+                    }
+                })
+                .populate({
+                    path: 'article',
+                    match: {
+                        _id: {$exists : true},
+                        status: Article.STATUS.PUBLISHED
+                    }
+                })
                 .sort('-order -create_time')
                 .skip(pageSkip)
                 .limit(pageSize)

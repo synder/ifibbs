@@ -6,6 +6,8 @@
 const async = require('async');
 const mongodb = require('../service/mongodb').db;
 
+const User = mongodb.model('User');
+const Subject = mongodb.model('Subject');
 const Question = mongodb.model('Question');
 const AttentionQuestion = mongodb.model('AttentionQuestion');
 const AttentionSubject = mongodb.model('AttentionSubject');
@@ -27,7 +29,20 @@ exports.getUserAttentionQuestionList = function (userID, pageSkip, pageSize, cal
 
         questions: function (cb) {
             AttentionQuestion.find(condition)
-                .populate('question_id question_user_id')
+                .populate({
+                    path: 'question_user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'question_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Question.STATUS.NORMAL
+                    }
+                })
                 .sort('create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -41,19 +56,25 @@ exports.getUserAttentionQuestionList = function (userID, pageSkip, pageSize, cal
  * @desc 获取用户关注用户列表
  * */
 exports.getUserAttentionUserList = function (userID, pageSkip, pageSize, callback) {
-    let conditoin = {
+    let condition = {
         user_id: userID,
         to_user_id : { $exists: true}
     };
 
     async.parallel({
         count: function (cb) {
-            AttentionUser.count(conditoin, cb);
+            AttentionUser.count(condition, cb);
         },
 
         users: function (cb) {
-            AttentionUser.find(conditoin)
-                .populate('to_user_id')
+            AttentionUser.find(condition)
+                .populate({
+                    path: 'to_user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
                 .sort('create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -79,7 +100,13 @@ exports.getUserAttentionSubjectList = function (userID, pageSkip, pageSize, call
 
         subjects: function (cb) {
             AttentionSubject.find(condition)
-                .populate('subject_id')
+                .populate({
+                    path: 'subject_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Subject.STATUS.ENABLE
+                    }
+                })
                 .sort('create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)

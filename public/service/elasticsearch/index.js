@@ -4,10 +4,16 @@
  * @desc
  */
 
-
+const async = require('async');
 const elasticsearch = require('elasticsearch');
 
 const indices = require('./indices');
+
+const question = require('./indices/question');
+const tags = require('./indices/tags');
+const answer = require('./indices/answer');
+const article = require('./indices/article');
+const subject = require('./indices/subject');
 
 const config = require('../config');
 
@@ -26,8 +32,51 @@ const elasticSearchClient = new elasticsearch.Client({
 
 indices.initIndices(elasticSearchClient);
 
-elasticSearchClient.indices = indices.indices;
+elasticSearchClient.indices = {
+    question: question.index,
+    tags: tags.index,
+    answer: answer.index,
+    article: article.index,
+    subject: subject.index,
+};
 
 exports.client = elasticSearchClient;
 
+if(process.env.INIT_ELASTIC === 'yes'){
 
+    let initIndexMapping = function (mapping, callback) {
+        elasticSearchClient.indices.delete({
+            index: mapping.index,
+            body: {}
+        }, function (err, result) {
+            if(err){
+                return cb(err);
+            }
+            elasticSearchClient.indices.create(mapping, callback);
+        });
+    };
+
+    async.parallel([
+        function (cb) {
+            initIndexMapping(question, cb);
+        },
+        function (cb) {
+            initIndexMapping(tags, cb);
+        },
+        function (cb) {
+            initIndexMapping(answer, cb);
+        },
+        function (cb) {
+            initIndexMapping(subject, cb);
+        },
+        function (cb) {
+            initIndexMapping(article, cb);
+        },
+    ], function (err, results) {
+        if(err){
+            return console.log(err);
+        }
+
+        console.log(results);
+    });
+}

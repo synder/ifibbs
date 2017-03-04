@@ -8,6 +8,9 @@ const async = require('async');
 const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
 
+const User = mongodb.model('User');
+const Question = mongodb.model('Question');
+const Article = mongodb.model('Article');
 const UserHistory = mongodb.model('UserHistory');
 
 /**
@@ -24,7 +27,27 @@ exports.getUserBrowseHistoryList = function (userID, pageSkip, pageSize, callbac
         },
         histories: function (cb) {
             UserHistory.find(condition)
-                .populate('user_id question_id article_id')
+                .populate({
+                    path: 'user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'question_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Question.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'article_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Article.STATUS.PUBLISHED
+                    }
+                })
                 .sort('-create_time -_id')
                 .skip(pageSkip)
                 .limit(pageSize)

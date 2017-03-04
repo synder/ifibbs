@@ -9,6 +9,8 @@ const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
 
 const QuestionAnswer = mongodb.model('QuestionAnswer');
+const User = mongodb.model('User');
+const Question = mongodb.model('Question');
 
 /**
  * @desc 获取最热回答列表
@@ -22,7 +24,20 @@ exports.getHottestAnswerList = function (pageSkip, pageSize, callback) {
         },
         answers: function (cb) {
             QuestionAnswer.find({})
-                .populate('create_user_id question_id')
+                .populate({
+                    path: 'create_user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'question_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Question.STATUS.NORMAL
+                    }
+                })
                 .sort('comment_count favour_count create_time')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -44,7 +59,20 @@ exports.getLatestAnswerList = function (pageSkip, pageSize, callback) {
         },
         answers: function (cb) {
             QuestionAnswer.find({})
-                .populate('create_user_id question_id')
+                .populate({
+                    path: 'create_user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'question_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Question.STATUS.NORMAL
+                    }
+                })
                 .sort('-create_time -_id')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -69,8 +97,21 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
         answers: function (cb) {
             if(!lastAnswerID){
                 QuestionAnswer.find(condition)
-                    .populate('create_user_id question_id')
-                    .sort('-_id') //这里只能使用ID排序，不能使用create_time排序
+                    .populate({
+                        path: 'create_user_id',
+                        match: {
+                            _id: {$exists : true},
+                            status: User.STATUS.NORMAL
+                        }
+                    })
+                    .populate({
+                        path: 'question_id',
+                        match: {
+                            _id: {$exists : true},
+                            status: Question.STATUS.NORMAL
+                        }
+                    })
+                    .sort('-create_time -_id') //这里只能使用ID排序，不能使用create_time排序
                     .skip(pageSkip)
                     .limit(pageSize)
                     .exec(cb);
@@ -82,8 +123,21 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
                     
                     if(!QuestionAnswer){
                         return QuestionAnswer.find(condition)
-                            .populate('create_user_id question_id')
-                            .sort('-_id') //这里只能使用ID排序，不能使用create_time排序
+                            .populate({
+                                path: 'create_user_id',
+                                match: {
+                                    _id: {$exists : true},
+                                    status: User.STATUS.NORMAL
+                                }
+                            })
+                            .populate({
+                                path: 'question_id',
+                                match: {
+                                    _id: {$exists : true},
+                                    status: Question.STATUS.NORMAL
+                                }
+                            })
+                            .sort('-create_time -_id')
                             .skip(pageSkip)
                             .limit(pageSize)
                             .exec(cb);
@@ -98,8 +152,21 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
                     };
 
                     QuestionAnswer.find(pageCondition)
-                        .populate('create_user_id question_id')
-                        .sort('-_id') //这里只能使用ID排序，不能使用create_time排序
+                        .populate({
+                            path: 'create_user_id',
+                            match: {
+                                _id: {$exists : true},
+                                status: User.STATUS.NORMAL
+                            }
+                        })
+                        .populate({
+                            path: 'question_id',
+                            match: {
+                                _id: {$exists : true},
+                                status: Question.STATUS.NORMAL
+                            }
+                        })
+                        .sort('-create_time -_id')
                         .limit(pageSize)
                         .exec(cb);
                 });
@@ -197,7 +264,20 @@ exports.getUserAnswerList = function (userID, pageSkip, pageSize, callback) {
         },
         answers: function (cb) {
             QuestionAnswer.find(condition)
-                .populate('create_user_id question_id')
+                .populate({
+                    path: 'create_user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'question_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Question.STATUS.NORMAL
+                    }
+                })
                 .sort('-create_time -_id')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -217,7 +297,20 @@ exports.getQuestionAnswerDetail = function (answerID, callback) {
     };
     
     QuestionAnswer.findOne(condition)
-        .populate('create_user_id question_id')
+        .populate({
+            path: 'create_user_id',
+            match: {
+                _id: {$exists : true},
+                status: User.STATUS.NORMAL
+            }
+        })
+        .populate({
+            path: 'question_id',
+            match: {
+                _id: {$exists : true},
+                status: Question.STATUS.NORMAL
+            }
+        })
         .exec(callback);
 };
 

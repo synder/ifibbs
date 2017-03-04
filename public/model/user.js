@@ -8,6 +8,8 @@ const async = require('async');
 const crypto = require('crypto');
 
 const mongodb = require('../service/mongodb').db;
+const mysql = require('../service/mysql').db;
+
 const User = mongodb.model('User');
 
 /**
