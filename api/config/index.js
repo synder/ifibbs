@@ -4,14 +4,14 @@
  * @desc
  */
 
-const NODE_ENV = process.env.NODE_ENV;
+let NODE_ENV = process.env.NODE_ENV;
 
-const nodenv = NODE_ENV ? NODE_ENV.toLowerCase() : null;
+NODE_ENV = NODE_ENV ? NODE_ENV.toLowerCase() : null;
 
-if(nodenv != 'dev' && nodenv != 'pre' && nodenv != 'pro'){
+if(NODE_ENV != 'dev' && NODE_ENV != 'pre' && NODE_ENV != 'pro'){
     throw new Error('NODE_ENV must be "dev" or "pre" or "pro"');
 }
 
-const config = global.config = require('./' + nodenv);
+const config = global.config = require('./' + NODE_ENV);
 
 module.exports = config;

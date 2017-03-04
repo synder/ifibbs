@@ -1,3 +1,6 @@
+/**
+ * @desc 个推(http://www.getui.com/)
+ * */
 
 const config = require('../config');
 
@@ -57,61 +60,6 @@ const SimpleAlertMsg = require('./sdk/payload/SimpleAlertMsg');
  * 而 APNs 最大只支持 256Byte，因此建议 iOS 推送采用TransmissionTemplate(透传消 息模板)。
  * */
 
-/**
- * @desc 停止推送
- * */
-exports.stopPushTask = function () {
-    
-};
-
-/**
- * @desc 设置客户端TAG
- * */
-exports.setClientTag = function () {
-    
-};
-
-/**
- * @desc 获取客户端TAG
- * */
-exports.getUserTags = function () {
-    
-};
-
-/**
- * @desc 获取用户状态
- * */
-exports.getUserStatus = function () {
-    
-};
-
-/**
- * @desc 客户端绑定别名
- * */
-exports.setClientAlias = function () {
-    
-};
-
-/**
- * @desc 取消客户端绑定别名
- * */
-exports.unsetClientAlias = function () {
-
-};
-
-/**
- * @desc 根据别名获取客户端ID
- * */
-exports.getClientIDByAlias = function () {
-    
-};
-
-/**
- * @desc 获取推送结果
- * */
-exports.getPushResult = function () {
-    
-};
 
 /**
  * @desc 推送打开应用通知，主要针对安卓，IOS无法实现离线下推送

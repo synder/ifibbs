@@ -1,7 +1,7 @@
 /**
  * @author synder on 2017/2/18
  * @copyright
- * @desc
+ * @desc elastic search 搜索引擎
  */
 
 const async = require('async');
