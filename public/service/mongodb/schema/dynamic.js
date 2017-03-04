@@ -15,8 +15,10 @@ const UserDynamicSchema = new Schema({
     status: {type: Number, required: true},
     type: {type: Number, required: true},
     user_id: {type: ObjectId, required: true, ref: 'User'},
+    user: {type: ObjectId, required: false, ref: 'User'},
     question: {type: ObjectId, required: false, ref: 'Question'},
     answer: {type: ObjectId, required: false, ref: 'QuestionAnswer'},
+    comment: {type: ObjectId, required: false, ref: 'AnswerComment'},
     subject: {type: ObjectId, required: false, ref: 'Subject'},
     article:  {type: ObjectId, required: false, ref: 'Article'},
     create_time: {type: Date, required: true},
@@ -30,10 +32,11 @@ UserDynamicSchema.statics.STATUS = {
     DISABLE: 0
 };
 
-UserDynamicSchema.statics.TYPE = {
+UserDynamicSchema.statics.TYPES = {
     PUBLISH_QUESTION: 100,      //发布问题
-    ANSWER_QUESTION: 101,       //回答了问题
-    COMMENT_ANSWER: 102,        //评论了回答
+    DELETE_QUESTION: 101,       //删除问题
+    ANSWER_QUESTION: 102,       //回答了问题
+    COMMENT_ANSWER: 103,        //评论了回答
     ATTENTION_QUESTION: 200, //关注了问题
     ATTENTION_SUBJECT: 201,  //关注了专题
     ATTENTION_USER: 202,     //关注了用户

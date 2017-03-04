@@ -11,6 +11,7 @@ const elasticsearch = require('../service/elasticsearch').client;
 const QuestionAnswer = mongodb.model('QuestionAnswer');
 const User = mongodb.model('User');
 const Question = mongodb.model('Question');
+const UserDynamic = mongodb.model('UserDynamic');
 
 /**
  * @desc 获取最热回答列表
@@ -338,26 +339,37 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
         
         let answerID = result._id;
         
-        //创建es索引
-        elasticsearch.create({
-            index: elasticsearch.indices.answer,
-            type: elasticsearch.indices.answer,
-            id: answerID.toString(),
-            body: {
-                create_user_id: result.create_user_id,
-                question_id: result.question_id,
-                content: result.content,
-                create_time: result.create_time,
-                update_time: result.update_time
-            }
-        }, function (err, response) {
-            if (err) {
-                return callback(err);
-            }
-
+        async.parallel({
+            createElasticSearchIndex: function(cb) {
+                //创建es索引
+                elasticsearch.create({
+                    index: elasticsearch.indices.answer,
+                    type: elasticsearch.indices.answer,
+                    id: answerID.toString(),
+                    body: {
+                        create_user_id: result.create_user_id,
+                        question_id: result.question_id,
+                        content: result.content,
+                        create_time: result.create_time,
+                        update_time: result.update_time
+                    }
+                }, cb);
+            },
+            insertUserDynamic: function(cb) {
+                //插入用户动态
+                UserDynamic.create({
+                    status: UserDynamic.STATUS.ENABLE,
+                    type: UserDynamic.TYPES.ANSWER_QUESTION,
+                    user_id: userID,
+                    question: questionID,
+                    answer: answerID,
+                    create_time: new Date(),
+                    update_time: new Date(),
+                }, cb);
+            },
+        }, function (err, results) {
             callback(null, answerID);
         });
-        
     });
 };
 
@@ -378,7 +390,7 @@ exports.removeQuestionAnswer = function (userID, answerID, callback) {
         if(err){
             return callback(err);
         }
-        
-        callback(null, result.ok === 1);
+
+        callback(null, result.nModified === 1);
     });
 };

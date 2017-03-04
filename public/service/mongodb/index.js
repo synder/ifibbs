@@ -45,6 +45,7 @@ const subject = require('./schema/subject');
 const tag = require('./schema/tag');
 const user = require('./schema/user');
 const dynamic = require('./schema/dynamic');
+const share = require('./schema/share');
 
 
 
@@ -70,6 +71,7 @@ db.model('QuestionTag', tag.QuestionTagSchema, 'question_tag');
 db.model('Subject', subject.SubjectSchema, 'subject');
 db.model('User', user.UserSchema, 'user');
 db.model('UserDynamic', dynamic.UserDynamicSchema, 'user_dynamic');
+db.model('UserShare', share.UserShareSchema, 'user_share');
 
 
 exports.db = db;

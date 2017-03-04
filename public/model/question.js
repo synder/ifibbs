@@ -9,7 +9,7 @@ const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
 
 const Question = mongodb.model('Question');
-
+const UserDynamic = mongodb.model('UserDynamic');
 
 /**
  * @desc 新建问题
@@ -36,28 +36,43 @@ exports.createNewQuestion = function (userID, question, callback) {
         if (err) {
             return callback(err);
         }
-
-        //在搜索引擎中创建索引
+       
         let questionID = result._id;
+        
+        async.parallel({
+            createElasticSearchDoc: function(cb) {
+                //在搜索引擎中创建索引
+                let elasticDoc = {
+                    title: questionDoc.title,
+                    describe: questionDoc.describe,
+                    tags: questionDoc.tags,
+                    create_time: questionDoc.create_time,
+                    update_time: questionDoc.update_time,
+                };
 
-        let elasticDoc = {
-            title: questionDoc.title,
-            describe: questionDoc.describe,
-            tags: questionDoc.tags,
-            create_time: questionDoc.create_time,
-            update_time: questionDoc.update_time,
-        };
-
-        elasticsearch.create({
-            index: elasticsearch.indices.question,
-            type: elasticsearch.indices.question,
-            id: questionID.toString(),
-            body: elasticDoc
-        }, function (err, response) {
-            if (err) {
+                elasticsearch.create({
+                    index: elasticsearch.indices.question,
+                    type: elasticsearch.indices.question,
+                    id: questionID.toString(),
+                    body: elasticDoc
+                }, cb);
+            },
+            insertUserDynamic: function(cb) {
+                //插入用户动态
+                UserDynamic.create({
+                    status: UserDynamic.STATUS.ENABLE,
+                    type: UserDynamic.TYPES.PUBLISH_QUESTION,
+                    user_id: userID,
+                    question: questionID,
+                    create_time: new Date(),
+                    update_time: new Date(),
+                }, cb);
+            },
+        }, function (err, results) {
+            if(err){
                 return callback(err);
             }
-
+            
             callback(null, questionID);
         });
     });
@@ -88,12 +103,27 @@ exports.removeUserQuestion = function (userID, questionID, callback) {
         if (result.n !== 1) {
             return callback(null, false);
         }
-
-        elasticsearch.delete({
-            index: elasticsearch.indices.question,
-            type: elasticsearch.indices.question,
-            id: questionID.toString()
-        }, function (err, response) {
+        
+        async.parallel({
+            deleteElasticSearchDoc: function(cb) {
+                elasticsearch.delete({
+                    index: elasticsearch.indices.question,
+                    type: elasticsearch.indices.question,
+                    id: questionID.toString()
+                }, cb);
+            },
+            insertUserDynamic: function(cb) {
+                //插入用户动态
+                UserDynamic.create({
+                    status: UserDynamic.STATUS.ENABLE,
+                    type: UserDynamic.TYPES.DELETE_QUESTION,
+                    user_id: userID,
+                    question: questionID,
+                    create_time: new Date(),
+                    update_time: new Date(),
+                }, cb);
+            },
+        }, function (err, results) {
             callback(err, true);
         });
     });

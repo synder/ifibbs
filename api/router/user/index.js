@@ -15,6 +15,7 @@ const history = require('../../controller/user/history');
 const notification = require('../../controller/user/notification');
 const question = require('../../controller/user/question');
 const statistics = require('../../controller/user/statistics');
+const share = require('../../controller/user/share');
 
 
 exports.map = function(app){
@@ -102,4 +103,7 @@ exports.map = function(app){
     
     //获取用户统计数据
     app.get('/user/statistics', authority.check, statistics.getUserStatisticsData);  //获取用户统计数据(关注人数，收藏数，被赞数)
+    
+    //分享
+    app.put('/user/share', authority.check, share.createUserShare); //记录分享
 };

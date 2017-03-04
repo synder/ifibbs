@@ -7,6 +7,7 @@ const async = require('async');
 const mongodb = require('../service/mongodb').db;
 
 const User = mongodb.model('User');
+const UserDynamic = mongodb.model('UserDynamic');
 const Subject = mongodb.model('Subject');
 const Question = mongodb.model('Question');
 const AttentionQuestion = mongodb.model('AttentionQuestion');
@@ -185,8 +186,21 @@ exports.addAttentionToUser = function (userID, toUserID, callback) {
         if(err){
             return callback(err);
         }
+        
+        if(result.nModified === 0 && !result.upserted){
+            return callback(null, true);
+        }
 
-        callback(null, result.ok === 1);
+        UserDynamic.create({
+            status: UserDynamic.STATUS.ENABLE,
+            type: UserDynamic.TYPES.ATTENTION_USER,
+            user_id: userID,
+            user: toUserID,
+            create_time: new Date(),
+            update_time: new Date(),
+        }, function (err) {
+            callback(err, true);
+        });
     });
 };
 
@@ -210,8 +224,10 @@ exports.cancelAttentionToUser = function (userID, toUserID, callback) {
         if(err){
             return callback(err);
         }
-
-        callback(null, result.nModified === 1);
+        
+        if(result.nModified === 0){
+            callback(null, true);
+        }
     });
 };
 
@@ -250,13 +266,27 @@ exports.addAttentionToQuestion = function (userID, toQuestionID, callback) {
                 return callback(err);
             }
             
-            if(result.upserted === null && result.nModified === 0){
-                return callback(null, false);
+            if(!result.upserted && result.nModified === 0){
+                return callback(null, true);
             }
             
-            //更新问题关注数
-            Question.update({_id: toQuestionID}, {$inc: {attention_count: 1}}, function (err) {
-                 callback(err, true);
+            async.parallel({
+                updateQuestionAttentionCount: function(cb) {
+                    //更新问题关注数
+                    Question.update({_id: toQuestionID}, {$inc: {attention_count: 1}}, cb);
+                },
+                insertUserDynamic: function(cb) {
+                    UserDynamic.create({
+                        status: UserDynamic.STATUS.ENABLE,
+                        type: UserDynamic.TYPES.ATTENTION_QUESTION,
+                        user_id: userID,
+                        question: toQuestionID,
+                        create_time: new Date(),
+                        update_time: new Date(),
+                    }, cb);
+                },
+            }, function (err, results) {
+                callback(err, true);
             });
         });
     });
@@ -284,7 +314,7 @@ exports.cancelAttentionToQuestion = function (userID, toQuestionID, callback) {
         }
         
         if(result.nModified === 0){
-            return callback(null, false);
+            return callback(null, true);
         }
 
         //更新问题关注数
@@ -317,7 +347,20 @@ exports.addAttentionToSubject = function (userID, toSubjectID, callback) {
             return callback(err);
         }
 
-        callback(null, result.ok === 1);
+        if(result.nModified === 0 && !result.upserted){
+            return callback(null, false);
+        }
+
+        UserDynamic.create({
+            status: UserDynamic.STATUS.ENABLE,
+            type: UserDynamic.TYPES.ATTENTION_SUBJECT,
+            user_id: userID,
+            subject: toSubjectID,
+            create_time: new Date(),
+            update_time: new Date(),
+        }, function (err) {
+            callback(err, true);
+        });
     });
 };
 
