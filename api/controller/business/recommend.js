@@ -44,8 +44,8 @@ exports.getRecommendList = function(req, res, next){
                         eg_answer_id: recommend.answer._id,
                         eg_answer_time: recommend.answer.create_time,
                         eg_answer_content: recommend.answer.content,
-                        eg_answer_user_id: recommend.answer._id,
-                        eg_answer_user_name: recommend.answer.user_name,
+                        eg_answer_user_id: recommend.user._id,
+                        eg_answer_user_name: recommend.user.user_name,
                     };
                     
                     recommends.push(temp);

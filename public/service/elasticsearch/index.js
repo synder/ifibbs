@@ -7,8 +7,6 @@
 const async = require('async');
 const elasticsearch = require('elasticsearch');
 
-const indices = require('./indices');
-
 const question = require('./indices/question');
 const tags = require('./indices/tags');
 const answer = require('./indices/answer');
@@ -29,8 +27,6 @@ const elasticSearchClient = new elasticsearch.Client({
     host: host + ':' + port,
     log: log
 });
-
-indices.initIndices(elasticSearchClient);
 
 elasticSearchClient.indices = {
     question: question.index,

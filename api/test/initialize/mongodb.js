@@ -274,11 +274,9 @@ const initRecommend = function (callback) {
             type        : Recommend.TYPE.QUESTION,   //排序方式
             create_time : new Date(),     //排序方式
             update_time : new Date(),     //排序方式
-            question    : {
-                question_id: questionID,
-                answer_id: answerID,
-                answer_user_id: userID,
-            },  //推荐问题
+            question: questionID,
+            answer: answerID,
+            user: userID,
             activity    : null,  //推荐活动
             article     : null,  //推荐文章
         });
@@ -290,9 +288,7 @@ const initRecommend = function (callback) {
             create_time : new Date(),     //排序方式
             update_time : new Date(),     //排序方式
             question    : null,  //推荐问题
-            activity    : {
-                activity_id: activityID
-            },  //推荐活动
+            activity    : activityID,  //推荐活动
             article     : null,  //推荐文章
         });
 
@@ -304,9 +300,7 @@ const initRecommend = function (callback) {
                 update_time : new Date(),     //排序方式
                 question    : null,  //推荐问题
                 activity    : null,  //推荐活动
-                article     : {
-                    article_id : articleID
-                },  //推荐文章
+                article     : articleID,  //推荐文章
         });
         
 
