@@ -36,6 +36,8 @@ const Recommend = db.model('Recommend');
 const QuestionTag = db.model('QuestionTag');
 const Subject = db.model('Subject');
 const User = db.model('User');
+const UserDynamic = db.model('UserDynamic');
+const UserShare = db.model('UserShare');
 
 const USER_ID = "58aa50177ddbf5507c51f082";
 const USER_ID_OTHER = "58aa50177ddbf5507c51f083";
@@ -65,6 +67,8 @@ const emptyCollection = function (callback) {
         function (cb) {QuestionTag.remove({}, cb);},
         function (cb) {Subject.remove({}, cb);},
         function (cb) {User.remove({}, cb);},
+        function (cb) {UserDynamic.remove({}, cb);},
+        function (cb) {UserShare.remove({}, cb);},
     ], callback);
 };
 

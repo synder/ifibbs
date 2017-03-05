@@ -15,6 +15,7 @@ const history = require('../../controller/user/history');
 const notification = require('../../controller/user/notification');
 const question = require('../../controller/user/question');
 const statistics = require('../../controller/user/statistics');
+const dynamic = require('../../controller/user/dynamic');
 const share = require('../../controller/user/share');
 
 
@@ -37,7 +38,7 @@ exports.map = function(app){
     app.get('/other/attention/users', attention.getUserAttentionUserList);         //获取其他用户关注的用户列表 
     app.get('/other/attention/subjects', attention.getUserAttentionSubjectList);   //获取其他用户关注的专题列表
     app.get('/other/statistics', statistics.getUserStatisticsData);                //获取其他用户统计数据(关注人数，收藏数，被赞数)
-    //app.get('/other/dynamic', todo 其他用户动态);  //获取其他用户动态
+    app.get('/other/dynamic', dynamic.getUserDynamics);  //获取其他用户动态
     
 
     //用户登录后操作

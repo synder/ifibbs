@@ -103,26 +103,11 @@ exports.removeUserQuestion = function (userID, questionID, callback) {
         if (result.n !== 1) {
             return callback(null, false);
         }
-        
-        async.parallel({
-            deleteElasticSearchDoc: function(cb) {
-                elasticsearch.delete({
-                    index: elasticsearch.indices.question,
-                    type: elasticsearch.indices.question,
-                    id: questionID.toString()
-                }, cb);
-            },
-            insertUserDynamic: function(cb) {
-                //插入用户动态
-                UserDynamic.create({
-                    status: UserDynamic.STATUS.ENABLE,
-                    type: UserDynamic.TYPES.DELETE_QUESTION,
-                    user_id: userID,
-                    question: questionID,
-                    create_time: new Date(),
-                    update_time: new Date(),
-                }, cb);
-            },
+
+        elasticsearch.delete({
+            index: elasticsearch.indices.question,
+            type: elasticsearch.indices.question,
+            id: questionID.toString()
         }, function (err, results) {
             callback(err, true);
         });

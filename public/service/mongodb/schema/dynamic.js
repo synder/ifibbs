@@ -34,9 +34,8 @@ UserDynamicSchema.statics.STATUS = {
 
 UserDynamicSchema.statics.TYPES = {
     PUBLISH_QUESTION: 100,      //发布问题
-    DELETE_QUESTION: 101,       //删除问题
-    ANSWER_QUESTION: 102,       //回答了问题
-    COMMENT_ANSWER: 103,        //评论了回答
+    ANSWER_QUESTION: 101,       //回答了问题
+    COMMENT_ANSWER: 102,        //评论了回答
     ATTENTION_QUESTION: 200, //关注了问题
     ATTENTION_SUBJECT: 201,  //关注了专题
     ATTENTION_USER: 202,     //关注了用户
