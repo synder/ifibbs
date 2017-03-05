@@ -7,6 +7,7 @@
 const async = require('async');
 const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
+const rabbit = require('../service/rabbit');
 
 const QuestionAnswer = mongodb.model('QuestionAnswer');
 const User = mongodb.model('User');
@@ -367,6 +368,20 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
                     update_time: new Date(),
                 }, cb);
             },
+            
+            notifyRelatedUser: function (cb) {
+                //通知相关用户
+                async.parallel({
+                    notifyQuestionOwner: function(cb) {
+                        const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_ANSWERED;
+                        rabbit.client.produceMessage(QUEUE, {question: questionID, answer: answerID}, cb);
+                    },
+                    notifyQuestionAttentionUser: function(cb) {
+                        const QUEUE = rabbit.queues.notifications.ATTENTION_QUESTION_BEEN_ANSWERED;
+                        rabbit.client.produceMessage(QUEUE, {question: questionID, answer: answerID}, cb);
+                    },
+                }, cb);
+            }
         }, function (err, results) {
             callback(null, answerID);
         });

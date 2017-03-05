@@ -7,6 +7,7 @@
 const async = require('async');
 const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
+const rabbit = require('../service/rabbit');
 
 const Question = mongodb.model('Question');
 const UserDynamic = mongodb.model('UserDynamic');
@@ -68,6 +69,12 @@ exports.createNewQuestion = function (userID, question, callback) {
                     update_time: new Date(),
                 }, cb);
             },
+            
+            notifyRelatedUsers : function (cb) {
+                //通知相关用户
+                const QUEUE = rabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
+                rabbit.client.produceMessage(QUEUE, {question: questionID}, cb);
+            }
         }, function (err, results) {
             if(err){
                 return callback(err);
