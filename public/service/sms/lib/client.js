@@ -8,12 +8,14 @@
 
 class DefaultSMSClient {
     
-    constructor(options){
-        this.protocol = options.protocol;
-        this.hostname = options.host;
-        this.port = options.port;
-        this.pathname = options.pathname;
-    }
+    // constructor(options){
+    //     this.protocol = options.protocol;
+    //     this.hostname = options.host;
+    //     this.port = options.port;
+    //     this.pathname = options.pathname;
+    // }
+
+    //todo options属性不全
     
     send(msg, callback){
         let x = this.hostname;
