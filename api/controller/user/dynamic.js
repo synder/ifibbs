@@ -27,7 +27,7 @@ exports.getUserDynamics = function (req, res, next) {
        results.dynamics.forEach(function (dynamic) {
            if(dynamic.type === 100){
                //发布问题
-               if(dynamic.question){
+               if(dynamic.question && dynamic.user){
                    dynamics.push({
                        type: dynamic.type,
                        user_id: dynamic.user._id,
@@ -44,7 +44,7 @@ exports.getUserDynamics = function (req, res, next) {
                
            }else if(dynamic.type === 101){
                //回答了问题
-               if(dynamic.question && dynamic.answer){
+               if(dynamic.question && dynamic.answer && dynamic.user){
                    dynamics.push({
                        type: dynamic.type,
                        user_id: dynamic.user._id,
@@ -62,21 +62,24 @@ exports.getUserDynamics = function (req, res, next) {
                }
            }else if(dynamic.type === 200){
                //关注了问题
-               dynamics.push({
-                   type: dynamic.type,
-                   user_id: dynamic.user._id,
-                   user_name: dynamic.user.user_name,
-                   user_avatar: dynamic.user.user_avatar,
-                   question_id: dynamic.question._id,
-                   question_title: dynamic.question.title,
-                   question_tags: dynamic.question.tags,
-                   question_attention_count: dynamic.question.attention_count,
-                   question_answer_count: dynamic.question.answer_count,
-                   create_time: dynamic.create_time,
-               });
+               if(dynamic.question && dynamic.user){
+                   dynamics.push({
+                       type: dynamic.type,
+                       user_id: dynamic.user._id,
+                       user_name: dynamic.user.user_name,
+                       user_avatar: dynamic.user.user_avatar,
+                       question_id: dynamic.question._id,
+                       question_title: dynamic.question.title,
+                       question_tags: dynamic.question.tags,
+                       question_attention_count: dynamic.question.attention_count,
+                       question_answer_count: dynamic.question.answer_count,
+                       create_time: dynamic.create_time,
+                   });
+               }
+               
            }else if(dynamic.type === 201){
                //关注了专题
-               if(dynamic.subject){
+               if(dynamic.subject && dynamic.user){
                    dynamics.push({
                        type: dynamic.type,
                        user_id: dynamic.user._id,
@@ -92,7 +95,7 @@ exports.getUserDynamics = function (req, res, next) {
                }
            }else if(dynamic.type === 500){
                //收藏了问题
-               if(dynamic.subject){
+               if(dynamic.subject && dynamic.user){
                    dynamics.push({
                        type: dynamic.type,
                        user_id: dynamic.user._id,

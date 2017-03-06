@@ -22,7 +22,8 @@ const AttentionQuestion = db.model('AttentionQuestion');
 const AttentionSubject = db.model('AttentionSubject');
 const AttentionUser = db.model('AttentionUser');
 const SecurityCode = db.model('SecurityCode');
-const UserCollection = db.model('UserCollection');
+const UserAnswerCollection = db.model('UserAnswerCollection');
+const UserArticleCollection = db.model('UserArticleCollection');
 const AnswerComment = db.model('AnswerComment');
 const UserDevice = db.model('UserDevice');
 const UserFavourAnswer = db.model('UserFavourAnswer');
@@ -52,7 +53,8 @@ const emptyCollection = function (callback) {
         function (cb) {AttentionSubject.remove({}, cb);},
         function (cb) {AttentionUser.remove({}, cb);},
         function (cb) {SecurityCode.remove({}, cb);},
-        function (cb) {UserCollection.remove({}, cb);},
+        function (cb) {UserAnswerCollection.remove({}, cb);},
+        function (cb) {UserArticleCollection.remove({}, cb);},
         function (cb) {AnswerComment.remove({}, cb);},
         function (cb) {UserDevice.remove({}, cb);},
         function (cb) {UserFavourAnswer.remove({}, cb);},

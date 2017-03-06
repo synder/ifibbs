@@ -18,7 +18,7 @@ exports.getUserArticleCollections = function(req, res, next){
         return next(new BadRequestError('user_id is need'));
     }
     
-    collectionModel.getUserCollectionList(userID, pageSkip, pageSize, function (err, results) {
+    collectionModel.getUserArticleCollectionList(userID, pageSkip, pageSize, function (err, results) {
         if(err){
             return next(err);
         }
@@ -26,29 +26,16 @@ exports.getUserArticleCollections = function(req, res, next){
         let count = results.count;
         let collections = [];
 
-       results.collections.forEach(function (collection) {
-            if(collection.collection_type === 1){
-                collections.push({
-                    id: collection._id,
-                    title: collection.answer_id ? collection.answer_id.title : null,
-                    tags: collection.question_id ? collection.question_id.tags : null,
-                    be_collect_count: collection.answer_id ? collection.answer_id.collect_count : null,
-                    user_id: collection.user_id ? collection.user_id._id : null,
-                    user_name: collection.user_id ? collection.user_id.user_name : null,
-                    collection_type: 1,
-                    
-                });
-            }else if(collection.collection_type === 2){
-                collections.push({
-                    id: collection._id,
-                    tags: collection.article_id ? collection.article_id.tags : null,
-                    title: collection.article_id ? collection.article_id.title : null,
-                    be_collect_count: collection.article_id ? collection.article_id.collect_count : null,
-                    user_id: collection.user_id ? collection.user_id._id : null,
-                    user_name: collection.user_id ? collection.user_id.user_name : null,
-                    collection_type: 1,
-                });
-            }
+        results.collections.forEach(function (collection) {
+            collections.push({
+                collection_id: collection._id,
+                article_id: collection.article_id ? collection.article_id._id : null,
+                article_title: collection.article_id ? collection.article_id.title : null,
+                article_favour_count: collection.article_id ? collection.article_id.favour_count : null,
+                article_comment_count: collection.article_id ? collection.article_id.comment_count : null,
+                article_collect_count: collection.article_id ? collection.article_id.collect_count : null,
+                article_browse_count: collection.article_id ? collection.article_id.browse_count : null,
+            });
         });
        
        res.json({
@@ -74,7 +61,7 @@ exports.getUserAnswerCollections = function(req, res, next){
         return next(new BadRequestError('user_id is need'));
     }
 
-    collectionModel.getUserCollectionList(userID, pageSkip, pageSize, function (err, results) {
+    collectionModel.getUserAnswerCollectionList(userID, pageSkip, pageSize, function (err, results) {
         if(err){
             return next(err);
         }
@@ -83,28 +70,16 @@ exports.getUserAnswerCollections = function(req, res, next){
         let collections = [];
 
         results.collections.forEach(function (collection) {
-            if(collection.collection_type === 1){
-                collections.push({
-                    id: collection._id,
-                    title: collection.answer_id ? collection.answer_id.title : null,
-                    tags: collection.question_id ? collection.question_id.tags : null,
-                    be_collect_count: collection.answer_id ? collection.answer_id.collect_count : null,
-                    user_id: collection.user_id ? collection.user_id._id : null,
-                    user_name: collection.user_id ? collection.user_id.user_name : null,
-                    collection_type: 1,
-
-                });
-            }else if(collection.collection_type === 2){
-                collections.push({
-                    id: collection._id,
-                    tags: collection.article_id ? collection.article_id.tags : null,
-                    title: collection.article_id ? collection.article_id.title : null,
-                    be_collect_count: collection.article_id ? collection.article_id.collect_count : null,
-                    user_id: collection.user_id ? collection.user_id._id : null,
-                    user_name: collection.user_id ? collection.user_id.user_name : null,
-                    collection_type: 1,
-                });
-            }
+            collections.push({
+                collection_id: collection._id,
+                question_id: collection.question_id ? collection.question_id._id : null,
+                question_title: collection.question_id ? collection.question_id.title : null,
+                answer_id: collection.answer_id ? collection.answer_id._id : null,
+                answer_content: collection.answer_id ? collection.answer_id.content : null,
+                answer_comment_count: collection.answer_id ? collection.answer_id.comment_count : null,
+                answer_favour_count: collection.answer_id ? collection.answer_id.favour_count : null,
+                answer_collect_count: collection.answer_id ? collection.answer_id.collect_count : null,
+            });
         });
 
         res.json({

@@ -8,8 +8,8 @@ const async = require('async');
 const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
 
-const UserCollection = mongodb.model('UserAnswerCollection');
-const UserArticleCollectionSchema = mongodb.model('UserArticleCollection');
+const UserAnswerCollection = mongodb.model('UserAnswerCollection');
+const UserArticleCollection = mongodb.model('UserArticleCollection');
 const QuestionAnswer = mongodb.model('QuestionAnswer');
 const Article = mongodb.model('Article');
 const User = mongodb.model('User');
@@ -17,32 +17,25 @@ const User = mongodb.model('User');
 /**
  * @desc 获取用户收藏的回答列表
  * */
-exports.getUserCollectionList = function (userID, pageSkip, pageSize, callback) {
+exports.getUserArticleCollectionList = function (userID, pageSkip, pageSize, callback) {
     
     let condition = {
-        status: UserCollection.STATUS.COLLECTED,
+        status: UserArticleCollection.STATUS.COLLECTED,
         user_id: userID,
     };
     
     async.parallel({
         count: function (cb) {
-            UserCollection.count(condition, cb);
+            UserArticleCollection.count(condition, cb);
         },
 
         collections: function (cb) {
-            UserCollection.find(condition)
+            UserArticleCollection.find(condition)
                 .populate({
                     path: 'article_id',
                     match: {
                         _id: {$exists : true},
                         status: Article.STATUS.PUBLISHED
-                    }
-                })
-                .populate({
-                    path: 'answer_id',
-                    match: {
-                        _id: {$exists : true},
-                        status: QuestionAnswer.STATUS.NORMAL
                     }
                 })
                 .populate({
@@ -64,15 +57,58 @@ exports.getUserCollectionList = function (userID, pageSkip, pageSize, callback) 
 
 
 /**
+ * @desc 获取用户收藏的回答列表
+ * */
+exports.getUserAnswerCollectionList = function (userID, pageSkip, pageSize, callback) {
+
+    let condition = {
+        status: UserAnswerCollection.STATUS.COLLECTED,
+        user_id: userID,
+    };
+
+    async.parallel({
+        count: function (cb) {
+            UserAnswerCollection.count(condition, cb);
+        },
+
+        collections: function (cb) {
+            UserAnswerCollection.find(condition)
+                .populate({
+                    path: 'answer_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: QuestionAnswer.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .sort('create_time _id')
+                .skip(pageSkip)
+                .limit(pageSize)
+                .exec(cb);
+        }
+    }, callback);
+
+
+};
+
+/**
  * @desc 查询获取用户收藏的回答(根据用户ID和关注ID)
  * */
 exports.findUserCollectionAnswerByCollectionID = function (userID, collectionID, callback) {
+    
     let condition = {
-        status: UserCollection.STATUS.COLLECTED,
+        status: UserAnswerCollection.STATUS.COLLECTED,
         user_id: userID,
         target_id: collectionID,
     };
-    UserCollection.findOne(condition)
+    
+    UserAnswerCollection.findOne(condition)
         .populate({
             path: 'target_id',
             match: {
@@ -89,11 +125,12 @@ exports.findUserCollectionAnswerByCollectionID = function (userID, collectionID,
  * */
 exports.findUserCollectionArticleByCollectionID = function (userID, collectionID, callback) {
     let condition = {
-        status: UserCollection.STATUS.COLLECTED,
+        status: UserArticleCollection.STATUS.COLLECTED,
         user_id: userID,
         target_id: collectionID,
     };
-    UserCollection.findOne(condition)
+    
+    UserArticleCollection.findOne(condition)
         .populate({
             path: 'target_id',
             match: {
@@ -116,8 +153,7 @@ exports.addAnswerToCollection = function (userID, questionID, answerID, callback
     };
 
     let update = {
-        status: UserCollection.STATUS.COLLECTED,
-        type: UserCollection.TYPES.ANSWER,
+        status: UserAnswerCollection.STATUS.COLLECTED,
         user_id: userID,
         answer_id: answerID,
         question_id: questionID,
@@ -125,7 +161,7 @@ exports.addAnswerToCollection = function (userID, questionID, answerID, callback
         update_time: new Date(),
     };
 
-    UserCollection.update(condition, update, {upsert: true}, function (err, result) {
+    UserAnswerCollection.update(condition, update, {upsert: true}, function (err, result) {
         if(err){
             return callback(err);
         }
@@ -148,19 +184,19 @@ exports.addAnswerToCollection = function (userID, questionID, answerID, callback
 exports.removeAnswerFromCollection = function (userID, answerID, callback) {
 
     let condition = {
-        status: UserCollection.STATUS.COLLECTED,
+        status: UserAnswerCollection.STATUS.COLLECTED,
         user_id: userID,
         answer_id: answerID,
     };
 
     let update = {
         $set:{
-            status: UserCollection.STATUS.UNCOLLECTED,
+            status: UserAnswerCollection.STATUS.UNCOLLECTED,
             update_time: new Date(),
         }
     };
 
-    UserCollection.update(condition, update, function (err, result) {
+    UserAnswerCollection.update(condition, update, function (err, result) {
         if(err){
             return callback(err);
         }
@@ -188,8 +224,7 @@ exports.addArticleToCollection = function (userID, subjectID, articleID, callbac
     };
 
     let update = {
-        status: UserCollection.STATUS.COLLECTED,
-        type: UserCollection.TYPES.ANSWER,
+        status: UserArticleCollection.STATUS.COLLECTED,
         user_id: userID,
         article_id: articleID,
         subject_id: subjectID,
@@ -197,7 +232,7 @@ exports.addArticleToCollection = function (userID, subjectID, articleID, callbac
         update_time: new Date(),
     };
 
-    UserCollection.update(condition, update, {upsert: true}, function (err, result) {
+    UserArticleCollection.update(condition, update, {upsert: true}, function (err, result) {
         if(err){
             return callback(err);
         }
@@ -220,20 +255,20 @@ exports.addArticleToCollection = function (userID, subjectID, articleID, callbac
 exports.removeArticleFromCollection = function (userID, articleID, callback) {
 
     let condition = {
-        status: UserCollection.STATUS.COLLECTED,
+        status: UserArticleCollection.STATUS.COLLECTED,
         user_id: userID,
         article_id: articleID,
     };
 
     let update = {
         $set: {
-            status: UserCollection.STATUS.UNCOLLECTED,
+            status: UserArticleCollection.STATUS.UNCOLLECTED,
             update_time: new Date(),
         }
     };
-    
 
-    UserCollection.update(condition, update, function (err, result) {
+
+    UserArticleCollection.update(condition, update, function (err, result) {
         if(err){
             return callback(err);
         }
