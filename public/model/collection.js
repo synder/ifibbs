@@ -81,6 +81,13 @@ exports.getUserAnswerCollectionList = function (userID, pageSkip, pageSize, call
                     }
                 })
                 .populate({
+                    path: 'question_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: QuestionAnswer.STATUS.NORMAL
+                    }
+                })
+                .populate({
                     path: 'user_id',
                     match: {
                         _id: {$exists : true},

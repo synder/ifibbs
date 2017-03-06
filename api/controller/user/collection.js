@@ -68,8 +68,11 @@ exports.getUserAnswerCollections = function(req, res, next){
 
         let count = results.count;
         let collections = [];
+        
+        
 
         results.collections.forEach(function (collection) {
+            
             collections.push({
                 collection_id: collection._id,
                 question_id: collection.question_id ? collection.question_id._id : null,

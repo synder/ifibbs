@@ -146,20 +146,21 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
 
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err);
+            return callback(err, channel);
         }
 
         let questionID = message.content.toString();
 
         if (!questionID) {
-            return callback(null, null);
+            return callback(null, channel);
         }
-        
+
         //查找问题
         let questionCondition = {_id: questionID, status: Question.STATUS.NORMAL};
+        
         Question.findOne(questionCondition, function (err, question) {
-            if(err){
-                return callback(err);
+            if (err) {
+                return callback(err, channel);
             }
 
             let questionCreateUserID = question.create_user_id;
@@ -194,34 +195,38 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
                     temp.push(getuiCID);
                 }
 
+                //一次批量推送20条
                 if (temp.length > 19) {
                     stream.pause();
                     let clientIDS = temp;
                     temp = [];
                     getui.notifyTransmissionMsg(true, clientIDS, message, function (err, result) {
                         stream.resume();
-                        callback(err, result);
+                        callback(err, channel);
                     });
                 }
+                
             }).on('error', function (err) {
-
                 if (temp.length > 0) {
                     let clientIDS = temp;
                     temp = [];
-                    getui.notifyTransmissionMsg(true, clientIDS, message, callback);
+                    getui.notifyTransmissionMsg(true, clientIDS, message, function (err) {
+                        callback(err, channel);
+                    });
+                }else{
+                    callback(err, channel);
                 }
-
-                callback(err);
-
             }).on('close', function () {
 
                 if (temp.length > 0) {
                     let clientIDS = temp;
                     temp = [];
-                    getui.notifyTransmissionMsg(true, clientIDS, message, callback);
+                    getui.notifyTransmissionMsg(true, clientIDS, message, function (err) {
+                        callback(err, channel);
+                    });
+                }else {
+                    callback(null, channel);
                 }
-
-                callback();
             });
         });
     });
@@ -249,18 +254,14 @@ exports.produceForQuestionBeenAnsweredMQS = function (questionID, answerID, call
 exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
 
     const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_ANSWERED;
-    
-    rabbit.client.consumeMessage(QUEUE, function (err, message) {
+
+    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err);
+            return callback(err, channel);
         }
 
         let content = message.content.toString();
-
-        if (!content) {
-            return callback(null);
-        }
-
+        
         content = content.split(':');
 
         let questionID = content[0];
@@ -278,82 +279,100 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
         }, function (err, results) {
 
             if (err) {
-                return callback(err);
+                return callback(err, channel);
             }
 
             let question = results.question;
             let answer = results.answer;
 
             if (!question) {
-                return callback(null, null);
+                return callback(null, channel);
             }
 
             if (!answer) {
-                return callback(null, null);
+                return callback(null, channel);
             }
 
             let questionCreateUserID = question.create_user_id;
             let questionTitle = question.title;
-            let answerContent = answer.content;
 
             let message = questionTitle + '有了新的回答';
 
+            
+            async.parallel({
+                pushToAttentionUser: function(cb) {
+                    let temp = [];
 
-            //推送通知给问题的发布者和关注者
-            let attentionUserCondition = {
-                to_user_id: questionCreateUserID,        //关注用户ID
-                status: AttentionUser.STATUS.ATTENTION
-            };
+                    //推送通知给问题关注者
+                    let attentionUserCondition = {
+                        to_user_id: questionCreateUserID,        //关注用户ID
+                        status: AttentionUser.STATUS.ATTENTION
+                    };
 
-            let temp = [];
+                    let stream = AttentionUser
+                        .find(attentionUserCondition)
+                        .populate({
+                            path: 'user_id',
+                            select: 'getui_cid',
+                            match: {
+                                getui_cid: {$exists: true}
+                            }
+                        })
+                        .stream();
+                    
+                    //流的方式处理
+                    stream.on('data', function (doc) {
 
-            let stream = AttentionUser
-                .find(attentionUserCondition)
-                .populate({
-                    path: 'user_id',
-                    select: 'getui_cid',
-                    match: {
-                        getui_cid: {$exists: true}
-                    }
-                })
-                .stream();
+                        if (doc.user_id && doc.user_id.getui_cid) {
+                            let getuiCID = doc.user_id.getui_cid;
+                            temp.push(getuiCID);
+                        }
 
-            stream.on('data', function (doc) {
+                        if (temp.length > 19) {
+                            stream.pause();
+                            let clientIDS = temp;
+                            temp = [];
+                            getui.notifyTransmissionMsg(true, clientIDS, message, function (err, result) {
+                                stream.resume();
+                                callback(err, result);
+                            });
+                        }
+                    }).on('error', function (err) {
 
-                if (doc.user_id && doc.user_id.getui_cid) {
-                    let getuiCID = doc.user_id.getui_cid;
-                    temp.push(getuiCID);
-                }
+                        if (temp.length > 0) {
+                            let clientIDS = temp;
+                            temp = [];
+                            getui.notifyTransmissionMsg(true, clientIDS, message, callback);
+                        }
 
-                if (temp.length > 19) {
-                    stream.pause();
-                    let clientIDS = temp;
-                    temp = [];
-                    getui.notifyTransmissionMsg(true, clientIDS, message, function (err, result) {
-                        stream.resume();
-                        callback(err, result);
+                        callback(err);
+
+                    }).on('close', function () {
+
+                        if (temp.length > 0) {
+                            let clientIDS = temp;
+                            temp = [];
+                            getui.notifyTransmissionMsg(true, clientIDS, message, callback);
+                        }
+
+                        callback();
                     });
+                },
+                pushToQuestionOwner: function(cb) { 
+                    
+                },
+            }, function (err, results) {
+            
+                if(err){
+                     return ;
                 }
-            }).on('error', function (err) {
-
-                if (temp.length > 0) {
-                    let clientIDS = temp;
-                    temp = [];
-                    getui.notifyTransmissionMsg(true, clientIDS, message, callback);
-                }
-
-                callback(err);
-
-            }).on('close', function () {
-
-                if (temp.length > 0) {
-                    let clientIDS = temp;
-                    temp = [];
-                    getui.notifyTransmissionMsg(true, clientIDS, message, callback);
-                }
-
-                callback();
+                
+                let pushToAttentionUser = results.pushToAttentionUser;
+                let pushToQuestionOwner = results.pushToQuestionOwner;
+                
             });
+
+            
         });
     });
 };
@@ -371,19 +390,44 @@ exports.produceForQuestionBeenStickiedMQS = function (questionID, callback) {
 
 exports.consumeForQuestionBeenStickiedMQS = function (callback) {
     const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
-    rabbit.client.consumeMessage(QUEUE, function (err, message) {
+    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err);
+            return callback(err, channel);
         }
 
         let questionID = message.content.toString();
 
-        if (!questionID) {
-            return callback(new Error('questionID is null'));
-        }
+        //查找问题的创建者
+        Question.findOne({_id: questionID})
+            .populate({
+                path: 'create_user_id',
+                select: 'getui_cid',
+                match: {
+                    getui_cid: {$exists: true}
+                }
+            })
+            .exec(function (err, question) {
+                if (err) {
+                    return callback(err, channel);
+                }
 
-        //todo
-        callback(null, questionID);
+                if (!question) {
+                    return callback(null, channel);
+                }
+
+                if (question.create_user_id && question.create_user_id.getui_cid) {
+                    let getuiCID = question.create_user_id.getui_cid;
+                    let questionTitle = question.title;
+                    let message = questionTitle + '被管理员加精';
+
+                    //推送通知给问题的所有者
+                    getui.notifyTransmissionMsg(true, [getuiCID], message, function (err) {
+                        callback(err, channel);
+                    });
+                }else{
+                    callback(null, channel);
+                }
+            });
     });
 };
 
@@ -398,15 +442,15 @@ exports.produceForAttentionSubjectHasNewArticleMQS = function (subjectID, articl
 
 exports.consumeForAttentionSubjectHasNewArticleMQS = function (callback) {
     const QUEUE = rabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
-    rabbit.client.consumeMessage(QUEUE, function (err, message) {
+    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err);
+            return callback(err, channel);
         }
 
         let content = message.content.toString();
 
         if (!content) {
-            return callback(null);
+            return callback(null, channel);
         }
 
         content = content.split(':');
@@ -414,6 +458,6 @@ exports.consumeForAttentionSubjectHasNewArticleMQS = function (callback) {
         let subjectID = content[0];
         let articleID = content[1];
 
-        callback(null, subjectID, articleID);
+        callback(null, channel);
     });
 };

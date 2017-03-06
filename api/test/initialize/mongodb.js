@@ -43,6 +43,7 @@ const USER_ID = "58aa50177ddbf5507c51f082";
 const USER_ID_OTHER = "58aa50177ddbf5507c51f083";
 const QUESTION_ID = "58ae5da34171fd177d387656";
 const SUBJECT_ID = "58ae5da34171fd177d387637";
+const ARTICLE_ID = "58ae5da34171fd177d387638";
 
 const emptyCollection = function (callback) {
     async.parallel([
@@ -113,6 +114,39 @@ const initSubject = function (callback) {
     
     Subject.create(docs, callback);
 };
+
+
+/**
+ * @desc 初始化文章数据
+ * */
+const initArticle = function (callback) {
+
+    let icon = 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518';
+    let cover = 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518';
+    
+    let doc = {
+        _id: ARTICLE_ID,
+        status          : Article.STATUS.PUBLISHED,    //文章状态
+        top             : true,    //是否置顶
+        title           : Mock.Random.ctitle(10, 20),    //文章标题
+        summary         : Mock.Random.ctitle(100, 200),    //文章摘要
+        icon            : icon,    //文章图标
+        cover           : cover,    //封面图片
+        tags            : ['测试'],    //文章标签
+        content         : Mock.Random.ctitle(100, 200),    //文章内容
+        browse_count    : 6,    //浏览次数
+        favour_count    : 7,    //被赞次数
+        comment_count   : 8,    //被评论次数
+        collect_count   : 9,    //被收藏次数
+        create_time     : new Date(),    //创建时间
+        update_time     : new Date(),    //更新时间
+        subject_id      : SUBJECT_ID,  //文章所属主题
+        create_user_id  : USER_ID      //创建人
+    };
+    
+    Article.create(doc, callback);
+};
+
 
 /**
  * @desc 初始化问题数据
@@ -503,7 +537,11 @@ exports.init = function (callback) {
             function (cb) {
                 initSubject(cb);
             },
-            
+
+            function (cb) {
+                initArticle(cb);
+            },
+
             function (cb) {
                 initQuestion(cb);
             },

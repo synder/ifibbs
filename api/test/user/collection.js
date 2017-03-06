@@ -6,13 +6,43 @@ const Mock = require('mockjs');
 const app = require('../../app').app;
 
 describe('用户添加收藏答案', function() {
+    
+    let questionID = "58ae5da34171fd177d387656";
+    let answerID;
+    
+    before(function(done) {
+        request(app)
+            .put('/user/question/answer')
+            .send({
+                question_id: questionID,
+                answer_content: Mock.Random.cparagraph(5, 10),
+            })
+            .expect(200)
+            .end(function (err, res) {
+                if (err) {
+                    throw err;
+                }
+
+                chai.expect(res.body).to.have.property('flag', '0000');
+                chai.expect(res.body).to.have.property('msg', '');
+
+                chai.expect(res.body).to.have.ownProperty('result');
+                chai.expect(res.body.result).to.have.ownProperty('question_id');
+                chai.expect(res.body.result).to.have.ownProperty('answer_id');
+
+                answerID = res.body.result.answer_id;
+
+                done();
+            });
+    });
+    
     it('#返回用户添加收藏答案状态', function (done) {
 
         request(app)
             .put('/user/collection/answer')
             .send({
-                question_id: '58aaae950e95c9205f3db5dc',
-                answer_id: '58aaae950e95c9205f3db5db'
+                question_id: questionID,
+                answer_id: answerID
             })
             .expect(200)
             .end(function(err, res) {
@@ -37,8 +67,8 @@ describe('用户添加收藏文章', function() {
         request(app)
             .put('/user/collection/article')
             .send({
-                subject_id: '58aaae950e95c9205f3db5dc',
-                article_id: '58aaae950e95c9205f3db5db'
+                subject_id: "58ae5da34171fd177d387637",
+                article_id: '58ae5da34171fd177d387638'
             })
             .expect(200)
             .end(function(err, res) {
@@ -63,7 +93,7 @@ describe('用户取消收藏答案', function() {
         request(app)
             .delete('/user/collection/answer')
             .query({
-                answer_id: '58aaae950e95c9205f3db5db'
+                answer_id: '58ae5da34171fd177d387638'
             })
             .expect(200)
             .end(function(err, res) {
@@ -88,7 +118,7 @@ describe('用户取消收藏文章', function() {
         request(app)
             .delete('/user/collection/article')
             .query({
-                article_id: '58aaae950e95c9205f3db5db'
+                article_id: '58ae5da34171fd177d387638'
             })
             .expect(200)
             .end(function(err, res) {
