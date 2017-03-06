@@ -71,9 +71,8 @@ exports.createNewQuestion = function (userID, question, callback) {
             },
             
             notifyRelatedUsers : function (cb) {
-                //通知相关用户
-                const QUEUE = rabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
-                rabbit.client.produceMessage(QUEUE, {question: questionID}, cb);
+                //todo 通知相关用户
+                cb();
             }
         }, function (err, results) {
             if(err){

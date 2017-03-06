@@ -370,17 +370,8 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
             },
             
             notifyRelatedUser: function (cb) {
-                //通知相关用户
-                async.parallel({
-                    notifyQuestionOwner: function(cb) {
-                        const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_ANSWERED;
-                        rabbit.client.produceMessage(QUEUE, {question: questionID, answer: answerID}, cb);
-                    },
-                    notifyQuestionAttentionUser: function(cb) {
-                        const QUEUE = rabbit.queues.notifications.ATTENTION_QUESTION_BEEN_ANSWERED;
-                        rabbit.client.produceMessage(QUEUE, {question: questionID, answer: answerID}, cb);
-                    },
-                }, cb);
+                //todo 通知相关用户
+                cb();
             }
         }, function (err, results) {
             callback(null, answerID);

@@ -1,7 +1,7 @@
 /**
  * @author synder on 2017/2/17
  * @copyright
- * @desc 用户通知
+ * @desc 用户通知，该系统在未来会被迁出，作为独立的系统
  */
 
 const mongoose = require('mongoose');
@@ -48,14 +48,23 @@ UserNotificationSchema.statics.CATEGORY = {
 
 //通知分类
 UserNotificationSchema.statics.TYPE = {
-    PROMOTIONAL_ACTIVITY        : 1,    //活动通知
-    PUBLISH_QUESTION            : 2,    //发布了问题
-    QUESTION_STICKIED_BY_ADMIN  : 3,    //问题被管理员加精
-    QUESTION_DELETED_BY_ADMIN   : 4,    //问题被管理员删除
-    QUESTION_BEEN_ANSWERED      : 11,   //问题被回答
-    ANSWER_BEEN_FAVOURED      : 12,     //回答被赞
-    QUESTION_BEEN_COLLECTED     : 13,   //问题被收藏
-    QUESTION_BEEN_SHARED        : 14,   //问题被分享
+    SYSTEM_NOTIFICATION              : 101,    //系统通知
+    SYSTEM_ACTIVITY                  : 102,    //系统活动通知
+    
+    USER_PUBLISH_QUESTION            : 200,    //用户发布了问题
+    USER_QUESTION_BEEN_STICKIED      : 201,    //用户发布的问题被管理员加精
+    USER_QUESTION_BEEN_DELETED       : 202,    //用户发布的问题被管理员删除
+    USER_QUESTION_BEEN_ATTENTION     : 203,    //用户发布的问题被关注
+    USER_QUESTION_BEEN_ANSWERED      : 204,    //用户发布的问题被回答
+    USER_QUESTION_BEEN_COLLECTED     : 205,    //用户发布的问题被收藏
+    USER_QUESTION_BEEN_SHARED        : 206,    //用户发布的问题被分享
+    
+    USER_ANSWER_BEEN_FAVOURED        : 300,    //用户发表的回答被赞
+    USER_ANSWER_BEEN_COMMEND         : 301,    //用户发表的回答被评论
+    
+    ATTENTION_USER_PUBLISH_NEW_QUESTION: 400,  //关注的用户发布了新的问题
+    ATTENTION_QUESTION_BEEN_ANSWER: 401,       //关注的问题有了新的回答
+    ATTENTION_SUBJECT_HAS_NEW_ARTICLE: 402,    //关注的专题有了新的文章
 };
 
 exports.UserNotificationSchema = UserNotificationSchema;
