@@ -30,6 +30,8 @@ AttentionQuestionSchema.virtual('id', function () {
 });
 
 AttentionQuestionSchema.index({user_id : 1, question_id: 1});
+AttentionQuestionSchema.index({user_id : 1});
+AttentionQuestionSchema.index({question_id : 1});
 
 //关注状态
 AttentionQuestionSchema.statics.STATUS = STATUS;
@@ -50,6 +52,8 @@ AttentionSubjectSchema.virtual('id', function () {
 });
 
 AttentionSubjectSchema.index({user_id : 1, subject_id: 1});
+AttentionSubjectSchema.index({user_id: 1});
+AttentionSubjectSchema.index({subject_id: 1});
 
 //关注状态
 AttentionSubjectSchema.statics.STATUS = STATUS;
@@ -71,6 +75,8 @@ AttentionUserSchema.virtual('id', function () {
 });
 
 AttentionUserSchema.index({user_id : 1, to_user_id: 1});
+AttentionUserSchema.index({user_id: 1});
+AttentionUserSchema.index({to_user_id: 1});
 
 //关注状态
 AttentionUserSchema.statics.STATUS = STATUS;

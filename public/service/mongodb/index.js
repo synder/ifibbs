@@ -38,7 +38,6 @@ const device = require('./schema/device');
 const favour = require('./schema/favour');
 const history = require('./schema/history');
 const notification = require('./schema/notification');
-const getui = require('./schema/getui');
 const question = require('./schema/question');
 const recommend = require('./schema/recommend');
 const subject = require('./schema/subject');
@@ -64,7 +63,6 @@ db.model('UserFavourArticle', favour.UserFavourArticleSchema, 'user_favour_artic
 db.model('UserFavourAnswerComment', favour.UserFavourAnswerCommentSchema, 'user_favour_answer_comment');
 db.model('UserHistory', history.UserHistorySchema, 'user_history');
 db.model('UserNotification', notification.UserNotificationSchema, 'user_notification');
-db.model('UserGeTuiMapping', getui.UserGeTuiMappingSchema, 'user_getui_mapping');
 db.model('Question', question.QuestionSchema, 'question');
 db.model('Recommend', recommend.RecommendSchema, 'recommend');
 db.model('QuestionTag', tag.QuestionTagSchema, 'question_tag');
