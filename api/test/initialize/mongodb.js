@@ -469,6 +469,31 @@ const initMongodbQuestionTagsCollection = function (callback) {
     });
 };
 
+/*
+ * @desc 初始化验证码
+ * */
+
+const initMongodbSecurityCode = function (callback) {
+
+    let now = new Date();
+    let expireTime = new Date();
+    expireTime.setMinutes(expireTime.getMinutes() + 30);
+
+    let securityCodeDoc = {
+        _id          : '58bce997fc71500981a75187',
+        status       : SecurityCode.STATUS.ENABLE,   //验证码状态
+        random       : '0.8504996783854122',       //随机串
+        mobile       : '13550501566',        //手机号码
+        code         : '903488',         //验证码
+        use_count    : 0,            //已验证次数
+        expire_time  : expireTime,   //过期时间
+        create_time  : now,          //创建时间
+        update_time  : now,          //更新次数
+    };
+
+    SecurityCode.create(securityCodeDoc, callback);
+};
+
 exports.init = function (callback) {
     
     emptyCollection(function () {
@@ -497,10 +522,16 @@ exports.init = function (callback) {
 
             function (cb) {
                 initMongodbQuestionTagsCollection(cb);
+            },
+
+            function (cb) {
+                initMongodbSecurityCode(cb);
             }
 
         ], callback);
         
     });
 };
+
+
 
