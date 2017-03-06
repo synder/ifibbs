@@ -12,38 +12,52 @@ const ObjectId = Schema.Types.ObjectId;
 
 
 //文章=======================================================
-const UserCollectionSchema = new Schema({
+const UserArticleCollectionSchema = new Schema({
     status    : {type: Number, required: true},   //收藏状态
-    type      : {type: Number, required: true},   //收藏类型
     create_time : {type: Date, required: true},   //创建时间
     update_time : {type: Date, required: true},   //更新时间
-    question_id : {type: ObjectId, required: false, ref: 'Question'},        //收藏对象ID
-    answer_id   : {type: ObjectId, required: false, ref: 'QuestionAnswer'},  //收藏对象ID
     subject_id  : {type: ObjectId, required: false, ref: 'Article'},         //收藏对象ID
-    article_id  : {type: ObjectId, required: false, ref: 'Article'},         //收藏对象ID
+    article_id  : {type: ObjectId, required: true, ref: 'Article'},          //收藏对象ID
     user_id     : {type: ObjectId, required: true, ref: 'User'},             //收藏用户ID
 });
 
-UserCollectionSchema.virtual('id', function () {
+UserArticleCollectionSchema.virtual('id', function () {
     return this._id.toString();
 });
 
-UserCollectionSchema.index({user_id : 1, target_id: 1});
+UserArticleCollectionSchema.index({user_id : 1, article_id: 1});
 
 
 //点赞状态
-UserCollectionSchema.statics.STATUS = {
+UserArticleCollectionSchema.statics.STATUS = {
+    COLLECTED : 1,        //已经收藏
+    UNCOLLECTED : 0       //未收藏
+};
+
+//回答========================================================
+const UserAnswerCollectionSchema = new Schema({
+    status    : {type: Number, required: true},   //收藏状态
+    create_time : {type: Date, required: true},   //创建时间
+    update_time : {type: Date, required: true},   //更新时间
+    question_id : {type: ObjectId, required: true, ref: 'Question'},         //收藏对象ID
+    answer_id   : {type: ObjectId, required: true, ref: 'QuestionAnswer'},   //收藏对象ID
+    user_id     : {type: ObjectId, required: true, ref: 'User'},             //收藏用户ID
+});
+
+UserAnswerCollectionSchema.virtual('id', function () {
+    return this._id.toString();
+});
+
+UserAnswerCollectionSchema.index({user_id : 1, answer_id: 1});
+
+
+//点赞状态
+UserAnswerCollectionSchema.statics.STATUS = {
     COLLECTED : 1,        //已经收藏
     UNCOLLECTED : 0       //未收藏
 };
 
 
-//点赞状态
-UserCollectionSchema.statics.TYPES = {
-    ANSWER : 1,      //收藏回答
-    ARTICLE : 2      //收藏文章
-};
 
-
-
-exports.UserCollectionSchema = UserCollectionSchema;
+exports.UserArticleCollectionSchema = UserArticleCollectionSchema;
+exports.UserAnswerCollectionSchema = UserAnswerCollectionSchema;

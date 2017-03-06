@@ -66,9 +66,10 @@ exports.map = function(app){
     
     
     //用户的收藏
-    app.get('/user/collections', authority.check, collection.getUserCollections);             //获取用户的所有收藏
-    app.put('/user/collection/answer', authority.check, collection.addAnswerToCollection);    //收藏回答
-    app.put('/user/collection/article', authority.check, collection.addArticleToCollection);  //收藏文章
+    app.get('/user/collections/answer', authority.check, collection.getUserAnswerCollections);        //获取用户的所有答案收藏
+    app.get('/user/collections/article', authority.check, collection.getUserArticleCollections);      //获取用户的所有文章收藏
+    app.put('/user/collection/answer', authority.check, collection.addAnswerToCollection);        //收藏回答
+    app.put('/user/collection/article', authority.check, collection.addArticleToCollection);      //收藏文章
     app.delete('/user/collection/answer', authority.check, collection.removeAnswerFromCollection);    //取消收藏回答
     app.delete('/user/collection/article', authority.check, collection.removeArticleFromCollection);  //取消收藏文章
     
