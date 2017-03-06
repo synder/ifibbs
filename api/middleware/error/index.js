@@ -13,6 +13,8 @@ exports.notFoundHandler = function () {
 
 exports.serverErrorHandler = function () {
     return function (err, req, res, next) {
+
+        err.code = ~~err.code;
         
         if (!err.code) {
             err.code = 500;
