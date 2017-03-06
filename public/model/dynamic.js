@@ -23,7 +23,14 @@ exports.getUserDynamicList = function (userID, pageSkip, pageSize, callback) {
     
     let condition = {
         user_id: userID,
-        status: UserDynamic.STATUS.ENABLE
+        status: UserDynamic.STATUS.ENABLE,
+        type: {$in: [
+            UserDynamic.TYPES.PUBLISH_QUESTION,
+            UserDynamic.TYPES.ANSWER_QUESTION,
+            UserDynamic.TYPES.ATTENTION_QUESTION,
+            UserDynamic.TYPES.ATTENTION_SUBJECT,
+            UserDynamic.TYPES.COLLECT_ANSWER,
+        ]}
     };
     
     async.parallel({

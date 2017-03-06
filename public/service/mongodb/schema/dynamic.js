@@ -44,6 +44,8 @@ UserDynamicSchema.statics.TYPES = {
     FAVOUR_ARTICLE: 302,       //赞了文章
     SHARE_QUESTION: 400,    //分享了问题
     SHARE_ARTICLE: 401,     //分享了文章
+    COLLECT_ANSWER: 500,      //收藏了问题
+    COLLECT_ARTICLE: 501,     //收藏了文章
 };
 
 exports.UserDynamicSchema = UserDynamicSchema;
