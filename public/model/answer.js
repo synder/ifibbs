@@ -368,11 +368,6 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
                     update_time: new Date(),
                 }, cb);
             },
-            
-            notifyRelatedUser: function (cb) {
-                //todo 通知相关用户
-                cb();
-            }
         }, function (err, results) {
             callback(null, answerID);
         });
@@ -382,10 +377,10 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
 /**
  * @desc 删除回答
  * */
-exports.removeQuestionAnswer = function (userID, answerID, callback) {
+exports.removeQuestionAnswer = function (answerID, callback) {
     let condition = {
         _id: answerID,
-        create_user_id: userID,
+        status: QuestionAnswer.STATUS.NORMAL
     };
     
     let update = {
@@ -396,7 +391,23 @@ exports.removeQuestionAnswer = function (userID, answerID, callback) {
         if(err){
             return callback(err);
         }
+        
+        if(result.nModified !== 1){
+            return  callback(null, false);
+        }
 
-        callback(null, result.nModified === 1);
+        //删除搜索引擎索引
+        elasticsearch.delete({
+            index: elasticsearch.indices.answer,
+            type: elasticsearch.indices.answer,
+            id: answerID.toString()
+        }, function (err, results) {
+
+            if(err && err.status != 404){
+                return callback(err);
+            }
+
+            callback(null, true);
+        });
     });
 };

@@ -34,7 +34,8 @@ exports.getUserAnswers = function(req, res, next){
                     question_title: answer.question_id ? answer.question_id.title : null,
                     question_tags: answer.question_id ? answer.question_id.tags : null,
                     answer_id: answer._id,
-                    answer_content: answer.content
+                    answer_content: answer.content,
+                    create_time: answer.create_time.valueOf(),
                 });   
             }
         });
@@ -95,8 +96,7 @@ exports.removeUserAnswer = function (req, res, next) {
         return next(new BadRequestError('answer_id is needed'));
     }
     
-    
-    answerModel.removeQuestionAnswer(userID, answerID, function (err, success) {
+    answerModel.removeQuestionAnswer(answerID, function (err, success) {
         if(err){
             return next(err);
         } 

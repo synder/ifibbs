@@ -69,11 +69,6 @@ exports.createNewQuestion = function (userID, question, callback) {
                     update_time: new Date(),
                 }, cb);
             },
-            
-            notifyRelatedUsers : function (cb) {
-                //todo 通知相关用户
-                cb();
-            }
         }, function (err, results) {
             if(err){
                 return callback(err);
@@ -87,11 +82,11 @@ exports.createNewQuestion = function (userID, question, callback) {
 /**
  * @desc 删除用户提问
  * */
-exports.removeUserQuestion = function (userID, questionID, callback) {
+exports.removeUserQuestion = function (questionID, callback) {
 
     let condition = {
         _id: questionID,
-        create_user_id: userID,
+        status: Question.STATUS.NORMAL,
     };
 
     let update = {
@@ -106,7 +101,7 @@ exports.removeUserQuestion = function (userID, questionID, callback) {
             return callback(err);
         }
 
-        if (result.n !== 1) {
+        if (result.nModified !== 1) {
             return callback(null, false);
         }
 
@@ -115,7 +110,12 @@ exports.removeUserQuestion = function (userID, questionID, callback) {
             type: elasticsearch.indices.question,
             id: questionID.toString()
         }, function (err, results) {
-            callback(err, true);
+            
+            if(err && err.status != 404){
+                return callback(err);
+            }
+            
+            callback(null, true);
         });
     });
 };
