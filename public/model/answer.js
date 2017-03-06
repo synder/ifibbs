@@ -244,8 +244,6 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
             next.forEach(function (answer) {
                 answerIDS.push(answer._id);
             });
-            
-            console.log(answerIDS);
 
             callback(null, answerIDS);
         });
