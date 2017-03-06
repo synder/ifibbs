@@ -41,7 +41,18 @@ exports.createNewUser = function (mobile, password, callback) {
         pass_salt_str: salt,
     };
 
-    User.create(userDoc, callback);
+    let condition = {
+        user_mobile: {$exists: true, $eq: mobile},
+    };
+
+    User.findOne(condition, function (err, user) {
+        if(user){
+            return callback(null, false)
+        }
+        User.create(userDoc, callback);
+    });
+
+
 };
 
 /**
