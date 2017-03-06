@@ -7,7 +7,6 @@
 const async = require('async');
 
 const deviceModel = require('../../../public/model/device');
-const getuiModel = require('../../../public/model/getui');
 
 /**
  * @desc 上报用户设备信息
@@ -35,17 +34,6 @@ exports.reportUserDeviceInfo = function(req, res, next){
                 deviceBrand: deviceBrand,
                 deviceVersion: deviceVersion,
             }, cb);
-        },
-        
-        //保存个推的映射信息
-        createGetuiMapping: function(cb) { 
-            getuiModel.createNewGeTuiMapping(userID, {
-                deviceToken: deviceToken,
-                devicePlatform: devicePlatform,
-                deviceVersion: deviceVersion,
-                getuiAppID: getuiAppID,
-                getuiClientID: getuiClientID,
-            }, cb)
         },
     }, function (err, results) {
     

@@ -8,7 +8,8 @@ const async = require('async');
 const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
 
-const UserCollection = mongodb.model('UserCollection');
+const UserCollection = mongodb.model('UserAnswerCollection');
+const UserArticleCollectionSchema = mongodb.model('UserArticleCollection');
 const QuestionAnswer = mongodb.model('QuestionAnswer');
 const Article = mongodb.model('Article');
 const User = mongodb.model('User');
