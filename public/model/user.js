@@ -9,8 +9,11 @@ const crypto = require('crypto');
 
 const mongodb = require('../service/mongodb').db;
 const mysql = require('../service/mysql').db;
+const redis = require('../service/redis').client;
 
 const User = mongodb.model('User');
+
+const _self = this;
 
 /**
  * @desc 密码加密
@@ -46,7 +49,7 @@ exports.createNewUser = function (mobile, password, callback) {
     };
 
     User.findOne(condition, function (err, user) {
-        if(user){
+        if (user) {
             return callback(null, false)
         }
         User.create(userDoc, callback);
@@ -84,28 +87,28 @@ exports.getUserByMobile = function (phone, callback) {
  * @desc 根据用户手机和密码查找用户
  * */
 exports.getUserByMobileAndPassword = function (phone, pass, callback) {
-    
+
     let condition = {
         user_mobile: {$exists: true, $eq: phone}
     };
-    
+
     User.findOne(condition, function (err, user) {
-        if(err){
+        if (err) {
             return callback(err);
         }
-        
-        if(!user){
+
+        if (!user) {
             return callback(null, null);
         }
-        
+
         let salt = user.pass_salt_str;
         let realPassword = user.user_password;
         let enPassword = hashUserPassword(salt, pass);
-        
-        if(realPassword !== enPassword){
+
+        if (realPassword !== enPassword) {
             return callback(null, null);
         }
-        
+
         callback(null, user);
     });
 };
@@ -114,39 +117,39 @@ exports.getUserByMobileAndPassword = function (phone, pass, callback) {
  * @desc 更新用户信息
  * */
 exports.updateUserInfo = function (userID, userInfo, callback) {
-    
+
     let condition = {
         _id: userID
     };
-    
+
     let updateSets = {update_time: new Date()};
-    
-    if(userInfo.userName){
+
+    if (userInfo.userName) {
         updateSets.user_name = userInfo.userName;
     }
 
-    if(userInfo.userProfile){
+    if (userInfo.userProfile) {
         updateSets.user_profile = userInfo.userProfile;
     }
 
-    if(userInfo.userAvatar){
+    if (userInfo.userAvatar) {
         updateSets.user_avatar = userInfo.userAvatar;
     }
 
-    if(userInfo.userGender){
+    if (userInfo.userGender) {
         //不能用'==='，传入sex可能为字符串;
         updateSets.user_gender = userInfo.userGender ? userInfo.userGender == 1 : null;
     }
 
-    if(userInfo.userMobile){
+    if (userInfo.userMobile) {
         updateSets.user_mobile = userInfo.userMobile;
     }
 
-    if(userInfo.workInfo){
+    if (userInfo.workInfo) {
         updateSets.work_info = userInfo.workInfo;
     }
 
-    if(userInfo.eduInfo){
+    if (userInfo.eduInfo) {
         updateSets.edu_info = userInfo.eduInfo;
     }
 
@@ -168,60 +171,129 @@ exports.updateUserInfo = function (userID, userInfo, callback) {
  * @desc 更新用户的登录token信息
  * */
 exports.updateUserLoginToken = function (userID, token, expire, callback) {
-    
+
     let condition = {
         _id: userID
     };
 
-    let update = {
-        $set: {
-            update_time: new Date(),
-            'login_token.token': token,
-            'login_token.expire': expire,
-        }
+    let session = {
+        id: userID,
+        token: token,
+        expire: expire,
     };
 
-    User.update(condition, update, function (err, result) {
+    let sessionExpire = parseInt((expire - Date.now())/1000);
+
+    redis.set(token, JSON.stringify(session), function (err, result) {
         if (err) {
-            return callback(err);
+            return callback(err)
         }
 
-        callback(null, result.nModified === 1);
+        redis.expire(token, sessionExpire, function (err, result) {
+            if (err) {
+                return callback(err)
+            }
+
+
+            User.findOne(condition, function (err, result) {
+                if (err) {
+                    return callback(err);
+                }
+
+                result.update_time = new Date();
+                result.login_token.token = token;
+                result.login_token.expire = expire;
+
+                result.save(function (err, doc) {
+                    callback(null, !!doc);
+                })
+
+            })
+        })
+    });
+};
+
+/*
+ * @desc 获取用户session信息
+ * */
+exports.getUserLoginToken = function (token, callback) {
+    let sessionExpire = Date.now() + 1000 * 3600 * 24 * 30;
+
+    redis.get(token, function (err, session) {
+        if (err) {
+            return callback(err)
+        }
+
+        if (session) {
+            let session = JSON.parse(session);
+
+
+            if (session.expire - Date.now() < 1000 * 3600 * 24 * 5) {
+                _self.updateUserLoginToken(session.id, token, sessionExpire);
+            }
+
+            return callback(null, session)
+        }
+
+        let condition = {
+            'login_token.token': token,
+            'login_token.expire': {$gt: new Date()},
+        };
+
+        User.findOne(condition, function (err, doc) {
+            if (err) {
+                return callback(err)
+            }
+
+            if (doc) {
+                let session = {
+                    id: doc._id,
+                    token: token,
+                    expire: doc.login_token.expire,
+                };
+
+                if (new Date(session.expire).getTime() - Date.now() < 1000 * 3600 * 24 * 5) {
+                    _self.updateUserLoginToken(session.id, token, sessionExpire);
+                }
+
+                return callback(null, session)
+            }
+
+            callback(null, null)
+        })
     })
 };
 
-
-
 /**
- * @desc 更新用户密码
+ * @desc 更新用户密码(修改)
  * */
 exports.updateUserPasswordWithOldPassword = function (userID, oldPassword, newPassword, callback) {
     let condition = {
         _id: userID
     };
-    
+
     User.findOne(condition, function (err, user) {
-        if(err){
+        if (err) {
             return callback(err);
         }
-        
-        if(!user){
+
+        if (!user) {
             return callback(null, false);
         }
-        
+
         let salt = user.pass_salt_str;
-        
+
         let dbMd5Pass = hashUserPassword(salt, user.user_password);
         let oldMd5Pass = hashUserPassword(salt, oldPassword);
-        
-        if(dbMd5Pass !== oldMd5Pass){
+
+        if (dbMd5Pass !== oldMd5Pass) {
             return callback(null, false);
         }
 
         user.user_password = hashUserPassword(salt, newPassword);
 
         user.save(function (err, result) {
-            if(err){
+            if (err) {
                 return callback(err);
             }
 
@@ -232,19 +304,19 @@ exports.updateUserPasswordWithOldPassword = function (userID, oldPassword, newPa
 
 
 /**
- * @desc 更新用户的密码
+ * @desc 更新用户的密码（找回）
  * */
 exports.updateUserPasswordWithMobile = function (phone, newPassword, callback) {
     let condition = {
-        user_mobile: {$exists:true, $eq: phone}
+        user_mobile: {$exists: true, $eq: phone}
     };
 
     User.findOne(condition, function (err, user) {
-        if(err){
+        if (err) {
             return callback(err);
         }
 
-        if(!user){
+        if (!user) {
             return callback(null, false);
         }
 
@@ -253,7 +325,7 @@ exports.updateUserPasswordWithMobile = function (phone, newPassword, callback) {
         user.user_password = hashUserPassword(salt, newPassword);
 
         user.save(function (err, result) {
-            if(err){
+            if (err) {
                 return callback(err);
             }
 
@@ -261,22 +333,21 @@ exports.updateUserPasswordWithMobile = function (phone, newPassword, callback) {
         });
     });
 };
-
 
 
 /**
  * @desc 绑定手机号
  * */
 exports.updateUserPhone = function (userID, phone) {
-    
+
 };
 
 
 /**
  * @desc 绑定微信
  * */
-exports.updateUserTencentWechat= function (userID) {
-    
+exports.updateUserTencentWechat = function (userID) {
+
 };
 
 
