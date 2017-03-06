@@ -56,8 +56,6 @@ exports.sendSmsSecurityCode = function (phone, callback) {
         
         callback(null, doc);
     });
-    
-    
 };
 
 /**

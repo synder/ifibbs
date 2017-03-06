@@ -17,6 +17,7 @@ class DefaultSMSClient {
     
     send(msg, callback){
         let x = this.hostname;
+        //todo 发送验证码
         callback(null, true);
     }
 }
