@@ -23,7 +23,7 @@ exports.getSmsSecurityCode = function (req, res, next) {
         return next(new BadRequestError('mobile is illegal'));
     }
 
-    captchaModel.sendSmsSecurityCode(mobileNumber, function (err, captchaID) {
+    captchaModel.sendSmsSecurityCode(mobileNumber, function (err, captcha) {
         if(err){
             return next(err);
         }
@@ -32,8 +32,8 @@ exports.getSmsSecurityCode = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                code_id: captchaID,
-                random: ''
+                code_id: captcha._id,
+                random: captcha.random
             }
         });
     });
