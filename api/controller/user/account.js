@@ -150,7 +150,15 @@ exports.userRegisterWithPhone = function (req, res, next) {
             }
 
             let userId = user._id;
-            let token = UUID(); //todo 调取session写入数据
+            let token = UUID();
+            let expire = Date.now() + 1000 * 3600 * 24 * 30;
+
+            userModel.updateUserLoginToken(userId, token, expire, function (err, success) {
+                if(err){
+                    return next(err)
+                }
+
+            });
 
             res.json({
                 flag: '0000',
@@ -191,16 +199,25 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
         }
 
         let userId = user._id;
-        let token = UUID(); //todo 调取session写入数据
+        let token = UUID();
+        let expire = Date.now() + 1000 * 3600 * 24 * 30;
 
-        res.json({
-            flag: '0000',
-            msg: '',
-            result: {
-                token: token,
-                ok: true,
+        userModel.updateUserLoginToken(userId, token, expire, function (err, success) {
+            if(err){
+                return next(err)
             }
-        })
+
+            res.json({
+                flag: '0000',
+                msg: '',
+                result: {
+                    token: token,
+                    ok: true,
+                }
+            })
+        });
+
+
 
     })
 };
