@@ -17,7 +17,7 @@ class DefaultSMSClient {
     
     send(msg, callback){
         let x = this.hostname;
-        callback();
+        callback(null, true);
     }
 }
 

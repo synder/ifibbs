@@ -5,7 +5,7 @@
  */
 const async = require('async');
 const mongodb = require('../service/mongodb').db;
-// const sms = require('../service/sms').client;
+const sms = require('../service/sms').client;
 
 const SecurityCode = mongodb.model('SecurityCode');
 
@@ -22,29 +22,17 @@ exports.sendSmsSecurityCode = function (phone, callback) {
     let expireTime = new Date();
     expireTime.setMinutes(expireTime.getMinutes() + 30);
 
-    // let securityCodeDoc = {
-    //     status       : SecurityCode.STATUS.ENABLE,   //验证码状态
-    //     random       : random,       //随机串
-    //     mobile       : phone,        //手机号码
-    //     code         : code,         //验证码
-    //     use_count    : 0,            //已验证次数
-    //     expire_time  : expireTime,   //过期时间
-    //     create_time  : now,          //创建时间
-    //     update_time  : now,          //更新次数
-    // };
-
     let securityCodeDoc = {
-        _id          : '58bce997fc71500981a75187',
         status       : SecurityCode.STATUS.ENABLE,   //验证码状态
-        random       : '0.8504996783854122',       //随机串
+        random       : random,       //随机串
         mobile       : phone,        //手机号码
-        code         : '903488',         //验证码
+        code         : code,         //验证码
         use_count    : 0,            //已验证次数
         expire_time  : expireTime,   //过期时间
         create_time  : now,          //创建时间
         update_time  : now,          //更新次数
-    }; // todo 测试用
-
+    };
+    
     SecurityCode.create(securityCodeDoc, function (err, doc) {
         if(err){
             return callback(err);
@@ -54,26 +42,23 @@ exports.sendSmsSecurityCode = function (phone, callback) {
             return callback(new Error('sms security code save failed'));
         }
 
-        // sms.send(msg, function (err, result) {
-        //     if(err){
-        //         return callback(err);
-        //     }
-        //
-        //     if(result !== true){
-        //         return callback(new Error('sms security code send failed'));
-        //     }
-        //
-        //     callback(null, doc);
-        // });
+        sms.send(msg, function (err, result) {
+            if(err){
+                return callback(err);
+            }
+
+            if(result !== true){
+                return callback(new Error('sms security code send failed'));
+            }
+
+            callback(null, doc);
+        });
+        
         callback(null, doc);
     });
     
     
 };
-
-this.sendSmsSecurityCode('13550501566',function (err, doc) {//todo 测试用
-    console.log(doc)
-});
 
 /**
  * @desc 查找验证码
