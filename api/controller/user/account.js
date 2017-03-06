@@ -20,7 +20,7 @@ exports.getUserInfo = function (req, res, next) {
         }
 
         let userInfo = {
-            headPic: result.user_avatar,
+            head_pic: result.user_avatar,
             username: result.user_name,
             signature: result.user_profile,
             sex: result.user_gender == null ? null : (result.user_gender ? 1 : 0),

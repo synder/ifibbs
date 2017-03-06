@@ -4,8 +4,10 @@
  * @desc 短消息服务
  */
 
+const config = require('../config');
+
 const DefaultSMSClient = require('./lib/client').DefaultSMSClient;
 
-const client = new DefaultSMSClient();
+const client = new DefaultSMSClient(config.sms);
 
 exports.client = client;
