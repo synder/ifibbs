@@ -28,6 +28,12 @@ class Connection {
             host: host,
             port: port
         });
+        
+        this.__connect(true, function (err) {
+            if(err){
+                console.error(err.stack);
+            }
+        });
     }
 
     //链接服务器，并创建channel

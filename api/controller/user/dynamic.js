@@ -30,7 +30,9 @@ exports.getUserDynamics = function (req, res, next) {
                if(dynamic.question){
                    dynamics.push({
                        type: dynamic.type,
-                       user_id: dynamic.user_id,
+                       user_id: dynamic.user._id,
+                       user_name: dynamic.user.user_name,
+                       user_avatar: dynamic.user.user_avatar,
                        question_id: dynamic.question._id,
                        question_title: dynamic.question.title,
                        question_tags: dynamic.question.tags,
@@ -45,7 +47,9 @@ exports.getUserDynamics = function (req, res, next) {
                if(dynamic.question && dynamic.answer){
                    dynamics.push({
                        type: dynamic.type,
-                       user_id: dynamic.user_id,
+                       user_id: dynamic.user._id,
+                       user_name: dynamic.user.user_name,
+                       user_avatar: dynamic.user.user_avatar,
                        question_id: dynamic.question._id,
                        question_title: dynamic.question.title,
                        question_tags: dynamic.question.tags,
@@ -60,7 +64,9 @@ exports.getUserDynamics = function (req, res, next) {
                //关注了问题
                dynamics.push({
                    type: dynamic.type,
-                   user_id: dynamic.user_id,
+                   user_id: dynamic.user._id,
+                   user_name: dynamic.user.user_name,
+                   user_avatar: dynamic.user.user_avatar,
                    question_id: dynamic.question._id,
                    question_title: dynamic.question.title,
                    question_tags: dynamic.question.tags,
@@ -73,8 +79,11 @@ exports.getUserDynamics = function (req, res, next) {
                if(dynamic.subject){
                    dynamics.push({
                        type: dynamic.type,
-                       user_id: dynamic.user_id,
+                       user_id: dynamic.user._id,
+                       user_name: dynamic.user.user_name,
+                       user_avatar: dynamic.user.user_avatar,
                        subject_id: dynamic.subject._id,
+                       subject_icon: dynamic.subject.icon,
                        subject_title: dynamic.subject.title,
                        subject_attention_count: dynamic.subject.attention_count,
                        subject_article_count: dynamic.subject.article_count,
@@ -86,7 +95,9 @@ exports.getUserDynamics = function (req, res, next) {
                if(dynamic.subject){
                    dynamics.push({
                        type: dynamic.type,
-                       user_id: dynamic.user_id,
+                       user_id: dynamic.user._id,
+                       user_name: dynamic.user.user_name,
+                       user_avatar: dynamic.user.user_avatar,
                        question_id: dynamic.question._id,
                        question_title: dynamic.question.title,
                        question_tags: dynamic.question.tags,

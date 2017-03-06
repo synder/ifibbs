@@ -182,7 +182,7 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
  * */
 exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, callback) {
     
-    QuestionAnswer.findOne({ _id: questionID}, function (err, answer) {
+    QuestionAnswer.findOne({ question_id: questionID}, function (err, answer) {
         if(err){
             return callback(err);
         }

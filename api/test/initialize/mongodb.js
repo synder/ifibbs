@@ -30,7 +30,6 @@ const UserFavourArticle = db.model('UserFavourArticle');
 const UserFavourAnswerComment = db.model('UserFavourAnswerComment');
 const UserHistory = db.model('UserHistory');
 const UserNotification = db.model('UserNotification');
-const UserGeTuiMapping = db.model('UserGeTuiMapping');
 const Question = db.model('Question');
 const Recommend = db.model('Recommend');
 const QuestionTag = db.model('QuestionTag');
@@ -61,7 +60,6 @@ const emptyCollection = function (callback) {
         function (cb) {UserFavourAnswerComment.remove({}, cb);},
         function (cb) {UserHistory.remove({}, cb);},
         function (cb) {UserNotification.remove({}, cb);},
-        function (cb) {UserGeTuiMapping.remove({}, cb);},
         function (cb) {Question.remove({}, cb);},
         function (cb) {Recommend.remove({}, cb);},
         function (cb) {QuestionTag.remove({}, cb);},

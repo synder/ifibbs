@@ -33,7 +33,8 @@ exports.map = function(app){
     app.get('/other/questions', question.getUserQuestions);                        //获取用户所有提问
     app.get('/other/question/answers', answer.getUserAnswers);                     //其他用户的回答列表
     app.get('/other/question/answer/comments', comment.getUserCommentsList);       //获取其他用户评论列表
-    app.get('/other/collections', collection.getUserCollections);                  //获取其他用户的所有收藏
+    app.get('/other/collections/answer', collection.getUserAnswerCollections);     //获取其他用户的所有回答收藏
+    app.get('/other/collections/article', collection.getUserArticleCollections);   //获取其他用户的所有文章收藏
     app.get('/other/attention/questions', attention.getAttentionQuestionList);     //获取其他用户关注的问题列表
     app.get('/other/attention/users', attention.getUserAttentionUserList);         //获取其他用户关注的用户列表 
     app.get('/other/attention/subjects', attention.getUserAttentionSubjectList);   //获取其他用户关注的专题列表
@@ -66,9 +67,10 @@ exports.map = function(app){
     
     
     //用户的收藏
-    app.get('/user/collections', authority.check, collection.getUserCollections);             //获取用户的所有收藏
-    app.put('/user/collection/answer', authority.check, collection.addAnswerToCollection);    //收藏回答
-    app.put('/user/collection/article', authority.check, collection.addArticleToCollection);  //收藏文章
+    app.get('/user/collections/answer', authority.check, collection.getUserAnswerCollections);        //获取用户的所有答案收藏
+    app.get('/user/collections/article', authority.check, collection.getUserArticleCollections);      //获取用户的所有文章收藏
+    app.put('/user/collection/answer', authority.check, collection.addAnswerToCollection);        //收藏回答
+    app.put('/user/collection/article', authority.check, collection.addArticleToCollection);      //收藏文章
     app.delete('/user/collection/answer', authority.check, collection.removeAnswerFromCollection);    //取消收藏回答
     app.delete('/user/collection/article', authority.check, collection.removeArticleFromCollection);  //取消收藏文章
     

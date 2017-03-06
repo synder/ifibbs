@@ -38,7 +38,6 @@ const device = require('./schema/device');
 const favour = require('./schema/favour');
 const history = require('./schema/history');
 const notification = require('./schema/notification');
-const getui = require('./schema/getui');
 const question = require('./schema/question');
 const recommend = require('./schema/recommend');
 const subject = require('./schema/subject');
@@ -56,7 +55,8 @@ db.model('AttentionQuestion', attention.AttentionQuestionSchema, 'attention_ques
 db.model('AttentionSubject', attention.AttentionSubjectSchema, 'attention_subject');
 db.model('AttentionUser', attention.AttentionUserSchema, 'attention_user');
 db.model('SecurityCode', captcha.SecurityCodeSchema, 'security_code');
-db.model('UserCollection', collection.UserCollectionSchema, 'user_collection');
+db.model('UserAnswerCollection', collection.UserAnswerCollectionSchema, 'user_answer_collection');
+db.model('UserArticleCollection', collection.UserArticleCollectionSchema, 'user_article_collection');
 db.model('AnswerComment', comment.AnswerCommentSchema, 'answer_comment');
 db.model('UserDevice', device.UserDeviceSchema, 'user_device');
 db.model('UserFavourAnswer', favour.UserFavourAnswerSchema, 'user_favour_answer');
@@ -64,7 +64,6 @@ db.model('UserFavourArticle', favour.UserFavourArticleSchema, 'user_favour_artic
 db.model('UserFavourAnswerComment', favour.UserFavourAnswerCommentSchema, 'user_favour_answer_comment');
 db.model('UserHistory', history.UserHistorySchema, 'user_history');
 db.model('UserNotification', notification.UserNotificationSchema, 'user_notification');
-db.model('UserGeTuiMapping', getui.UserGeTuiMappingSchema, 'user_getui_mapping');
 db.model('Question', question.QuestionSchema, 'question');
 db.model('Recommend', recommend.RecommendSchema, 'recommend');
 db.model('QuestionTag', tag.QuestionTagSchema, 'question_tag');

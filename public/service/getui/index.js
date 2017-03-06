@@ -307,7 +307,7 @@ exports.notifyClientToDownload = function (isIOS, clientID, title, content, icon
 /**
  * @desc 推送穿透消息
  * */
-exports.notifyTransmissionMsg = function (isIOS, clientID, content, callback) {
+exports.notifyTransmissionMsg = function (isIOS, clientIDS, content, callback) {
 
     let template = new TransmissionTemplate({
         appId: APP_ID,
@@ -353,13 +353,25 @@ exports.notifyTransmissionMsg = function (isIOS, clientID, content, callback) {
 
     const batch = client.getBatch();
     
-    //接收方
-    let target = new Target({
-        appId: APP_ID,
-        clientId: clientID
-    });
+    if(Array.isArray(clientIDS)){
+        clientIDS.forEach(function (clientID) {
+            //接收方
+            let target = new Target({
+                appId: APP_ID,
+                clientId: clientID.toString()
+            });
 
-    batch.add(message, target);
+            batch.add(message, target);
+        });
+    }else{
+        //接收方
+        let target = new Target({
+            appId: APP_ID,
+            clientId: clientIDS.toString()
+        });
+
+        batch.add(message, target);
+    }
 
     batch.submit(function (err, res) {
         if(err){

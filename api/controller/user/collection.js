@@ -7,9 +7,9 @@
 const collectionModel = require('../../../public/model/collection');
 
 /**
- * @desc 用户收藏列表
+ * @desc 用户收藏文章列表
  * */
-exports.getUserCollections = function(req, res, next){
+exports.getUserArticleCollections = function(req, res, next){
     let pageSkip = req.query.page_skip;
     let pageSize = req.query.page_size;
     let userID = req.query.user_id;
@@ -59,6 +59,62 @@ exports.getUserCollections = function(req, res, next){
                list : collections
            }
        });
+    });
+};
+
+/**
+ * @desc 用户收藏回答列表
+ * */
+exports.getUserAnswerCollections = function(req, res, next){
+    let pageSkip = req.query.page_skip;
+    let pageSize = req.query.page_size;
+    let userID = req.query.user_id;
+
+    if(!userID){
+        return next(new BadRequestError('user_id is need'));
+    }
+
+    collectionModel.getUserCollectionList(userID, pageSkip, pageSize, function (err, results) {
+        if(err){
+            return next(err);
+        }
+
+        let count = results.count;
+        let collections = [];
+
+        results.collections.forEach(function (collection) {
+            if(collection.collection_type === 1){
+                collections.push({
+                    id: collection._id,
+                    title: collection.answer_id ? collection.answer_id.title : null,
+                    tags: collection.question_id ? collection.question_id.tags : null,
+                    be_collect_count: collection.answer_id ? collection.answer_id.collect_count : null,
+                    user_id: collection.user_id ? collection.user_id._id : null,
+                    user_name: collection.user_id ? collection.user_id.user_name : null,
+                    collection_type: 1,
+
+                });
+            }else if(collection.collection_type === 2){
+                collections.push({
+                    id: collection._id,
+                    tags: collection.article_id ? collection.article_id.tags : null,
+                    title: collection.article_id ? collection.article_id.title : null,
+                    be_collect_count: collection.article_id ? collection.article_id.collect_count : null,
+                    user_id: collection.user_id ? collection.user_id._id : null,
+                    user_name: collection.user_id ? collection.user_id.user_name : null,
+                    collection_type: 1,
+                });
+            }
+        });
+
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                count : count,
+                list : collections
+            }
+        });
     });
 };
 

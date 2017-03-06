@@ -34,6 +34,7 @@ const UserSchema = new Schema({
     user_mobile  : {type: String,  required: false},  //用户手机
     work_info    : {type: String,  required: false},  //用户性别
     edu_info     : {type: String,  required: false},  //用户性别
+    getui_cid    : {type: String,  required: false},  //个推CID
     bind_tencent_qq      : ThirdBindSchema,                  //qq绑定
     bind_tencent_wechat  : ThirdBindSchema,                  //微信绑定
     bind_sina_weibo      : ThirdBindSchema,                  //微博绑定
