@@ -83,6 +83,7 @@ exports.getUserDynamics = function (req, res, next) {
                        user_name: dynamic.user.user_name,
                        user_avatar: dynamic.user.user_avatar,
                        subject_id: dynamic.subject._id,
+                       subject_icon: dynamic.subject.icon,
                        subject_title: dynamic.subject.title,
                        subject_attention_count: dynamic.subject.attention_count,
                        subject_article_count: dynamic.subject.article_count,
