@@ -33,6 +33,9 @@ exports.getUserDynamics = function (req, res, next) {
                        user_id: dynamic.user_id,
                        question_id: dynamic.question._id,
                        question_title: dynamic.question.title,
+                       question_tags: dynamic.question.tags,
+                       question_attention_count: dynamic.question.attention_count,
+                       question_answer_count: dynamic.question.answer_count,
                        create_time: dynamic.create_time,
                    });
                }
@@ -47,6 +50,8 @@ exports.getUserDynamics = function (req, res, next) {
                        question_title: dynamic.question.title,
                        answer_id: dynamic.answer._id,
                        answer_content: dynamic.answer.content,
+                       answer_favour_count: dynamic.answer.favour_count,
+                       answer_comment_count: dynamic.answer.comment_count,
                        create_time: dynamic.create_time,
                    });
                }
@@ -57,6 +62,8 @@ exports.getUserDynamics = function (req, res, next) {
                    user_id: dynamic.user_id,
                    question_id: dynamic.question._id,
                    question_title: dynamic.question.title,
+                   question_attention_count: dynamic.question.attention_count,
+                   question_answer_count: dynamic.question.answer_count,
                    create_time: dynamic.create_time,
                });
            }else if(dynamic.type === 201){
@@ -67,6 +74,7 @@ exports.getUserDynamics = function (req, res, next) {
                        user_id: dynamic.user_id,
                        subject_id: dynamic.subject._id,
                        subject_title: dynamic.subject.title,
+                       subject_attention_count: dynamic.subject.attention_count,
                        create_time: dynamic.create_time,
                    });
                }
@@ -78,6 +86,8 @@ exports.getUserDynamics = function (req, res, next) {
                        user_id: dynamic.user_id,
                        question_id: dynamic.question._id,
                        question_title: dynamic.question.title,
+                       question_attention_count: dynamic.question.attention_count,
+                       question_answer_count: dynamic.question.answer_count,
                        create_time: dynamic.create_time,
                    });
                }
