@@ -225,9 +225,7 @@ exports.cancelAttentionToUser = function (userID, toUserID, callback) {
             return callback(err);
         }
         
-        if(result.nModified === 0){
-            callback(null, true);
-        }
+        callback(null, result.nModified === 1);
     });
 };
 
@@ -385,6 +383,6 @@ exports.cancelAttentionToSubject = function (userID, toSubjectID, callback) {
             return callback(err);
         }
 
-        callback(null, result.ok === 1);
+        callback(null, result.nModified === 1);
     });
 };

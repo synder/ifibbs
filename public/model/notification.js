@@ -128,27 +128,41 @@ exports.changeNotificationToNotified = function (userID, notificationIDS, callba
 /**
  * @desc 用户发布了新的问题，推送通知给关注该用户的用户
  * */
-exports.notifyAttentionUserForUserPublishNewQuestion = function (questionID, callback) {
+exports.produceForUserPublishNewQuestionMQS = function (questionID, callback) {
+    questionID = questionID.toString();
+    
     const QUEUE = rabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
-    rabbit.client.produceMessage(QUEUE, questionID, cb);
+    
+    rabbit.client.produceMessage(QUEUE, questionID, callback);
 };
 
-/**
- * @desc 接收发布问题通知
- * */
-exports.pushNotifyAttentionUserForUserPublishNewQuestion = function () {
+exports.consumeForUserPublishNewQuestionMQS = function (callback) {
     const QUEUE = rabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
-    rabbit.client.consumeMessage(QUEUE, function (err, message) {
+
+    rabbit.client.produceMessage(QUEUE, function (err, message) {
         if(err){
-            
+            return callback(err);
         }
+
+        let questionID = message.content.toString();
+        
+        if(!questionID){
+            return callback(null, null);
+        }
+        
+        //todo
+        
+        callback(null, questionID);
     });
 };
+
 
 /**
  * @desc 问题有了新的回答，推送通知给关注该问题的用户和问题的发布者
  * */
-exports.notifyAttentionUserAndOwnerForQuestionBeenAnswered = function (questionID, answerID, callback) {
+exports.produceQuestionBeenAnsweredMQS = function (questionID, answerID, callback) {
+    questionID = questionID.toString();
+    answerID = answerID.toString();
     //通知相关用户
     async.parallel({
         notifyQuestionOwner: function(cb) {
@@ -159,19 +173,29 @@ exports.notifyAttentionUserAndOwnerForQuestionBeenAnswered = function (questionI
             const QUEUE = rabbit.queues.notifications.ATTENTION_QUESTION_BEEN_ANSWERED;
             rabbit.client.produceMessage(QUEUE, questionID + ':' + answerID, cb);
         },
-    }, cb);
+    }, callback);
+};
+
+exports.consumeQuestionBeenAnsweredMQS = function (callback) {
+    
 };
 
 /**
  * @desc 问题被管理员加精，推送通知给关注该问题的发布者
  * */
-exports.notifyQuestionOwnerForQuestionBeenStickied = function (questionID, callback) {
-
+exports.produceForQuestionBeenStickiedMQS = function (questionID, callback) {
+    
+    questionID = questionID.toString();
+    
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    rabbit.client.produceMessage(QUEUE, questionID, callback);
 };
 
 /**
  * @desc 用户关注的专题有了新的文章，推送通知给关注专题的用户
  * */
-exports.notifyAttentionUserForAttentionSubjectHasNewArticle = function (questionID, answerID, callback) {
+exports.produceForAttentionSubjectHasNewArticleMQS = function (subjectID, articleID, callback) {
+    const QUEUE = rabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
 
+    rabbit.client.produceMessage(QUEUE, subjectID + ':' + articleID, callback);
 };
