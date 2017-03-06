@@ -5,6 +5,7 @@
  */
 
 const answerModel = require('../../../public/model/answer');
+const notificationModel = require('../../../public/model/notification');
 
 /**
  * @desc 获取用户提问信息
@@ -72,6 +73,12 @@ exports.createNewAnswer = function(req, res, next){
         if(err){
             return next(err);
         }
+
+        notificationModel.produceForQuestionBeenAnsweredMQS(questionID, answerID, function (err) {
+            if(err){
+                logger.error(err);
+            }
+        });
 
         res.json({
             flag: '0000',

@@ -7,6 +7,7 @@
 const async = require('async');
 
 const questionModel = require('../../../public/model/question');
+const notificationModel = require('../../../public/model/notification');
 const tagsModel = require('../../../public/model/tags');
 
 /**
@@ -136,12 +137,14 @@ exports.addNewUserQuestion = function(req, res, next){
         function (tags, cb) {
             questionDoc.tags = tags;
             questionModel.createNewQuestion(createUserId, questionDoc, cb);
-        }
+        },
     ], function (err, questionID) {
-        
-        if(err){
-            return next(err);
-        }
+
+        notificationModel.produceForUserPublishNewQuestionMQS(questionID, function (err) {
+            if(err){
+                logger.error(err);
+            }
+        });
 
         res.json({
             flag: '0000',
