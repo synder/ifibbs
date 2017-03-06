@@ -60,5 +60,12 @@ module.exports =  {
     amqp: {
         host: '127.0.0.1',
         port: '',
+    },
+
+    /**
+     * 短消息服务
+     * */
+    sms: {
+
     }
 };
