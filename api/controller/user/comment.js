@@ -112,7 +112,9 @@ exports.getUserCommentsList = function (req, res, next) {
         comments = comments.map(function (comment) {
             return {
                 question_id: comment.question_id ? comment.question_id._id : null,
+                question_title: comment.question_id ? comment.question_id.title : null,
                 answer_id: comment.answer_id ? comment.answer_id._id : null,
+                answer_content: comment.answer_id ? comment.answer_id.content : null,
                 user_id: comment.create_user_id ? comment.create_user_id._id : null,
                 user_avatar: comment.create_user_id ? comment.create_user_id.user_avatar : null,
                 user_name: comment.create_user_id ? comment.create_user_id.user_name : null,
