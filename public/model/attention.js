@@ -156,9 +156,9 @@ exports.findUserAttentionByUserID = function (userID, otherUserID, callback) {
     }
     
     let condition = {
-        status: AttentionUser.STATUS.ATTENTION,
         user_id: userID,
-        to_user_id: otherUserID
+        to_user_id: otherUserID,
+        status: AttentionUser.STATUS.ATTENTION,
     };
 
     AttentionUser.findOne(condition, callback);

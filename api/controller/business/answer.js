@@ -189,8 +189,32 @@ exports.getAnswerDetail = function(req, res, next){
     if(!questionID){
         return next(new BadRequestError('question_id is needed'));
     }
-
-    answerModel.getQuestionAnswerDetail(answerID, function (err, answer) {
+    
+    async.parallel({
+        answerDetail: function(cb) {
+            answerModel.getQuestionAnswerDetail(answerID, cb);
+        },
+        isFavour: function (cb) {
+            if(!userID){
+                return cb(null, false);
+            }
+            favourModel.findUserFavourAnswerByFavourID(userID, answerID, cb);
+        },
+        isCollected: function (cb) {
+            if(!userID){
+                return cb(null, false);
+            }
+            collectionModel.findUserCollectionAnswerByCollectionID(userID, answerID, cb);
+        },
+    }, function (err, results) {
+    
+        if(err){
+             return ;
+        }
+        
+        let answer = results.answerDetail;
+        let isFavour = results.isFavour;
+        let isCollected = results.isCollected;
         
         if(!answer){
             return res.json({
@@ -199,7 +223,7 @@ exports.getAnswerDetail = function(req, res, next){
                 result: null
             });
         }
-        
+
         let result = {
             question_id: answer.question_id ? answer.question_id._id : null,
             answer_id: answer.id,
@@ -213,10 +237,10 @@ exports.getAnswerDetail = function(req, res, next){
             user_name: answer.create_user_id ? answer.create_user_id.user_name : null,
             user_profile: answer.create_user_id ? answer.create_user_id.user_profile : null,
             is_attention_user: false,
-            is_favour: false,
-            is_collected: false,
+            is_favour: isFavour,
+            is_collected: isCollected,
         };
-
+        
         if(!userID){
             return res.json({
                 flag: '0000',
@@ -226,32 +250,20 @@ exports.getAnswerDetail = function(req, res, next){
         }
 
         let toUserID =  answer.create_user_id ? answer.create_user_id.id : null;
-
-        //用户已经登录，查看关注情况
-        async.parallel({
-            isFavour: function (cb) {
-                favourModel.findUserFavourAnswerByFavourID(userID, answerID, cb);
-            },
-            isCollected: function (cb) {
-                collectionModel.findUserCollectionAnswerByCollectionID(userID, answerID, cb);
-            },
-            isAttentionUser: function (cb) {
-                attentionModel.findUserAttentionByUserID(userID, toUserID, cb);
-            }
-        }, function (err, results) {
+        
+        attentionModel.findUserAttentionByUserID(userID, toUserID, function (err, doc) {
             if(err){
                 return next(err);
             }
 
-            result.is_favour = !!results.isFavour;
-            result.is_collected = !!results.isCollected;
-            result.is_attention_user = !!results.isAttentionUser;
+            result.is_attention_user = !!doc;
 
-            return res.json({
+            res.json({
                 flag: '0000',
                 msg: '',
                 result: result
             });
         });
+        
     });
 };
