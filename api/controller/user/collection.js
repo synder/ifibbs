@@ -74,6 +74,7 @@ exports.getUserAnswerCollections = function(req, res, next){
                 collection_id: collection._id,
                 question_id: collection.question_id ? collection.question_id._id : null,
                 question_title: collection.question_id ? collection.question_id.title : null,
+                question_tags: collection.question_id ? collection.question_id.tags : null,
                 answer_id: collection.answer_id ? collection.answer_id._id : null,
                 answer_content: collection.answer_id ? collection.answer_id.content : null,
                 answer_comment_count: collection.answer_id ? collection.answer_id.comment_count : null,
