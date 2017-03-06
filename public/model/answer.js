@@ -7,8 +7,12 @@
 const async = require('async');
 const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
+const rabbit = require('../service/rabbit');
 
 const QuestionAnswer = mongodb.model('QuestionAnswer');
+const User = mongodb.model('User');
+const Question = mongodb.model('Question');
+const UserDynamic = mongodb.model('UserDynamic');
 
 /**
  * @desc 获取最热回答列表
@@ -22,7 +26,20 @@ exports.getHottestAnswerList = function (pageSkip, pageSize, callback) {
         },
         answers: function (cb) {
             QuestionAnswer.find({})
-                .populate('create_user_id question_id')
+                .populate({
+                    path: 'create_user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'question_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Question.STATUS.NORMAL
+                    }
+                })
                 .sort('comment_count favour_count create_time')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -44,7 +61,20 @@ exports.getLatestAnswerList = function (pageSkip, pageSize, callback) {
         },
         answers: function (cb) {
             QuestionAnswer.find({})
-                .populate('create_user_id question_id')
+                .populate({
+                    path: 'create_user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'question_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Question.STATUS.NORMAL
+                    }
+                })
                 .sort('-create_time -_id')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -69,8 +99,21 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
         answers: function (cb) {
             if(!lastAnswerID){
                 QuestionAnswer.find(condition)
-                    .populate('create_user_id question_id')
-                    .sort('-_id') //这里只能使用ID排序，不能使用create_time排序
+                    .populate({
+                        path: 'create_user_id',
+                        match: {
+                            _id: {$exists : true},
+                            status: User.STATUS.NORMAL
+                        }
+                    })
+                    .populate({
+                        path: 'question_id',
+                        match: {
+                            _id: {$exists : true},
+                            status: Question.STATUS.NORMAL
+                        }
+                    })
+                    .sort('-create_time -_id') //这里只能使用ID排序，不能使用create_time排序
                     .skip(pageSkip)
                     .limit(pageSize)
                     .exec(cb);
@@ -82,8 +125,21 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
                     
                     if(!QuestionAnswer){
                         return QuestionAnswer.find(condition)
-                            .populate('create_user_id question_id')
-                            .sort('-_id') //这里只能使用ID排序，不能使用create_time排序
+                            .populate({
+                                path: 'create_user_id',
+                                match: {
+                                    _id: {$exists : true},
+                                    status: User.STATUS.NORMAL
+                                }
+                            })
+                            .populate({
+                                path: 'question_id',
+                                match: {
+                                    _id: {$exists : true},
+                                    status: Question.STATUS.NORMAL
+                                }
+                            })
+                            .sort('-create_time -_id')
                             .skip(pageSkip)
                             .limit(pageSize)
                             .exec(cb);
@@ -98,8 +154,21 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
                     };
 
                     QuestionAnswer.find(pageCondition)
-                        .populate('create_user_id question_id')
-                        .sort('-_id') //这里只能使用ID排序，不能使用create_time排序
+                        .populate({
+                            path: 'create_user_id',
+                            match: {
+                                _id: {$exists : true},
+                                status: User.STATUS.NORMAL
+                            }
+                        })
+                        .populate({
+                            path: 'question_id',
+                            match: {
+                                _id: {$exists : true},
+                                status: Question.STATUS.NORMAL
+                            }
+                        })
+                        .sort('-create_time -_id')
                         .limit(pageSize)
                         .exec(cb);
                 });
@@ -197,7 +266,20 @@ exports.getUserAnswerList = function (userID, pageSkip, pageSize, callback) {
         },
         answers: function (cb) {
             QuestionAnswer.find(condition)
-                .populate('create_user_id question_id')
+                .populate({
+                    path: 'create_user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'question_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Question.STATUS.NORMAL
+                    }
+                })
                 .sort('-create_time -_id')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -217,7 +299,20 @@ exports.getQuestionAnswerDetail = function (answerID, callback) {
     };
     
     QuestionAnswer.findOne(condition)
-        .populate('create_user_id question_id')
+        .populate({
+            path: 'create_user_id',
+            match: {
+                _id: {$exists : true},
+                status: User.STATUS.NORMAL
+            }
+        })
+        .populate({
+            path: 'question_id',
+            match: {
+                _id: {$exists : true},
+                status: Question.STATUS.NORMAL
+            }
+        })
         .exec(callback);
 };
 
@@ -245,36 +340,47 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
         
         let answerID = result._id;
         
-        //创建es索引
-        elasticsearch.create({
-            index: elasticsearch.indices.answer,
-            type: elasticsearch.indices.answer,
-            id: answerID.toString(),
-            body: {
-                create_user_id: result.create_user_id,
-                question_id: result.question_id,
-                content: result.content,
-                create_time: result.create_time,
-                update_time: result.update_time
-            }
-        }, function (err, response) {
-            if (err) {
-                return callback(err);
-            }
-
+        async.parallel({
+            createElasticSearchIndex: function(cb) {
+                //创建es索引
+                elasticsearch.create({
+                    index: elasticsearch.indices.answer,
+                    type: elasticsearch.indices.answer,
+                    id: answerID.toString(),
+                    body: {
+                        create_user_id: result.create_user_id,
+                        question_id: result.question_id,
+                        content: result.content,
+                        create_time: result.create_time,
+                        update_time: result.update_time
+                    }
+                }, cb);
+            },
+            insertUserDynamic: function(cb) {
+                //插入用户动态
+                UserDynamic.create({
+                    status: UserDynamic.STATUS.ENABLE,
+                    type: UserDynamic.TYPES.ANSWER_QUESTION,
+                    user_id: userID,
+                    question: questionID,
+                    answer: answerID,
+                    create_time: new Date(),
+                    update_time: new Date(),
+                }, cb);
+            },
+        }, function (err, results) {
             callback(null, answerID);
         });
-        
     });
 };
 
 /**
  * @desc 删除回答
  * */
-exports.removeQuestionAnswer = function (userID, answerID, callback) {
+exports.removeQuestionAnswer = function (answerID, callback) {
     let condition = {
         _id: answerID,
-        create_user_id: userID,
+        status: QuestionAnswer.STATUS.NORMAL
     };
     
     let update = {
@@ -286,6 +392,22 @@ exports.removeQuestionAnswer = function (userID, answerID, callback) {
             return callback(err);
         }
         
-        callback(null, result.ok === 1);
+        if(result.nModified !== 1){
+            return  callback(null, false);
+        }
+
+        //删除搜索引擎索引
+        elasticsearch.delete({
+            index: elasticsearch.indices.answer,
+            type: elasticsearch.indices.answer,
+            id: answerID.toString()
+        }, function (err, results) {
+
+            if(err && err.status != 404){
+                return callback(err);
+            }
+
+            callback(null, true);
+        });
     });
 };

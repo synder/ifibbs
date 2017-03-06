@@ -23,23 +23,44 @@ exports.getQuestionDetail = function(req, res, next){
     if(!questionID){
         return next(new BadRequestError('question_id is needed'));
     }
+    
+    async.parallel({
+        questionDetail: function(cb) {
+            questionModel.getQuestionDetail(questionID, cb);
+        },
+        isAttented: function(cb) { 
+            if(!userID){
+                return cb(null, false);
+            }
 
-    questionModel.getQuestionDetail(questionID, function (err, question) {
-        
-        if(err){
-            return next(err);
+            attentionModel.findUserAttentionByQuestionID(userID, questionID, function (err, doc) {
+                if(err){
+                    return cb(err);
+                }
+                
+                cb(null, !!doc);
+            });
+        },
+        createHistory: function (cb) {
+            historyModel.createBrowseQuestionHistory(userID, questionID, cb);
         }
+    }, function (err, results) {
+    
+        if(err){
+             return next(err);
+        }
+        
+        let question = results.questionDetail;
+        let isAttented = results.isAttented;
         
         if(!question){
             return res.json({
                 flag: '0000',
                 msg: '',
-                result: {}
+                result: null
             });
         }
 
-        let isAttented = false;
-        
         let result = {
             id: question._id,
             title: question.title,
@@ -53,36 +74,11 @@ exports.getQuestionDetail = function(req, res, next){
             create_user_id: question.create_user_id,
             create_time: question.create_time.valueOf(),
         };
-        
-        if(!userID){
-            return res.json({
-                flag: '0000',
-                msg: '',
-                result: result
-            });
-        }
 
-        //创建浏览历史
-        async.parallel({
-            createHistory: function(cb){
-                historyModel.createBrowseQuestionHistory(userID, questionID, cb);
-            },
-            
-            hasAttention: function (cb) {
-                attentionModel.findUserAttentionByQuestionID(userID, questionID, cb);
-            }
-        }, function (err, results) {
-            if(err){
-                return next(err);
-            }
-
-            result.is_attented = !!results.hasAttention;
-
-            res.json({
-                flag: '0000',
-                msg: '',
-                result: result
-            });
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: result
         });
     });
 };

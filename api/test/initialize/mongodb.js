@@ -36,6 +36,8 @@ const Recommend = db.model('Recommend');
 const QuestionTag = db.model('QuestionTag');
 const Subject = db.model('Subject');
 const User = db.model('User');
+const UserDynamic = db.model('UserDynamic');
+const UserShare = db.model('UserShare');
 
 const USER_ID = "58aa50177ddbf5507c51f082";
 const USER_ID_OTHER = "58aa50177ddbf5507c51f083";
@@ -65,6 +67,8 @@ const emptyCollection = function (callback) {
         function (cb) {QuestionTag.remove({}, cb);},
         function (cb) {Subject.remove({}, cb);},
         function (cb) {User.remove({}, cb);},
+        function (cb) {UserDynamic.remove({}, cb);},
+        function (cb) {UserShare.remove({}, cb);},
     ], callback);
 };
 
@@ -86,6 +90,7 @@ const initSubject = function (callback) {
         icon           : icon,
         cover          : cover,
         article_count  : 0,
+        attention_count: 0,
         display_order  : Mock.Random.natural(1, 10),
         create_time    : new Date(),
         update_time    : new Date(),
@@ -99,6 +104,7 @@ const initSubject = function (callback) {
             icon           : icon,
             cover          : cover,
             article_count  : 0,
+            attention_count: 0,
             display_order  : Mock.Random.natural(1, 10),
             create_time    : new Date(),
             update_time    : new Date(),
@@ -274,11 +280,9 @@ const initRecommend = function (callback) {
             type        : Recommend.TYPE.QUESTION,   //排序方式
             create_time : new Date(),     //排序方式
             update_time : new Date(),     //排序方式
-            question    : {
-                question_id: questionID,
-                answer_id: answerID,
-                answer_user_id: userID,
-            },  //推荐问题
+            question: questionID,
+            answer: answerID,
+            user: userID,
             activity    : null,  //推荐活动
             article     : null,  //推荐文章
         });
@@ -290,9 +294,7 @@ const initRecommend = function (callback) {
             create_time : new Date(),     //排序方式
             update_time : new Date(),     //排序方式
             question    : null,  //推荐问题
-            activity    : {
-                activity_id: activityID
-            },  //推荐活动
+            activity    : activityID,  //推荐活动
             article     : null,  //推荐文章
         });
 
@@ -304,9 +306,7 @@ const initRecommend = function (callback) {
                 update_time : new Date(),     //排序方式
                 question    : null,  //推荐问题
                 activity    : null,  //推荐活动
-                article     : {
-                    article_id : articleID
-                },  //推荐文章
+                article     : articleID,  //推荐文章
         });
         
 

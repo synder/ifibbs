@@ -27,49 +27,45 @@ exports.getRecommendList = function(req, res, next){
             
             if(recommend.type === 1){
                 
-                if(recommend.question && 
-                    recommend.question.question_id && 
-                    recommend.question.answer_id && 
-                    recommend.question.answer_user_id){
+                if(recommend.question && recommend.answer && recommend.user){
 
                     let temp = {
-                        id : recommend.question.question_id._id,
+                        id : recommend.question._id,
                         type: recommend.type,
-                        title: recommend.question.question_id.title,
-                        tags: recommend.question.question_id.tags || [],
+                        title: recommend.question.title,
+                        tags: recommend.question.tags || [],
                         cover: null,
-                        favour_count: recommend.question.question_id.favour_count,
-                        attention_count: recommend.question.question_id.attention_count,
-                        collect_count: recommend.question.question_id.collect_count,
-                        answer_count: recommend.question.question_id.answer_count,
+                        favour_count: recommend.question.favour_count,
+                        attention_count: recommend.question.attention_count,
+                        collect_count: recommend.question.collect_count,
+                        answer_count: recommend.question.answer_count,
                         comment_count: 0,
-                        create_time: recommend.question.question_id.create_time,
-                        eg_answer_id: recommend.question.answer_id._id,
-                        eg_answer_time: recommend.question.answer_id.create_time,
-                        eg_answer_content: recommend.question.answer_id.content,
-                        eg_answer_user_id: recommend.question.answer_user_id._id,
-                        eg_answer_user_name: recommend.question.answer_user_id.user_name,
+                        create_time: recommend.question.create_time,
+                        eg_answer_id: recommend.answer._id,
+                        eg_answer_time: recommend.answer.create_time,
+                        eg_answer_content: recommend.answer.content,
+                        eg_answer_user_id: recommend.user._id,
+                        eg_answer_user_name: recommend.user.user_name,
                     };
                     
                     recommends.push(temp);
                 }
             }else if(recommend.type === 2){
 
-                if(recommend.activity &&
-                    recommend.activity.activity_id){
+                if(recommend.activity){
 
                     let temp = {
-                        id : recommend.activity.activity_id._id,
+                        id : recommend.activity._id,
                         type: recommend.type,
-                        title: recommend.activity.activity_id.title,
+                        title: recommend.activity.title,
                         tags: null,
-                        cover: recommend.activity.activity_id.cover,
-                        favour_count: recommend.activity.activity_id.favour_count,
+                        cover: recommend.activity.cover,
+                        favour_count: recommend.activity.favour_count,
                         attention_count: 0,
-                        comment_count: recommend.activity.activity_id.comment_count,
-                        collect_count: recommend.activity.activity_id.collect_count, 
+                        comment_count: recommend.activity.comment_count,
+                        collect_count: recommend.activity.collect_count, 
                         answer_count: 0,
-                        create_time: recommend.activity.activity_id.create_time,
+                        create_time: recommend.activity.create_time,
                         eg_answer_id: null,
                         eg_answer_time: null,
                         eg_answer_content: null,
@@ -81,21 +77,20 @@ exports.getRecommendList = function(req, res, next){
                 }
                 
             }else if(recommend.type === 3){
-                if(recommend.article &&
-                    recommend.article.article_id){
+                if(recommend.article){
 
                     let temp = {
-                        id : recommend.article.article_id._id,
+                        id : recommend.article._id,
                         type: recommend.type,
-                        title: recommend.article.article_id.title,
+                        title: recommend.article.title,
                         tags: null,
-                        cover: recommend.article.article_id.cover,
-                        favour_count: recommend.article.article_id.favour_count,
+                        cover: recommend.article.cover,
+                        favour_count: recommend.article.favour_count,
                         attention_count: 0,
-                        comment_count: recommend.article.article_id.comment_count,
-                        collect_count: recommend.article.article_id.collect_count,
+                        comment_count: recommend.article.comment_count,
+                        collect_count: recommend.article.collect_count,
                         answer_count: 0,
-                        create_time: recommend.article.article_id.create_time,
+                        create_time: recommend.article.create_time,
                         eg_answer_id: null,
                         eg_answer_time: null,
                         eg_answer_content: null,
@@ -106,21 +101,20 @@ exports.getRecommendList = function(req, res, next){
                     recommends.push(temp);
                 }
             }else if(recommend.type === 4){
-                if(recommend.subject &&
-                    recommend.subject.subject_id){
+                if(recommend.subject){
 
                     let temp = {
-                        id : recommend.subject.subject_id._id,
+                        id : recommend.subject._id,
                         type: recommend.type,
-                        title: recommend.subject.subject_id.title,
+                        title: recommend.subject.title,
                         tags: null,
-                        cover: recommend.subject.subject_id.cover,
+                        cover: recommend.subject.cover,
                         favour_count: 0,
                         attention_count: 0,
                         comment_count: 0,
                         collect_count: 0,
                         answer_count: 0,
-                        create_time: recommend.article.article_id.create_time,
+                        create_time: recommend.subject.create_time,
                         eg_answer_id: null,
                         eg_answer_time: null,
                         eg_answer_content: null,

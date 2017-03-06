@@ -6,6 +6,9 @@
 const async = require('async');
 const mongodb = require('../service/mongodb').db;
 
+const User = mongodb.model('User');
+const UserDynamic = mongodb.model('UserDynamic');
+const Subject = mongodb.model('Subject');
 const Question = mongodb.model('Question');
 const AttentionQuestion = mongodb.model('AttentionQuestion');
 const AttentionSubject = mongodb.model('AttentionSubject');
@@ -27,7 +30,20 @@ exports.getUserAttentionQuestionList = function (userID, pageSkip, pageSize, cal
 
         questions: function (cb) {
             AttentionQuestion.find(condition)
-                .populate('question_id question_user_id')
+                .populate({
+                    path: 'question_user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'question_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Question.STATUS.NORMAL
+                    }
+                })
                 .sort('create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -41,19 +57,25 @@ exports.getUserAttentionQuestionList = function (userID, pageSkip, pageSize, cal
  * @desc 获取用户关注用户列表
  * */
 exports.getUserAttentionUserList = function (userID, pageSkip, pageSize, callback) {
-    let conditoin = {
+    let condition = {
         user_id: userID,
         to_user_id : { $exists: true}
     };
 
     async.parallel({
         count: function (cb) {
-            AttentionUser.count(conditoin, cb);
+            AttentionUser.count(condition, cb);
         },
 
         users: function (cb) {
-            AttentionUser.find(conditoin)
-                .populate('to_user_id')
+            AttentionUser.find(condition)
+                .populate({
+                    path: 'to_user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
                 .sort('create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -79,7 +101,13 @@ exports.getUserAttentionSubjectList = function (userID, pageSkip, pageSize, call
 
         subjects: function (cb) {
             AttentionSubject.find(condition)
-                .populate('subject_id')
+                .populate({
+                    path: 'subject_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Subject.STATUS.ENABLE
+                    }
+                })
                 .sort('create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -128,9 +156,9 @@ exports.findUserAttentionByUserID = function (userID, otherUserID, callback) {
     }
     
     let condition = {
-        status: AttentionUser.STATUS.ATTENTION,
         user_id: userID,
-        to_user_id: otherUserID
+        to_user_id: otherUserID,
+        status: AttentionUser.STATUS.ATTENTION,
     };
 
     AttentionUser.findOne(condition, callback);
@@ -158,8 +186,21 @@ exports.addAttentionToUser = function (userID, toUserID, callback) {
         if(err){
             return callback(err);
         }
+        
+        if(result.nModified === 0 && !result.upserted){
+            return callback(null, true);
+        }
 
-        callback(null, result.ok === 1);
+        UserDynamic.create({
+            status: UserDynamic.STATUS.ENABLE,
+            type: UserDynamic.TYPES.ATTENTION_USER,
+            user_id: userID,
+            user: toUserID,
+            create_time: new Date(),
+            update_time: new Date(),
+        }, function (err) {
+            callback(err, true);
+        });
     });
 };
 
@@ -183,7 +224,7 @@ exports.cancelAttentionToUser = function (userID, toUserID, callback) {
         if(err){
             return callback(err);
         }
-
+        
         callback(null, result.nModified === 1);
     });
 };
@@ -223,13 +264,27 @@ exports.addAttentionToQuestion = function (userID, toQuestionID, callback) {
                 return callback(err);
             }
             
-            if(result.upserted === null && result.nModified === 0){
-                return callback(null, false);
+            if(!result.upserted && result.nModified === 0){
+                return callback(null, true);
             }
             
-            //更新问题关注数
-            Question.update({_id: toQuestionID}, {$inc: {attention_count: 1}}, function (err) {
-                 callback(err, true);
+            async.parallel({
+                updateQuestionAttentionCount: function(cb) {
+                    //更新问题关注数
+                    Question.update({_id: toQuestionID}, {$inc: {attention_count: 1}}, cb);
+                },
+                insertUserDynamic: function(cb) {
+                    UserDynamic.create({
+                        status: UserDynamic.STATUS.ENABLE,
+                        type: UserDynamic.TYPES.ATTENTION_QUESTION,
+                        user_id: userID,
+                        question: toQuestionID,
+                        create_time: new Date(),
+                        update_time: new Date(),
+                    }, cb);
+                },
+            }, function (err, results) {
+                callback(err, true);
             });
         });
     });
@@ -257,7 +312,7 @@ exports.cancelAttentionToQuestion = function (userID, toQuestionID, callback) {
         }
         
         if(result.nModified === 0){
-            return callback(null, false);
+            return callback(null, true);
         }
 
         //更新问题关注数
@@ -290,7 +345,20 @@ exports.addAttentionToSubject = function (userID, toSubjectID, callback) {
             return callback(err);
         }
 
-        callback(null, result.ok === 1);
+        if(result.nModified === 0 && !result.upserted){
+            return callback(null, false);
+        }
+
+        UserDynamic.create({
+            status: UserDynamic.STATUS.ENABLE,
+            type: UserDynamic.TYPES.ATTENTION_SUBJECT,
+            user_id: userID,
+            subject: toSubjectID,
+            create_time: new Date(),
+            update_time: new Date(),
+        }, function (err) {
+            callback(err, true);
+        });
     });
 };
 
@@ -315,6 +383,6 @@ exports.cancelAttentionToSubject = function (userID, toSubjectID, callback) {
             return callback(err);
         }
 
-        callback(null, result.ok === 1);
+        callback(null, result.nModified === 1);
     });
 };

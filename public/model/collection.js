@@ -11,6 +11,7 @@ const elasticsearch = require('../service/elasticsearch').client;
 const UserCollection = mongodb.model('UserCollection');
 const QuestionAnswer = mongodb.model('QuestionAnswer');
 const Article = mongodb.model('Article');
+const User = mongodb.model('User');
 
 /**
  * @desc 获取用户收藏的回答列表
@@ -29,7 +30,27 @@ exports.getUserCollectionList = function (userID, pageSkip, pageSize, callback) 
 
         collections: function (cb) {
             UserCollection.find(condition)
-                .populate('answer_id article_id user_id')
+                .populate({
+                    path: 'article_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Article.STATUS.PUBLISHED
+                    }
+                })
+                .populate({
+                    path: 'answer_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: QuestionAnswer.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
                 .sort('create_time _id')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -50,7 +71,15 @@ exports.findUserCollectionAnswerByCollectionID = function (userID, collectionID,
         user_id: userID,
         target_id: collectionID,
     };
-    UserCollection.findOne(condition).populate('target_id').exec(callback);
+    UserCollection.findOne(condition)
+        .populate({
+            path: 'target_id',
+            match: {
+                _id: {$exists : true},
+                status: QuestionAnswer.STATUS.NORMAL
+            }
+        })
+        .exec(callback);
 };
 
 
@@ -63,7 +92,15 @@ exports.findUserCollectionArticleByCollectionID = function (userID, collectionID
         user_id: userID,
         target_id: collectionID,
     };
-    UserCollection.findOne(condition).populate('target_id').exec(callback);
+    UserCollection.findOne(condition)
+        .populate({
+            path: 'target_id',
+            match: {
+                _id: {$exists : true},
+                status: Article.STATUS.PUBLISHED
+            }
+        })
+        .exec(callback);
 };
 
 

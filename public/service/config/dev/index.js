@@ -23,6 +23,17 @@ module.exports =  {
         password: '',
         db: ''
     },
+    
+    /**
+     * mysql 配置文件
+     * */
+    mysql: {
+        host: '127.0.0.1',
+        port: 3306,
+        username: 'root',
+        password: 'yuwei7496560',
+        database: 'ifibbs',
+    },
 
     /**
      * 搜索服务

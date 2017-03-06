@@ -8,6 +8,8 @@ const async = require('async');
 const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
 
+const User = mongodb.model('User');
+const Question = mongodb.model('Question');
 const AnswerComment = mongodb.model('AnswerComment');
 const QuestionAnswer = mongodb.model('QuestionAnswer');
 
@@ -108,7 +110,34 @@ exports.getAnswerCommentList = function (answerID, lastCommentID, pageSkip, page
         comments: function (cb) {
             if(!lastCommentID){
                 AnswerComment.find(condition)
-                    .populate('question_id answer_id create_user_id to_user_id')
+                    .populate({
+                        path: 'question_id',
+                        match: {
+                            _id: {$exists : true},
+                            status: Question.STATUS.NORMAL
+                        }
+                    })
+                    .populate({
+                        path: 'answer_id',
+                        match: {
+                            _id: {$exists : true},
+                            status: QuestionAnswer.STATUS.NORMAL
+                        }
+                    })
+                    .populate({
+                        path: 'create_user_id',
+                        match: {
+                            _id: {$exists : true},
+                            status: User.STATUS.NORMAL
+                        }
+                    })
+                    .populate({
+                        path: 'to_user_id',
+                        match: {
+                            _id: {$exists : true},
+                            status: User.STATUS.NORMAL
+                        }
+                    })
                     .sort('-create_time -_id')
                     .skip(pageSkip)
                     .limit(pageSize)
@@ -167,7 +196,34 @@ exports.getUserAnswerCommentsList = function (userID, pageSkip, pageSize, callba
 
         comments: function (cb) {
             AnswerComment.find(condition)
-                .populate('question_id answer_id create_user_id to_user_id')
+                .populate({
+                    path: 'question_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: Question.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'answer_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: QuestionAnswer.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'create_user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'to_user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
                 .sort('-create_time -_id')
                 .skip(pageSkip)
                 .limit(pageSize)

@@ -1,5 +1,5 @@
 /**
- * @author synder on 2017/3/2
+ * @author synder on 2017/3/4
  * @copyright
  * @desc
  */
@@ -7,26 +7,38 @@
 const async = require('async');
 const mongodb = require('../service/mongodb').db;
 
+const UserDynamic = mongodb.model('UserDynamic');
 const User = mongodb.model('User');
 const Question = mongodb.model('Question');
-const Activity = mongodb.model('Activity');
-const Article = mongodb.model('Article');
 const QuestionAnswer = mongodb.model('QuestionAnswer');
-const Recommend = mongodb.model('Recommend');
+const AnswerComment = mongodb.model('AnswerComment');
+const Subject = mongodb.model('Subject');
+const Article = mongodb.model('Article');
 
 
 /**
- * @desc 获取用户推荐
+ * @desc 获取用户动态列表
  * */
-exports.getUserRecommend = function (userID, pageSkip, pageSize, callback) {
-    let condition = {};
+exports.getUserDynamicList = function (userID, pageSkip, pageSize, callback) {
+    
+    let condition = {
+        user_id: userID,
+        status: UserDynamic.STATUS.ENABLE,
+        type: {$in: [
+            UserDynamic.TYPES.PUBLISH_QUESTION,
+            UserDynamic.TYPES.ANSWER_QUESTION,
+            UserDynamic.TYPES.ATTENTION_QUESTION,
+            UserDynamic.TYPES.ATTENTION_SUBJECT,
+            UserDynamic.TYPES.COLLECT_ANSWER,
+        ]}
+    };
     
     async.parallel({
         count: function(cb) { 
-            Recommend.count(condition, cb);
+            UserDynamic.count(condition, cb);
         },
-        recommends: function(cb) { 
-            Recommend.find(condition)
+        dynamics: function(cb) {
+            UserDynamic.find(condition)
                 .populate({
                     path: 'user',
                     match: {
@@ -49,10 +61,17 @@ exports.getUserRecommend = function (userID, pageSkip, pageSize, callback) {
                     }
                 })
                 .populate({
-                    path: 'activity',
+                    path: 'comment',
                     match: {
                         _id: {$exists : true},
-                        status: Activity.STATUS.DISPLAY
+                        status: AnswerComment.STATUS.NORMAL
+                    }
+                })
+                .populate({
+                    path: 'subject',
+                    match: {
+                        _id: {$exists : true},
+                        status: Subject.STATUS.ENABLE
                     }
                 })
                 .populate({
@@ -62,7 +81,7 @@ exports.getUserRecommend = function (userID, pageSkip, pageSize, callback) {
                         status: Article.STATUS.PUBLISHED
                     }
                 })
-                .sort('-order -create_time')
+                .sort('-create_time -_id')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);

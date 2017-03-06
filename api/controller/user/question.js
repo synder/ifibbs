@@ -65,7 +65,7 @@ exports.removeUserQuestion = function(req, res, next){
         return next(new BadRequestError('question_id is needed'));
     }
 
-    questionModel.removeUserQuestion(userID, questionID, function (err, success) {
+    questionModel.removeUserQuestion(questionID, function (err, success) {
         
         if(err){
             return next(err);

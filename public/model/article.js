@@ -17,17 +17,17 @@ const Article = mongodb.model('Article');
  * */
 exports.getRecommendArticleList = function (pageSkip, pageSize, callback) {
 
-    let conditoin = {
+    let condition = {
         status: Article.STATUS.PUBLISHED
     };
 
     async.parallel({
         count: function (cb) {
-            Article.count(conditoin, cb);
+            Article.count(condition, cb);
         },
 
         articles: function (cb) {
-            Article.find(conditoin)
+            Article.find(condition)
                 .sort('top browse_count comment_count collect_count favour_count create_time')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -42,18 +42,18 @@ exports.getRecommendArticleList = function (pageSkip, pageSize, callback) {
  * */
 exports.getSubjectArticleList = function (subjectID, pageSkip, pageSize, callback) {
 
-    let conditoin = {
+    let condition = {
         status: Article.STATUS.PUBLISHED,
         subject_id: subjectID
     };
 
     async.parallel({
         count: function (cb) {
-            Article.count(conditoin, cb);
+            Article.count(condition, cb);
         },
 
         articles: function (cb) {
-            Article.find(conditoin)
+            Article.find(condition)
                 .sort('top browse_count comment_count collect_count favour_count create_time')
                 .skip(pageSkip)
                 .limit(pageSize)
@@ -82,5 +82,5 @@ exports.getArticleDetail = function (articleID, callback) {
  * @desc 获取文章评论列表
  * */
 exports.getArticleCommentsList = function (articleID, pageSkip, pageSize, callback) {
-    
+    //todo
 };

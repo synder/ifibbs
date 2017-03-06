@@ -9,7 +9,10 @@ const async = require('async');
 const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
 
+const User = mongodb.model('User');
+const UserDynamic = mongodb.model('UserDynamic');
 const Article = mongodb.model('Article');
+const Question = mongodb.model('Question');
 const QuestionAnswer = mongodb.model('QuestionAnswer');
 const AnswerComment = mongodb.model('AnswerComment');
 const UserFavourAnswer = mongodb.model('UserFavourAnswer');
@@ -63,14 +66,14 @@ exports.createFavourToAnswer = function (userID, questionID, answerID, callback)
     let condition = {
         user_id: userID,
         answer_id: answerID,
-        qestion_id: questionID
+        question_id: questionID
     };
     
     let update = {
         status: UserFavourAnswer.STATUS.FAVOUR,
         user_id: userID,
         answer_id: answerID,
-        qestion_id: questionID,
+        question_id: questionID,
         create_time: new Date(),
         update_time: new Date(),
     };
@@ -80,12 +83,27 @@ exports.createFavourToAnswer = function (userID, questionID, answerID, callback)
             return callback(err);
         }
 
-        if(result.upserted == null && result.nModified){
+        if(!result.upserted && result.nModified === 0){
             return callback(null, false);
         }
-
-        //更新问题关注数
-        QuestionAnswer.update({_id: answerID}, {$inc: {favour_count: 1}}, function (err) {
+        
+        async.parallel({
+            updateQuestionAnswer: function(cb) {
+                //更新问题关注数
+                QuestionAnswer.update({_id: answerID}, {$inc: {favour_count: 1}}, cb);
+            },
+            insertUserDynamic: function(cb) {
+                UserDynamic.create({
+                    status: UserDynamic.STATUS.ENABLE,
+                    type: UserDynamic.TYPES.FAVOUR_ANSWER,
+                    user_id: userID,
+                    question: questionID,
+                    answer: answerID,
+                    create_time: new Date(),
+                    update_time: new Date(),
+                }, cb);
+            },
+        }, function (err, results) {
             callback(err, true);
         });
     });
@@ -152,12 +170,26 @@ exports.createFavourToArticle = function (userID, subjectID, articleID, callback
             return callback(err);
         }
 
-        if(result.upserted == null && result.nModified){
+        if(!result.upserted && result.nModified === 0){
             return callback(null, false);
         }
 
-        //更新问题关注数
-        Article.update({_id: articleID}, {$inc: {favour_count: 1}}, function (err) {
+        async.parallel({
+            updateArticle: function(cb) {
+                //更新文章关注数
+                Article.update({_id: articleID}, {$inc: {favour_count: 1}}, cb);
+            },
+            insertUserDynamic: function(cb) {
+                UserDynamic.create({
+                    status: UserDynamic.STATUS.ENABLE,
+                    type: UserDynamic.TYPES.FAVOUR_ARTICLE,
+                    user_id: userID,
+                    article: articleID,
+                    create_time: new Date(),
+                    update_time: new Date(),
+                }, cb);
+            },
+        }, function (err, results) {
             callback(err, true);
         });
     });
@@ -227,8 +259,23 @@ exports.createFavourToAnswerComment = function (userID, answerID, commentID, cal
             return callback(null, false);
         }
 
-        //更新问题关注数
-        AnswerComment.update({_id: commentID}, {$inc: {favour_count: 1}}, function (err) {
+        async.parallel({
+            updateAnswerComment: function(cb) {
+                //更新评论关注数
+                AnswerComment.update({_id: commentID}, {$inc: {favour_count: 1}}, cb);
+            },
+            insertUserDynamic: function(cb) {
+                UserDynamic.create({
+                    status: UserDynamic.STATUS.ENABLE,
+                    type: UserDynamic.TYPES.FAVOUR_ARTICLE,
+                    user_id: userID,
+                    answer: answerID,
+                    comment: commentID,
+                    create_time: new Date(),
+                    update_time: new Date(),
+                }, cb);
+            },
+        }, function (err, results) {
             callback(err, true);
         });
     });

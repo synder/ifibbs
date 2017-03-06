@@ -122,102 +122,80 @@ exports.changeNotificationToNotified = function (userID, notificationIDS, callba
 };
 
 
+
+
+//推送通知=======================================================================================
 /**
- * @desc 用户因某个用户回答了我发布的问题而被推送通知
+ * @desc 用户发布了新的问题，推送通知给关注该用户的用户
  * */
-exports.pushNotificationForQuestionBeenAnswered = function (userID, clientID, answerUserName, questionTitle, callback) {
+exports.produceForUserPublishNewQuestionMQS = function (questionID, callback) {
+    questionID = questionID.toString();
     
-    let notification = {
-        user_id     : userID,
-        status      : UserNotification.STATUS.UN_NOTIFIED,
-        category    : UserNotification.CATEGORY.BUSINESS,
-        type        : UserNotification.TYPE.QUESTION_BEEN_ANSWERED,
-        push_title       : answerUserName + '回答了您的问题',
-        push_content     : questionTitle,
-        push_client_id   : clientID,
-        create_time : new Date(),
-        update_time : new Date(),
-    };
+    const QUEUE = rabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
     
-    UserNotification.create(notification, function (err, doc) {
+    rabbit.client.produceMessage(QUEUE, questionID, callback);
+};
+
+exports.consumeForUserPublishNewQuestionMQS = function (callback) {
+    const QUEUE = rabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
+
+    rabbit.client.produceMessage(QUEUE, function (err, message) {
         if(err){
             return callback(err);
         }
+
+        let questionID = message.content.toString();
         
-        let msg = doc._id.toString();
+        if(!questionID){
+            return callback(null, null);
+        }
         
-        rabbit.client.produceMessage(rabbit.queues.BUSINESS.QUESTION_BEEN_ANSWERED, msg, function (err, ch) {
-            if(err){
-                return callback(err);
-            }
-            
-            return callback(null, doc._id);
-        });
+        //todo
+        
+        callback(null, questionID);
     });
 };
 
+
 /**
- * @desc 用户因某个用户对我的回答进行的点赞而被推送通知
+ * @desc 问题有了新的回答，推送通知给关注该问题的用户和问题的发布者
  * */
-exports.pushNotificationForAnswerBeenFavoured = function (userID, clientID, favourUserName, questionTitle, callback) {
-    let notification = {
-        user_id     : userID,
-        status      : UserNotification.STATUS.UN_NOTIFIED,
-        category    : UserNotification.CATEGORY.BUSINESS,
-        type        : UserNotification.TYPE.ANSWER_BEEN_FAVOURED,
-        push_title       : favourUserName + '赞了您的回答',
-        push_content     : questionTitle,
-        push_client_id   : clientID,
-        create_time : new Date(),
-        update_time : new Date(),
-    };
+exports.produceQuestionBeenAnsweredMQS = function (questionID, answerID, callback) {
+    questionID = questionID.toString();
+    answerID = answerID.toString();
+    //通知相关用户
+    async.parallel({
+        notifyQuestionOwner: function(cb) {
+            const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_ANSWERED;
+            rabbit.client.produceMessage(QUEUE, questionID + ':' + answerID, cb);
+        },
+        notifyQuestionAttentionUser: function(cb) {
+            const QUEUE = rabbit.queues.notifications.ATTENTION_QUESTION_BEEN_ANSWERED;
+            rabbit.client.produceMessage(QUEUE, questionID + ':' + answerID, cb);
+        },
+    }, callback);
+};
 
-    UserNotification.create(notification, function (err, doc) {
-        if(err){
-            return callback(err);
-        }
-
-        let msg = doc._id.toString();
-
-        rabbit.client.produceMessage(rabbit.queues.BUSINESS.ANSWER_BEEN_FAVOURED, msg, function (err, ch) {
-            if(err){
-                return callback(err);
-            }
-
-            return callback(null, doc._id);
-        });
-    });
+exports.consumeQuestionBeenAnsweredMQS = function (callback) {
+    
 };
 
 /**
- * @desc 用户因某个用户分享了我发布的问题而被推送通知
+ * @desc 问题被管理员加精，推送通知给关注该问题的发布者
  * */
-exports.pushNotificationForQuestionBeenShared = function (userID, clientID, sharedUserName, questionTitle, callback) {
-    let notification = {
-        user_id     : userID,
-        status      : UserNotification.STATUS.UN_NOTIFIED,
-        category    : UserNotification.CATEGORY.BUSINESS,
-        type        : UserNotification.TYPE.QUESTION_BEEN_SHARED,
-        push_title       : sharedUserName + '分享您的问题',
-        push_content     : questionTitle,
-        push_client_id   : clientID,
-        create_time : new Date(),
-        update_time : new Date(),
-    };
+exports.produceForQuestionBeenStickiedMQS = function (questionID, callback) {
+    
+    questionID = questionID.toString();
+    
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    rabbit.client.produceMessage(QUEUE, questionID, callback);
+};
 
-    UserNotification.create(notification, function (err, doc) {
-        if(err){
-            return callback(err);
-        }
+/**
+ * @desc 用户关注的专题有了新的文章，推送通知给关注专题的用户
+ * */
+exports.produceForAttentionSubjectHasNewArticleMQS = function (subjectID, articleID, callback) {
+    const QUEUE = rabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
 
-        let msg = doc._id.toString();
-
-        rabbit.client.produceMessage(rabbit.queues.BUSINESS.QUESTION_BEEN_SHARED, msg, function (err, ch) {
-            if(err){
-                return callback(err);
-            }
-
-            return callback(null, doc._id);
-        });
-    });
+    rabbit.client.produceMessage(QUEUE, subjectID + ':' + articleID, callback);
 };

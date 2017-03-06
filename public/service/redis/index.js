@@ -10,7 +10,7 @@ const redis = require('redis');
 const config = require('../config');
 
 if(!config && !config.redis && config.redis.host){
-    throw new Error('please provice mongodb config');
+    throw new Error('please provide mongodb config');
 }
 
 const redisConfig = {

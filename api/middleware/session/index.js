@@ -17,7 +17,7 @@ module.exports = function () {
 
         req.session = {};
 
-        if(NODE_ENV === 'dev'){
+        if(NODE_ENV === 'pre' || NODE_ENV === 'dev'){
             req.session = {
                 id: '58aa50177ddbf5507c51f082',
                 username: 'synder',

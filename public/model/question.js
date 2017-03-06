@@ -7,9 +7,10 @@
 const async = require('async');
 const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
+const rabbit = require('../service/rabbit');
 
 const Question = mongodb.model('Question');
-
+const UserDynamic = mongodb.model('UserDynamic');
 
 /**
  * @desc 新建问题
@@ -36,28 +37,43 @@ exports.createNewQuestion = function (userID, question, callback) {
         if (err) {
             return callback(err);
         }
-
-        //在搜索引擎中创建索引
+       
         let questionID = result._id;
+        
+        async.parallel({
+            createElasticSearchDoc: function(cb) {
+                //在搜索引擎中创建索引
+                let elasticDoc = {
+                    title: questionDoc.title,
+                    describe: questionDoc.describe,
+                    tags: questionDoc.tags,
+                    create_time: questionDoc.create_time,
+                    update_time: questionDoc.update_time,
+                };
 
-        let elasticDoc = {
-            title: questionDoc.title,
-            describe: questionDoc.describe,
-            tags: questionDoc.tags,
-            create_time: questionDoc.create_time,
-            update_time: questionDoc.update_time,
-        };
-
-        elasticsearch.create({
-            index: elasticsearch.indices.question,
-            type: elasticsearch.indices.question,
-            id: questionID.toString(),
-            body: elasticDoc
-        }, function (err, response) {
-            if (err) {
+                elasticsearch.create({
+                    index: elasticsearch.indices.question,
+                    type: elasticsearch.indices.question,
+                    id: questionID.toString(),
+                    body: elasticDoc
+                }, cb);
+            },
+            insertUserDynamic: function(cb) {
+                //插入用户动态
+                UserDynamic.create({
+                    status: UserDynamic.STATUS.ENABLE,
+                    type: UserDynamic.TYPES.PUBLISH_QUESTION,
+                    user_id: userID,
+                    question: questionID,
+                    create_time: new Date(),
+                    update_time: new Date(),
+                }, cb);
+            },
+        }, function (err, results) {
+            if(err){
                 return callback(err);
             }
-
+            
             callback(null, questionID);
         });
     });
@@ -66,11 +82,11 @@ exports.createNewQuestion = function (userID, question, callback) {
 /**
  * @desc 删除用户提问
  * */
-exports.removeUserQuestion = function (userID, questionID, callback) {
+exports.removeUserQuestion = function (questionID, callback) {
 
     let condition = {
         _id: questionID,
-        create_user_id: userID,
+        status: Question.STATUS.NORMAL,
     };
 
     let update = {
@@ -85,7 +101,7 @@ exports.removeUserQuestion = function (userID, questionID, callback) {
             return callback(err);
         }
 
-        if (result.n !== 1) {
+        if (result.nModified !== 1) {
             return callback(null, false);
         }
 
@@ -93,8 +109,13 @@ exports.removeUserQuestion = function (userID, questionID, callback) {
             index: elasticsearch.indices.question,
             type: elasticsearch.indices.question,
             id: questionID.toString()
-        }, function (err, response) {
-            callback(err, true);
+        }, function (err, results) {
+            
+            if(err && err.status != 404){
+                return callback(err);
+            }
+            
+            callback(null, true);
         });
     });
 };
