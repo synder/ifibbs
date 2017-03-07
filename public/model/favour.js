@@ -138,7 +138,8 @@ exports.cancelFavourToAnswer = function (userID, answerID, callback) {
         }
 
         //更新问题关注数
-        QuestionAnswer.update({_id: answerID}, {$inc: {favour_count: -1}}, function (err) {
+        let answerCondition = {_id: answerID, favour_count: {$gte: 1}};
+        QuestionAnswer.update(answerCondition, {$inc: {favour_count: -1}}, function (err) {
             callback(err, true);
         });
     });
@@ -224,7 +225,8 @@ exports.cancelFavourToArticle = function (userID, articleID, callback) {
         }
 
         //更新问题关注数
-        Article.update({_id: articleID}, {$inc: {favour_count: -1}}, function (err) {
+        let articleCondition = {_id: articleID, favour_count: {$gte: 1}};
+        Article.update(articleCondition, {$inc: {favour_count: -1}}, function (err) {
             callback(err, true);
         });
     });
@@ -267,7 +269,7 @@ exports.createFavourToAnswerComment = function (userID, answerID, commentID, cal
             insertUserDynamic: function(cb) {
                 UserDynamic.create({
                     status: UserDynamic.STATUS.ENABLE,
-                    type: UserDynamic.TYPES.FAVOUR_ARTICLE,
+                    type: UserDynamic.TYPES.FAVOUR_COMMENT,
                     user_id: userID,
                     answer: answerID,
                     comment: commentID,
@@ -310,7 +312,8 @@ exports.cancelFavourToAnswerComment = function (userID, commentID, callback) {
         }
 
         //更新问题关注数
-        AnswerComment.update({_id: commentID}, {$inc: {favour_count: -1}}, function (err) {
+        let commentCondition = {_id: commentID, favour_count: {$gte: 1}};
+        AnswerComment.update(commentCondition, {$inc: {favour_count: -1}}, function (err) {
             callback(err, true);
         });
     });

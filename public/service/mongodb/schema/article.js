@@ -38,8 +38,7 @@ ArticleSchema.index({status : 1});
 
 //文章状态
 ArticleSchema.statics.STATUS = {
-    UNPUBLISHED : -2,   //未发布
-    UNREADABLE : -1,    //不可读
+    UNPUBLISHED : -1,   //未发布
     PUBLISHED : 1,      //已发布
     DELETED: 0,         //已删除
 };

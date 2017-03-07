@@ -10,6 +10,99 @@ const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
 
 const Article = mongodb.model('Article');
+const Subject = mongodb.model('Subject');
+
+/**
+ * @desc 创建新的文章
+ * */
+exports.createOrUpdateNewArticle = function (createUserID, subjectID, article, callback) {
+    
+    let articleID = article.id;
+    
+    let condition = {
+        _id: articleID
+    };
+    
+    let update = {
+        status          : Article.STATUS.PUBLISHED,    //文章状态
+        top             : article.top || false,    //是否置顶
+        title           : article.title,    //文章标题
+        summary         : article.summary,    //文章摘要
+        icon            : article.icon,    //文章图标
+        cover           : article.cover,    //封面图片
+        tags            : article.tags,    //文章标签
+        content         : article.content,    //文章内容
+        browse_count    : 0,    //浏览次数
+        favour_count    : 0,    //被赞次数
+        comment_count   : 0,    //被评论次数
+        collect_count   : 0,    //被收藏次数
+        create_time     : new Date(),    //创建时间
+        update_time     : new Date(),    //更新时间
+        subject_id      : subjectID,  //文章所属主题
+        create_user_id  : createUserID      //创建人
+    };
+    
+    let options = {
+        new: true,
+        upsert: true
+    };
+    
+    Article.findOneAndUpdate(condition, update, options, function (err, article) {
+        if(err){
+            return callback(err);
+        }
+        
+        if(!article){
+            return callback(null, null);
+        }
+        
+        if(!subjectID){
+            return callback(null, article);
+        }
+
+        //更新专题文章数
+        Subject.update({_id: subjectID}, {$inc: {article_count: 1}}, function (err) {
+            callback(err, article);
+        });
+    });
+    
+};
+
+/**
+ * @desc 删除文章
+ * */
+exports.removeArticle = function (articleID, callback) {
+
+    let condition = {
+        _id: articleID,
+        status: {$ne: Article.STATUS.DELETED}
+    };
+
+    let update = {
+        status          : Article.STATUS.DELETED,    //文章状态
+        update_time     : new Date(),    //更新时间
+    };
+
+    Article.findOneAndUpdate(condition, update, function (err, article) {
+        if(err){
+            return callback(err);
+        }
+
+        if(!article){
+            return callback(null, false);
+        }
+        
+        if(!article.subject_id){
+            return callback(null, false);
+        }
+
+        //更新专题文章数
+        let subjectCondition = {_id: article.subject_id, article_count:{$gte: 1}};
+        Subject.update(subjectCondition, {$inc: {article_count: -1}}, function (err) {
+            callback(err, true);
+        });
+    });
+};
 
 
 /**

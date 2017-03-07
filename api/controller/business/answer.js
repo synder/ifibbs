@@ -27,7 +27,6 @@ exports.getHottestAnswer = function(req, res, next){
         let answers = [];
         
         result.answers.forEach(function (answer) {
-            
             if(answer.create_user_id && answer.question_id){
                 answers.push({
                     id: answer.id,

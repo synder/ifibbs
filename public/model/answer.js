@@ -341,6 +341,7 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
         let answerID = result._id;
         
         async.parallel({
+            
             createElasticSearchIndex: function(cb) {
                 //创建es索引
                 elasticsearch.create({
@@ -356,6 +357,19 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
                     }
                 }, cb);
             },
+            
+            //更新回答数量
+            updateQuestionAnswerCount: function (cb) {
+                
+                let condition = {
+                    _id: questionID,
+                };
+                
+                let update = {$inc: {answer_count: 1}};
+                
+                Question.update(condition, update, cb);
+            },
+            
             insertUserDynamic: function(cb) {
                 //插入用户动态
                 UserDynamic.create({
@@ -368,6 +382,7 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
                     update_time: new Date(),
                 }, cb);
             },
+            
         }, function (err, results) {
             callback(null, answerID);
         });
@@ -380,34 +395,52 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
 exports.removeQuestionAnswer = function (answerID, callback) {
     let condition = {
         _id: answerID,
-        status: QuestionAnswer.STATUS.NORMAL
+        status: {$ne: QuestionAnswer.STATUS.REMOVED}
     };
     
     let update = {
         status: QuestionAnswer.STATUS.REMOVED
     };
     
-    QuestionAnswer.update(condition, update, function (err, result) {
+    QuestionAnswer.findOneAndUpdate(condition, update, function (err, answer) {
         if(err){
             return callback(err);
         }
         
-        if(result.nModified !== 1){
+        if(!answer){
             return  callback(null, false);
         }
+        
+        let questionID = answer.question_id;
+        
+        async.parallel({
+            //更新回答数量
+            updateQuestionAnswerCount: function(cb) {
+                let condition = {
+                    _id: questionID,
+                };
 
-        //删除搜索引擎索引
-        elasticsearch.delete({
-            index: elasticsearch.indices.answer,
-            type: elasticsearch.indices.answer,
-            id: answerID.toString()
+                let update = {$inc: {answer_count: -1}};
+
+                Question.update(condition, update, cb);
+            },
+
+            //删除搜索引擎索引
+            deleteElasticSearchIndex: function(cb) {
+                elasticsearch.delete({
+                    index: elasticsearch.indices.answer,
+                    type: elasticsearch.indices.answer,
+                    id: answerID.toString()
+                }, function (err, results) {
+                    if(err && err.status == 404){
+                        callback(null);
+                    }else{
+                        callback(err, results)
+                    }
+                });
+            },
         }, function (err, results) {
-
-            if(err && err.status != 404){
-                return callback(err);
-            }
-
-            callback(null, true);
+            callback(err, true);
         });
     });
 };
