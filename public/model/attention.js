@@ -188,9 +188,10 @@ exports.addAttentionToUser = function (userID, toUserID, callback) {
         }
         
         if(result.nModified === 0 && !result.upserted){
-            return callback(null, true);
+            return callback(null, false);
         }
 
+        //插入用户动态
         UserDynamic.create({
             status: UserDynamic.STATUS.ENABLE,
             type: UserDynamic.TYPES.ATTENTION_USER,
@@ -211,6 +212,7 @@ exports.cancelAttentionToUser = function (userID, toUserID, callback) {
     let condition = {
         user_id: userID,
         to_user_id: toUserID,
+        status: AttentionUser.STATUS.ATTENTION,
     };
 
     let update = {
@@ -258,8 +260,12 @@ exports.addAttentionToQuestion = function (userID, toQuestionID, callback) {
             update_time: new Date(),
         };
         
+        let options = {
+            upsert: true
+        };
+        
 
-        AttentionQuestion.update(condition, update, {upsert: true}, function (err, result) {
+        AttentionQuestion.update(condition, update, options, function (err, result) {
             if(err){
                 return callback(err);
             }
@@ -269,10 +275,12 @@ exports.addAttentionToQuestion = function (userID, toQuestionID, callback) {
             }
             
             async.parallel({
+                
                 updateQuestionAttentionCount: function(cb) {
                     //更新问题关注数
                     Question.update({_id: toQuestionID}, {$inc: {attention_count: 1}}, cb);
                 },
+                
                 insertUserDynamic: function(cb) {
                     UserDynamic.create({
                         status: UserDynamic.STATUS.ENABLE,
@@ -297,6 +305,7 @@ exports.cancelAttentionToQuestion = function (userID, toQuestionID, callback) {
     let condition = {
         user_id: userID,
         question_id: toQuestionID,
+        status: AttentionQuestion.STATUS.ATTENTION,
     };
 
     let update = {
@@ -312,11 +321,15 @@ exports.cancelAttentionToQuestion = function (userID, toQuestionID, callback) {
         }
         
         if(result.nModified === 0){
-            return callback(null, true);
+            return callback(null, false);
         }
 
         //更新问题关注数
-        Question.update({_id: toQuestionID}, {$inc: {attention_count: -1}}, function (err) {
+        let questionCondition = {
+            _id: toQuestionID, 
+            attention_count: {$gte: 1}
+        };
+        Question.update(questionCondition, {$inc: {attention_count: -1}}, function (err) {
             callback(err, true);
         });
     });
@@ -327,6 +340,7 @@ exports.cancelAttentionToQuestion = function (userID, toQuestionID, callback) {
  * @desc 添加关注专题
  * */
 exports.addAttentionToSubject = function (userID, toSubjectID, callback) {
+    
     let condition = {
         user_id: userID,
         subject_id: toSubjectID,
@@ -339,8 +353,12 @@ exports.addAttentionToSubject = function (userID, toSubjectID, callback) {
         create_time: new Date(),
         update_time: new Date(),
     };
+    
+    let options = {
+        upsert: true
+    };
 
-    AttentionSubject.update(condition, update, {upsert: true}, function (err, result) {
+    AttentionSubject.update(condition, update, options, function (err, result) {
         if(err){
             return callback(err);
         }
@@ -349,14 +367,25 @@ exports.addAttentionToSubject = function (userID, toSubjectID, callback) {
             return callback(null, false);
         }
 
-        UserDynamic.create({
-            status: UserDynamic.STATUS.ENABLE,
-            type: UserDynamic.TYPES.ATTENTION_SUBJECT,
-            user_id: userID,
-            subject: toSubjectID,
-            create_time: new Date(),
-            update_time: new Date(),
-        }, function (err) {
+        async.parallel({
+
+            updateQuestionAttentionCount: function(cb) {
+                //更新专题关注数
+                Subject.update({_id: toSubjectID}, {$inc: {attention_count: 1}}, cb);
+            },
+
+            insertUserDynamic: function(cb) {
+                //创建用户动态
+                UserDynamic.create({
+                    status: UserDynamic.STATUS.ENABLE,
+                    type: UserDynamic.TYPES.ATTENTION_SUBJECT,
+                    user_id: userID,
+                    subject: toSubjectID,
+                    create_time: new Date(),
+                    update_time: new Date(),
+                }, cb);
+            },
+        }, function (err, results) {
             callback(err, true);
         });
     });
@@ -369,6 +398,7 @@ exports.cancelAttentionToSubject = function (userID, toSubjectID, callback) {
     let condition = {
         user_id: userID,
         subject_id: toSubjectID,
+        status: AttentionSubject.STATUS.ATTENTION,
     };
 
     let update = {
@@ -382,7 +412,19 @@ exports.cancelAttentionToSubject = function (userID, toSubjectID, callback) {
         if(err){
             return callback(err);
         }
+        
+        if(result.nModified === 0){
+            return callback(null, false);
+        }
 
-        callback(null, result.nModified === 1);
+        //更新专题关注数
+        let subjectCondition = {
+            _id: toSubjectID, 
+            attention_count: {$gte: 1}
+        };
+        
+        Subject.update(subjectCondition, {$inc: {attention_count: -1}}, function (err) {
+            callback(err, true);
+        });
     });
 };

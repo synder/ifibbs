@@ -9,6 +9,7 @@ const mongodb = require('../service/mongodb').db;
 const elasticsearch = require('../service/elasticsearch').client;
 
 const User = mongodb.model('User');
+const UserDynamic = mongodb.model('UserDynamic');
 const Question = mongodb.model('Question');
 const AnswerComment = mongodb.model('AnswerComment');
 const QuestionAnswer = mongodb.model('QuestionAnswer');
@@ -34,18 +35,33 @@ exports.createNewAnswerComment = function (userID, answerID, comment, callback) 
         update_time: new Date(),
     };
 
-    AnswerComment.create(commentDoc, function (err, answer) {
+    AnswerComment.create(commentDoc, function (err, comment) {
         if(err){
             return callback(err);
         }
         
-        if(!answer){
-            return callback(null, answer);
+        if(!comment){
+            return callback(null, null);
         }
         
-        //更新评论数
-        QuestionAnswer.update({_id: answerID}, {$inc: {comment_count: 1}}, function (err) {
-            callback(err, answer);
+        async.parallel({
+            updateAnswerCommentCount: function(cb) {
+                //更新评论数
+                QuestionAnswer.update({_id: answerID}, {$inc: {comment_count: 1}}, cb);
+            },
+            insertUserDynamic: function(cb) {
+                //创建用户动态
+                UserDynamic.create({
+                    status: UserDynamic.STATUS.ENABLE,
+                    type: UserDynamic.TYPES.COMMENT_ANSWER,
+                    user_id: userID,
+                    answer: answerID,
+                    create_time: new Date(),
+                    update_time: new Date(),
+                }, cb);
+            },
+        }, function (err, results) {
+            callback(err, comment);
         });
     });
 };
@@ -58,6 +74,7 @@ exports.removeAnswerComment = function (userID, commentID, callback) {
     let condition = {
         create_user_id: userID,
         _id: commentID,
+        status: AnswerComment.STATUS.ENABLE,
     };
     
     let update = {
@@ -67,26 +84,20 @@ exports.removeAnswerComment = function (userID, commentID, callback) {
         }
     };
 
-    AnswerComment.update(condition, update, function (err, result) {
+    AnswerComment.findOneAndUpdate(condition, update, function (err, comment) {
         if(err){
             return callback(err);
         }
 
-        if(result.nModified === 0){
+        if(!comment){
             return callback(null, false);
         }
-        
-        AnswerComment.findOne(condition, function (err, comment) {
-            if(err){
-                return callback(err);
-            }
-            
-            let updateAnswerCondition = {_id: comment.answer_id};
-            let updateAnswer =  {$inc: {comment_count: -1}};
 
-            QuestionAnswer.update(updateAnswerCondition, updateAnswer, function (err) {
-                callback(err, true);
-            });
+        let updateAnswerCondition = {_id: comment.answer_id, comment_count: {$gte: 1}};
+        let updateAnswer =  {$inc: {comment_count: -1}};
+
+        QuestionAnswer.update(updateAnswerCondition, updateAnswer, function (err) {
+            callback(err, true);
         });
     });
 };

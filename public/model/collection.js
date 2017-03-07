@@ -13,6 +13,7 @@ const UserArticleCollection = mongodb.model('UserArticleCollection');
 const QuestionAnswer = mongodb.model('QuestionAnswer');
 const Article = mongodb.model('Article');
 const User = mongodb.model('User');
+const UserDynamic = mongodb.model('UserDynamic');
 
 /**
  * @desc 获取用户收藏的回答列表
@@ -176,9 +177,24 @@ exports.addAnswerToCollection = function (userID, questionID, answerID, callback
         if(result.upserted == null && result.nModified){
             return callback(null, false);
         }
-
-        //更新收藏数
-        QuestionAnswer.update({_id: answerID}, {$inc: {collect_count: 1}}, function (err) {
+        
+        async.parallel({
+            updateQuestionCollectCount: function(cb) {
+                //更新收藏数
+                QuestionAnswer.update({_id: answerID}, {$inc: {collect_count: 1}}, cb);
+            },
+            insertUserDynamic: function(cb) {
+                //插入用户动态
+                UserDynamic.create({
+                    status: UserDynamic.STATUS.ENABLE,
+                    type: UserDynamic.TYPES.COLLECT_ANSWER,
+                    user_id: userID,
+                    answer: answerID,
+                    create_time: new Date(),
+                    update_time: new Date(),
+                }, cb);
+            },
+        }, function (err, results) {
             callback(err, true);
         });
     });
@@ -213,7 +229,8 @@ exports.removeAnswerFromCollection = function (userID, answerID, callback) {
         }
 
         //更新收藏数
-        QuestionAnswer.update({_id: answerID}, {$inc: {collect_count: -1}}, function (err) {
+        let answerCondition = {_id: answerID, collect_count: {$gte: 1}};
+        QuestionAnswer.update(answerCondition, {$inc: {collect_count: -1}}, function (err) {
             callback(err, true);
         });
         
@@ -248,10 +265,26 @@ exports.addArticleToCollection = function (userID, subjectID, articleID, callbac
             return callback(null, false);
         }
 
-        //更新收藏数
-        Article.update({_id: articleID}, {$inc: {collect_count: 1}}, function (err) {
+        async.parallel({
+            updateQuestionCollectCount: function(cb) {
+                //更新收藏数
+                Article.update({_id: articleID}, {$inc: {collect_count: 1}}, cb);
+            },
+            insertUserDynamic: function(cb) {
+                //插入用户动态
+                UserDynamic.create({
+                    status: UserDynamic.STATUS.ENABLE,
+                    type: UserDynamic.TYPES.COLLECT_ARTICLE,
+                    user_id: userID,
+                    article: articleID,
+                    create_time: new Date(),
+                    update_time: new Date(),
+                }, cb);
+            },
+        }, function (err, results) {
             callback(err, true);
         });
+       
     });
 };
 
@@ -285,7 +318,11 @@ exports.removeArticleFromCollection = function (userID, articleID, callback) {
         }
 
         //更新收藏数
-        Article.update({_id: articleID}, {$inc: {collect_count: -1}}, function (err) {
+        let articleCondition = {
+            _id: articleID,
+            collect_count: {$gte: 1}
+        };
+        Article.update(articleCondition, {$inc: {collect_count: -1}}, function (err) {
             callback(err, true);
         });
     });

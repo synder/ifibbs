@@ -10,7 +10,7 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId;
 
 const STATUS = {
-    UNFAVOUR : 0,  //取消点赞
+    UN_FAVOUR : 0,  //取消点赞
     FAVOUR : 1     //点赞
 };
 
@@ -41,8 +41,8 @@ const UserFavourAnswerSchema = new Schema({
     create_time : {type: Date, required: true},    //创建时间
     update_time : {type: Date, required: true},    //更新时间
     answer_id   : {type: ObjectId, required: true, ref: 'QuestionAnswer'},  //点赞对象ID
-    qestion_id  : {type: ObjectId, required: true, ref: 'Question'}, //点赞对象ID
-    user_id     : {type: ObjectId, required: true, ref: 'User'},    //点赞用户ID
+    question_id  : {type: ObjectId, required: true, ref: 'Question'},       //点赞对象ID
+    user_id     : {type: ObjectId, required: true, ref: 'User'},            //点赞用户ID
 });
 
 UserFavourAnswerSchema.virtual('id', function () {
@@ -60,9 +60,9 @@ const UserFavourAnswerCommentSchema = new Schema({
     status      : {type: Number, required: true},    //点赞状态
     create_time : {type: Date,   required: true},    //创建时间
     update_time : {type: Date,   required: true},    //更新时间
-    comment_id  : {type: ObjectId, required: true, ref: 'AnswerComment'}, //点赞对象ID
+    comment_id  : {type: ObjectId, required: true, ref: 'AnswerComment'},  //点赞对象ID
     answer_id   : {type: ObjectId, required: true, ref: 'QuestionAnswer'}, //点赞对象ID
-    user_id     : {type: ObjectId, required: true, ref: 'User'},    //点赞用户ID
+    user_id     : {type: ObjectId, required: true, ref: 'User'},           //点赞用户ID
 });
 
 UserFavourAnswerCommentSchema.virtual('id', function () {

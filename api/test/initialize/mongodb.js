@@ -92,7 +92,7 @@ const initSubject = function (callback) {
         cover          : cover,
         article_count  : 0,
         attention_count: 0,
-        display_order  : Mock.Random.natural(1, 10),
+        display_order  : 11,
         create_time    : new Date(),
         update_time    : new Date(),
     });
@@ -124,7 +124,7 @@ const initArticle = function (callback) {
     let icon = 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518';
     let cover = 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518';
     
-    let doc = {
+    let docs = [{
         _id: ARTICLE_ID,
         status          : Article.STATUS.PUBLISHED,    //文章状态
         top             : true,    //是否置顶
@@ -142,9 +142,30 @@ const initArticle = function (callback) {
         update_time     : new Date(),    //更新时间
         subject_id      : SUBJECT_ID,  //文章所属主题
         create_user_id  : USER_ID      //创建人
-    };
+    }];
     
-    Article.create(doc, callback);
+    for(let i = 0; i < 100; i++){
+        docs.push({
+            status          : Article.STATUS.PUBLISHED,    //文章状态
+            top             : true,    //是否置顶
+            title           : Mock.Random.ctitle(10, 20),    //文章标题
+            summary         : Mock.Random.ctitle(100, 200),    //文章摘要
+            icon            : icon,    //文章图标
+            cover           : cover,    //封面图片
+            tags            : ['测试'],    //文章标签
+            content         : Mock.Random.ctitle(100, 200),    //文章内容
+            browse_count    : 6,    //浏览次数
+            favour_count    : 7,    //被赞次数
+            comment_count   : 8,    //被评论次数
+            collect_count   : 9,    //被收藏次数
+            create_time     : new Date(),    //创建时间
+            update_time     : new Date(),    //更新时间
+            subject_id      : SUBJECT_ID,  //文章所属主题
+            create_user_id  : USER_ID      //创建人
+        });
+    }
+    
+    Article.create(docs, callback);
 };
 
 
