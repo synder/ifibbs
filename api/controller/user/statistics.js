@@ -33,8 +33,6 @@ exports.getUserStatisticsData = function (req, res, next) {
              return ;
         }
         
-        console.log(results);
-        
         let userAttentionUserCount = results.userAttentionUserCount;
         let userBeenAttentionCount = results.userBeenAttentionCount;
         let userBeenFavouredCount = results.userBeenFavouredCount;
