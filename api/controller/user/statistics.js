@@ -43,9 +43,9 @@ exports.getUserStatisticsData = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                be_favour_count: userAttentionUserCount,
+                be_favour_count: userBeenFavouredCount,
                 be_attention_count: userBeenAttentionCount,
-                favour_user_count: userBeenFavouredCount,
+                favour_user_count: userAttentionUserCount,
             }
         });
         
