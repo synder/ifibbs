@@ -40,13 +40,6 @@ exports.getUserDynamicList = function (userID, pageSkip, pageSize, callback) {
         dynamics: function(cb) {
             UserDynamic.find(condition)
                 .populate({
-                    path: 'user',
-                    match: {
-                        _id: {$exists : true},
-                        status: User.STATUS.NORMAL
-                    }
-                })
-                .populate({
                     path: 'user_id',
                     match: {
                         _id: {$exists : true},
@@ -68,24 +61,10 @@ exports.getUserDynamicList = function (userID, pageSkip, pageSize, callback) {
                     }
                 })
                 .populate({
-                    path: 'comment',
-                    match: {
-                        _id: {$exists : true},
-                        status: AnswerComment.STATUS.NORMAL
-                    }
-                })
-                .populate({
                     path: 'subject',
                     match: {
                         _id: {$exists : true},
                         status: Subject.STATUS.ENABLE
-                    }
-                })
-                .populate({
-                    path: 'article',
-                    match: {
-                        _id: {$exists : true},
-                        status: Article.STATUS.PUBLISHED
                     }
                 })
                 .sort('-create_time -_id')
