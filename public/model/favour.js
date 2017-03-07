@@ -123,7 +123,7 @@ exports.cancelFavourToAnswer = function (userID, answerID, callback) {
     
     let update = {
         $set:{
-            status: UserFavourAnswer.STATUS.UNFAVOUR,
+            status: UserFavourAnswer.STATUS.UN_FAVOUR,
             update_time: new Date(),
         }
     };
@@ -210,7 +210,7 @@ exports.cancelFavourToArticle = function (userID, articleID, callback) {
 
     let update = {
         $set:{
-            status: UserFavourArticle.STATUS.UNFAVOUR,
+            status: UserFavourArticle.STATUS.UN_FAVOUR,
             update_time: new Date(),
         }
     };
@@ -297,7 +297,7 @@ exports.cancelFavourToAnswerComment = function (userID, commentID, callback) {
 
     let update = {
         $set:{
-            status: UserFavourAnswerComment.STATUS.UNFAVOUR,
+            status: UserFavourAnswerComment.STATUS.UN_FAVOUR,
             update_time: new Date(),
         }
     };

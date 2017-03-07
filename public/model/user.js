@@ -7,13 +7,17 @@
 const async = require('async');
 const crypto = require('crypto');
 
-const mongodb = require('../service/mongodb').db;
+const mongo = require('../service/mongodb');
+const mongodb = mongo.db;
 const mysql = require('../service/mysql').db;
 const redis = require('../service/redis').client;
 
 const User = mongodb.model('User');
+const AttentionUser = mongodb.model('AttentionUser');
+const QuestionAnswer = mongodb.model('QuestionAnswer');
+const AnswerComment = mongodb.model('AnswerComment');
 
-const _self = this;
+const self = this;
 
 /**
  * @desc 密码加密
@@ -229,7 +233,7 @@ exports.getUserLoginToken = function (token, callback) {
 
 
             if (session.expire - Date.now() < 1000 * 3600 * 24 * 5) {
-                _self.updateUserLoginToken(session.id, token, sessionExpire);
+                self.updateUserLoginToken(session.id, token, sessionExpire);
             }
 
             return callback(null, session)
@@ -253,7 +257,7 @@ exports.getUserLoginToken = function (token, callback) {
                 };
 
                 if (new Date(session.expire).getTime() - Date.now() < 1000 * 3600 * 24 * 5) {
-                    _self.updateUserLoginToken(session.id, token, sessionExpire);
+                    self.updateUserLoginToken(session.id, token, sessionExpire);
                 }
 
                 return callback(null, session)
@@ -364,4 +368,76 @@ exports.updateUserTencentQQ = function (userID) {
  * */
 exports.updateUserSinaWeibo = function (userID) {
 
+};
+
+
+//用户统计信息================================================================
+/**
+ * @desc 获取用户关注的用户数
+ * */
+exports.getUserAttentionOtherUserCount = function (userID, callback) {
+    let condition = {
+        user_id: userID,
+        status: AttentionUser.STATUS.ATTENTION
+    };
+    
+    AttentionUser.count(condition, callback);
+};
+
+/**
+ * @desc 获取用户被关注数
+ * */
+exports.getUserBeenAttentionUserCount = function (userID, callback) {
+    let condition = {
+        to_user_id: userID,
+        status: AttentionUser.STATUS.ATTENTION
+    };
+
+    AttentionUser.count(condition, callback);
+};
+
+/**
+ * @desc 获取用户被点赞次数
+ * */
+exports.getUserBeenFavouredCount = function (userID, callback) {
+    //统计回答收到的赞 + 评论收到的赞
+    async.parallel({
+        answerBeenFavouredCount: function(cb) {
+            
+            QuestionAnswer.aggregate()
+                .match({ create_user_id: mongo.ObjectId(userID)})
+                .project({favour: '$favour_count'})
+                .group({
+                    _id: null,
+                    count: { $sum: "$favour" }
+                })
+                .exec(cb);
+        },
+        
+        commentBeenFavouredCount: function(cb) {
+
+            AnswerComment.aggregate()
+                .match({ create_user_id: mongo.ObjectId(userID)})
+                .project({favour: '$favour_count'})
+                .group({
+                    _id: null,
+                    count: { $sum: "$favour" }
+                })
+                .exec(cb);
+        },
+    }, function (err, results) {
+    
+        if(err){
+             return callback(err);
+        }
+        
+        let answerBeenFavouredCount = results.answerBeenFavouredCount[0] ? (results.answerBeenFavouredCount[0].count || 0) : 0;
+        let commentBeenFavouredCount = results.commentBeenFavouredCount[0] ? (results.commentBeenFavouredCount[0].count || 0) : 0;
+        
+        let total = answerBeenFavouredCount + commentBeenFavouredCount;
+        
+        callback(null, total);
+        
+    });
+    
 };
