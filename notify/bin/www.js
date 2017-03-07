@@ -5,3 +5,5 @@
  */
 
 const app = require('../app');
+
+console.log('notify server start successed');

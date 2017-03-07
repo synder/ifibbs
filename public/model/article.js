@@ -54,7 +54,7 @@ exports.getSubjectArticleList = function (subjectID, pageSkip, pageSize, callbac
 
         articles: function (cb) {
             Article.find(condition)
-                .sort('top browse_count comment_count collect_count favour_count create_time')
+                .sort('top browse_count create_time')
                 .skip(pageSkip)
                 .limit(pageSize)
                 .exec(cb);

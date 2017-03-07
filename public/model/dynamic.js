@@ -47,6 +47,13 @@ exports.getUserDynamicList = function (userID, pageSkip, pageSize, callback) {
                     }
                 })
                 .populate({
+                    path: 'user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .populate({
                     path: 'question',
                     match: {
                         _id: {$exists : true},
