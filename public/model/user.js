@@ -84,7 +84,7 @@ exports.getUserByMobile = function (phone, callback) {
 
 
 /**
- * @desc 根据用户手机和密码查找用户
+ * @desc 根据用户手机和密码登录
  * */
 exports.getUserByMobileAndPassword = function (phone, pass, callback) {
 
@@ -111,6 +111,99 @@ exports.getUserByMobileAndPassword = function (phone, pass, callback) {
 
         callback(null, user);
     });
+};
+
+/*
+ * @desc 第三方登录
+ * */
+exports.userLoginWithThirdPartyAccount = function (uid, socialType, name, union_id, callback) {
+    let condition = {};
+    let userDoc = {};
+    let now = new Date();
+    if(socialType == 1){
+        condition ={
+            bind_tencent_wechat: {$exists: true},
+            'bind_tencent_wechat.uid': uid,
+        };
+
+        userDoc = {
+            status: User.STATUS.NORMAL,
+            user_name: '',
+            user_profile: '',
+            user_avatar: '',
+            user_mobile: '',
+            user_password: '',
+            create_time: now,
+            update_time: now,
+            pass_salt_str: '',
+            bind_tencent_wechat:{
+                uid: uid,
+                union_id: union_id,
+                name: name,
+            }
+        };
+    }
+
+    if(socialType == 2){
+        condition ={
+            bind_tencent_qq: {$exists: true},
+            'bind_tencent_qq.uid': uid,
+        };
+
+        userDoc = {
+            status: User.STATUS.NORMAL,
+            user_name: '',
+            user_profile: '',
+            user_avatar: '',
+            user_mobile: '',
+            user_password: '',
+            create_time: now,
+            update_time: now,
+            pass_salt_str: '',
+            bind_tencent_qq:{
+                uid: uid,
+                union_id: union_id,
+                name: name,
+            }
+        };
+    }
+
+    if(socialType == 3){
+        condition ={
+            bind_sina_weibo: {$exists: true},
+            'bind_sina_weibo.uid': uid,
+        };
+
+        userDoc = {
+            status: User.STATUS.NORMAL,
+            user_name: '',
+            user_profile: '',
+            user_avatar: '',
+            user_mobile: '',
+            user_password: '',
+            create_time: now,
+            update_time: now,
+            pass_salt_str: '',
+            bind_sina_weibo:{
+                uid: uid,
+                union_id: union_id,
+                name: name,
+            }
+        };
+    }
+    User.findOne(condition, function (err, user) {
+        if(err){
+            return callback(err)
+        }
+
+        if(user){
+           return callback(null, user, true)
+        }
+
+        User.create(userDoc, function (err, userInfo) {
+            callback(null, userInfo, false)
+        })
+    })
 };
 
 /**
@@ -184,31 +277,24 @@ exports.updateUserLoginToken = function (userID, token, expire, callback) {
 
     let sessionExpire = parseInt((expire - Date.now())/1000);
 
-    redis.set(token, JSON.stringify(session), function (err, result) {
+    redis.setex(token, sessionExpire, JSON.stringify(session), function (err, result) {
         if (err) {
             return callback(err)
         }
 
-        redis.expire(token, sessionExpire, function (err, result) {
+        User.findOne(condition, function (err, result) {
             if (err) {
-                return callback(err)
+                return callback(err);
             }
 
+            result.update_time = new Date();
+            result.login_token.token = token;
+            result.login_token.expire = expire;
 
-            User.findOne(condition, function (err, result) {
-                if (err) {
-                    return callback(err);
-                }
-
-                result.update_time = new Date();
-                result.login_token.token = token;
-                result.login_token.expire = expire;
-
-                result.save(function (err, doc) {
-                    callback(null, !!doc);
-                })
-
+            result.save(function (err, doc) {
+                callback(null, !!doc);
             })
+
         })
     });
 };
@@ -333,7 +419,6 @@ exports.updateUserPasswordWithMobile = function (phone, newPassword, callback) {
         });
     });
 };
-
 
 /**
  * @desc 绑定手机号

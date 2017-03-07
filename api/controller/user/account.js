@@ -5,6 +5,7 @@
  */
 const userModel = require('../../../public/model/user');
 const captchaModel = require('../../../public/model/captcha');
+const deviceModel = require('../../../public/model/device');
 const UUID = require('uuid/v4');
 
 
@@ -114,13 +115,14 @@ exports.userRegisterWithPhone = function (req, res, next) {
     let codeID = req.body.code_id;
     let code = req.body.code;
     let randomString = req.body.code_random;
+    let registerPlatform = req.body.registerPlatform;
 
     if (!mobile) {
         return next(new BadRequestError('mobile_number is need'));
     }
 
     if (!password) {
-        return next(new BadRequestError('password is need'));
+        return next(new BadRequestError('user_password is need'));
     }
 
     if (!codeID) {
@@ -131,7 +133,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
         return next(new BadRequestError('code is need'));
     }
 
-    captchaModel.verifySmsSecurityCode(codeID, mobile, code, randomString, 5, true, function (err, result) {
+    captchaModel.verifySmsSecurityCode(codeID, mobile, code, randomString, 5, true, function (err, result) {//验证验证码信息
         if (err) {
             return next(err)
         }
@@ -140,7 +142,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
             return next(new BadRequestError('code has Been tampered with'));
         }
 
-        userModel.createNewUser(mobile, password, function (err, user) {
+        userModel.createNewUser(mobile, password, function (err, user) {//写入用户数据
             if (err) {
                 return next(err)
             }
@@ -153,21 +155,65 @@ exports.userRegisterWithPhone = function (req, res, next) {
             let token = UUID();
             let expire = Date.now() + 1000 * 3600 * 24 * 30;
 
-            userModel.updateUserLoginToken(userId, token, expire, function (err, success) {
+            userModel.updateUserLoginToken(userId, token, expire, function (err, success) {//更新session
                 if(err){
                     return next(err)
                 }
 
-            });
+                if(registerPlatform == 1 || registerPlatform == 2){//写入设备信息
+                    let device = {
+                        deviceToken: req.body.registerDeviceNo,
+                        devicePlatform: registerPlatform,
+                    };
 
-            res.json({
-                flag: '0000',
-                msg: '',
-                result: {
-                    token: token,
-                    ok: true,
+                    if(req.body.device_resolution){
+                        device.deviceResolution = req.body.device_resolution;
+                    }
+
+                    if(req.body.device_brand){
+                        device.deviceBrand = req.body.device_brand;
+                    }
+
+                    if(req.body.device_version){
+                        device.deviceVersion = req.body.device_version;
+                    }
+
+                    deviceModel.createNewDevice(userId, device, function (err, doc) {
+                        if(err){
+                            return next(err)
+                        }
+
+                        res.json({
+                            flag: '0000',
+                            msg: '',
+                            result: {
+                                juid: userId,
+                                login_token: token,
+                                loginFashion: 'phone',
+                                ok: true,
+                                bindWeChat: false,
+                                bindQQ: false,
+                                bindWeibo: false,
+                            }
+                        })
+                    })
+                } else {
+
+                    res.json({
+                        flag: '0000',
+                        msg: '',
+                        result: {
+                            juid: userId,
+                            login_token: token,
+                            loginFashion: 'phone',
+                            ok: true,
+                            bindWeChat: false,
+                            bindQQ: false,
+                            bindWeibo: false,
+                        }
+                    })
                 }
-            })
+            });
         })
     });
 };
@@ -211,8 +257,13 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
                 flag: '0000',
                 msg: '',
                 result: {
-                    token: token,
                     ok: true,
+                    juid: userId,
+                    login_token: token,
+                    loginFashion: 'phone',
+                    bindWeChat: !!user.bind_tencent_wechat,
+                    bindQQ: !!user.bind_tencent_qq,
+                    bindWeibo: !!user.bind_sina_weibo,
                 }
             })
         });
@@ -227,7 +278,92 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
  * @desc 用户使用第三方账户登录
  * */
 exports.userLoginWithThirdPartyAccount = function (req, res, next) {
+    let uid = req.body.openid;
+    let union_id = req.body.union_id || null;
+    let name = req.body.name;
+    let registerPlatform = req.body.registerPlatform;  //1: ANDROID 2: IOS 3: PC 4: H5 5: OTHER
+    let socialType = req.body.socialType; //1：微信 2: qq 3: 新浪微博
 
+    let loginFashion = '';
+
+    if(socialType == 1){
+        loginFashion = 'wechat';
+    }else if(socialType == 2){
+        loginFashion = 'qq';
+    }else{
+        loginFashion = 'weibo'
+    }
+
+    userModel.userLoginWithThirdPartyAccount(uid, socialType, name, union_id, function (err, user, oldUser) {
+        if(err){
+            return next(err)
+        }
+
+        let userId = user._id;
+        let token = UUID();
+        let expire = Date.now() + 1000 * 3600 * 24 * 30;
+
+        userModel.updateUserLoginToken(userId, token, expire, function (err, success) {//更新session
+            if(err){
+                return next(err)
+            }
+
+            if(!oldUser && (registerPlatform == 1 || registerPlatform == 2)){//第一次进入用户且为app进入写入设备信息
+                let device = {
+                    deviceToken: req.body.registerDeviceNo,
+                    devicePlatform: registerPlatform,
+                };
+
+                if(req.body.device_resolution){
+                    device.deviceResolution = req.body.device_resolution;
+                }
+
+                if(req.body.device_brand){
+                    device.deviceBrand = req.body.device_brand;
+                }
+
+                if(req.body.device_version){
+                    device.deviceVersion = req.body.device_version;
+                }
+
+                deviceModel.createNewDevice(user._id, device, function (err, doc) {
+                    if(err){
+                        return next(err)
+                    }
+
+                    res.json({
+                        flag: '0000',
+                        msg: '',
+                        result: {
+                            ok: true,
+                            juid: userId,
+                            login_token: token,
+                            loginFashion: loginFashion,
+                            bindWeChat: !!user.bind_tencent_wechat,
+                            bindQQ: !!user.bind_tencent_qq,
+                            bindWeibo: !!user.bind_sina_weibo,
+                            bindPhone: !!user.user_mobile,
+                        }
+                    })
+                })
+            }else{
+                res.json({
+                    flag: '0000',
+                    msg: '',
+                    result: {
+                        ok: true,
+                        juid: userId,
+                        login_token: token,
+                        loginFashion: loginFashion,
+                        bindWeChat: !!user.bind_tencent_wechat,
+                        bindQQ: !!user.bind_tencent_qq,
+                        bindWeibo: !!user.bind_sina_weibo,
+                        bindPhone: !!user.user_mobile,
+                    }
+                })
+            }
+        });
+    })
 };
 
 
