@@ -16,17 +16,17 @@ const Subject = mongodb.model('Subject');
  * */
 exports.getSubjectList = function (callback) {
     
-    let conditoin = {
+    let condition = {
         status: Subject.STATUS.ENABLE
     };
     
     async.parallel({
         count: function (cb) {
-            Subject.count(conditoin, cb);
+            Subject.count(condition, cb);
         },
         
         subjects: function (cb) {
-            Subject.find(conditoin)
+            Subject.find(condition)
                 .sort('-display_order -create_time')
                 .exec(cb);
         }

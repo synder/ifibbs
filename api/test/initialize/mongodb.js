@@ -92,7 +92,7 @@ const initSubject = function (callback) {
         cover          : cover,
         article_count  : 0,
         attention_count: 0,
-        display_order  : Mock.Random.natural(1, 10),
+        display_order  : 11,
         create_time    : new Date(),
         update_time    : new Date(),
     });
