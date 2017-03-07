@@ -24,9 +24,12 @@ exports.map = function(app){
     //用户账户非登录下接口
     app.get('/account/phone', account.checkPhoneRegistered);                  //检测手机是否登录
     app.put('/account/register', account.userRegisterWithPhone);              //注册账户
-    app.put('/account/login', account.userLoginWithSystemAccount);            //账户密码登录
-    app.put('/account/login/third', account.userLoginWithThirdPartyAccount);  //第三方账户登录
-    app.post('/account/password', account.userLoginWithThirdPartyAccount);    //找回密码
+    
+    app.post('/account/login', account.userLoginWithSystemAccount);            //账户密码登录
+    app.post('/account/login/third', account.userLoginWithThirdPartyAccount);  //第三方账户登录
+    
+    app.post('/account/password', account.modifyUserPassword);                //修改密码
+    app.put('/account/password', account.resetUserPassword);                  //找回密码
     
     
     //其他用户的相关接口
