@@ -27,7 +27,7 @@ exports.getSubjectList = function (callback) {
         
         subjects: function (cb) {
             Subject.find(conditoin)
-                .sort('display_order create_time')
+                .sort('-display_order -create_time')
                 .exec(cb);
         }
     }, callback);
