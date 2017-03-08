@@ -129,7 +129,6 @@ exports.userRegisterWithPhone = function (req, res, next) {
     let password = req.body.user_password;
     let codeID = req.body.code_id;
     let code = req.body.code;
-    let randomString = req.body.code_random;
     let registerPlatform = req.body.register_platform;
 
     let  deviceInfo = null;
@@ -161,7 +160,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
     }
 
     //验证验证码信息
-    captchaModel.verifySmsSecurityCode(codeID, mobile, code, randomString, 5, true, function (err, result) {
+    captchaModel.verifySmsSecurityCode(codeID, mobile, code, 5, true, function (err, result) {
         if (err) {
             return next(err);
         }
@@ -447,7 +446,7 @@ exports.resetUserPassword = function (req, res, next) {
     }
 
     //验证验证码
-    captchaModel.verifySmsSecurityCode(codeID, mobileNumber, securityCode, randomString, 5, true, function (err, result) {
+    captchaModel.verifySmsSecurityCode(codeID, mobileNumber, securityCode, 5, true, function (err, result) {
         if (err) {
             return next(err)
         }
