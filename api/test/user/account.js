@@ -13,7 +13,7 @@ describe('用户未登录相关接口测试', function() {
         request(app)
             .put('/account/register')
             .send({
-                user_mobile: '13550501566',
+                user_mobile: '13550501565',
                 user_password: '12345678',
                 code_id: '58bce997fc71500981a75187',
                 code: '903488',
