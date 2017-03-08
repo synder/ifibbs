@@ -743,9 +743,9 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
 
 
 /**
- * @desc 用户关注的专题有了新的文章
+ * @desc 专题有了新的文章
  * */
-exports.produceForAttentionSubjectHasNewArticleMQS = function (subjectID, articleID, callback) {
+exports.produceForSubjectHasNewArticleMQS = function (subjectID, articleID, callback) {
     
     const QUEUE = rabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
     
@@ -754,7 +754,7 @@ exports.produceForAttentionSubjectHasNewArticleMQS = function (subjectID, articl
     rabbit.client.produceMessage(QUEUE, message, callback);
 };
 
-exports.consumeForAttentionSubjectHasNewArticleMQS = function (callback) {
+exports.consumeForSubjectHasNewArticleMQS = function (callback) {
     
     const QUEUE = rabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
     
@@ -805,3 +805,6 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
         
     });
 };
+
+
+//=================================================================================
