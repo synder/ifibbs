@@ -809,7 +809,7 @@ const initMongodbSecurityCode = function (callback) {
         _id: '58bce997fc71500981a75187',
         uid: '58bce997fc71500981a75187',
         status: SecurityCode.STATUS.ENABLE,   //验证码状态
-        mobile: '13550501566',        //手机号码
+        mobile: '13550501565',        //手机号码
         code: '903488',         //验证码
         use_count: 0,            //已验证次数
         expire_time: expireTime,   //过期时间
