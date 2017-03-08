@@ -16,7 +16,7 @@ const deviceModel = require('../../../public/model/device');
  * @desc 获取用户信息
  * */
 exports.getUserInfo = function (req, res, next) {
-    let userID = req.session.id;
+    let userID = req.query.user_id;
 
     userModel.getUserInfoByID(userID, function (err, result) {
         if (err) {

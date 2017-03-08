@@ -43,6 +43,8 @@ exports.map = function(app){
     app.get('/other/statistics', statistics.getUserStatisticsData);                //获取其他用户统计数据(关注人数，收藏数，被赞数)
     app.get('/other/dynamic', dynamic.getUserDynamics);  //获取其他用户动态
     
+    app.get('/other/account/info', account.getUserInfo);  //获取其他用户信息
+    
 
     //用户登录后操作
     app.get('/user/account/info', authority.check, account.getUserInfo);             //获取用户信息
