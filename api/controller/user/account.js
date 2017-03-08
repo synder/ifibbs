@@ -18,12 +18,17 @@ const deviceModel = require('../../../public/model/device');
 exports.getUserInfo = function (req, res, next) {
     let userID = req.session.id;
 
-    userModel.getUserInfo(userID, function (err, result) {
+    userModel.getUserInfoByID(userID, function (err, result) {
         if (err) {
             return next(err);
         }
 
+        if(!result){
+            return next(new BadRequestError('without the user data'))
+        }
+
         let userInfo = {
+            user_id: userID,
             user_avatar: result.user_avatar,
             user_name: result.user_name,
             user_profile: result.user_profile,
@@ -178,7 +183,6 @@ exports.userRegisterWithPhone = function (req, res, next) {
             let userId = user._id;
             let token = uuid();
             let expire = Date.now() + 1000 * 3600 * 24 * 30;
-            
             async.parallel({
                 updateDeviceInfo: function(cb) {
                     if(deviceInfo){
@@ -191,7 +195,6 @@ exports.userRegisterWithPhone = function (req, res, next) {
                     userModel.updateUserLoginToken(userId, token, expire, cb);
                 },
             }, function (err, results) {
-            
                 if(err){
                      return next(err);
                 }
@@ -233,7 +236,6 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
             deviceVersion : req.body.device_version
         };
     }
-
 
     if (!mobile) {
         return next(new BadRequestError('mobile_number is need'));
@@ -295,12 +297,12 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
  * @desc 用户使用第三方账户登录
  * */
 exports.userLoginWithThirdPartyAccount = function (req, res, next) {
-    
     let uid = req.body.open_id;
     let union_id = req.body.union_id;
     let userName = req.body.user_name;
     let registerPlatform = req.body.register_platform;  //1: ANDROID 2: IOS 3: PC 4: H5 5: OTHER
     let loginType = req.body.login_type; //1：微信 2: qq 3: 新浪微博 （0:手机账号密码）
+    let userAvatar = req.body.user_avatar;
 
     let deviceInfo;
 
@@ -332,8 +334,7 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
     if (loginType == 3) {
         loginFunction = userModel.userLoginWithWeiBoAccount;
     }
-
-    loginFunction(uid, loginType, userName, union_id, function (err, user) {
+    loginFunction(uid, union_id, userName, userAvatar, function (err, user) {
         if (err) {
             return next(err)
         }
@@ -354,7 +355,6 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
                 userModel.updateUserLoginToken(userId, token, expire, cb);
             },
         }, function (err, results) {
-
             if(err){
                 return next(err);
             }
@@ -392,6 +392,10 @@ exports.modifyUserPassword = function (req, res, next) {
 
     if (!oldPassword) {
         return next(new BadRequestError('old_password is need'));
+    }
+
+    if (oldPassword === newPassword){
+        return next(new BadRequestError('old_password  and new_password cannot be the same'));
     }
 
     userModel.updateUserPasswordWithOldPassword(userID, oldPassword, newPassword, function (err, success) {

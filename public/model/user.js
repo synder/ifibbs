@@ -68,7 +68,7 @@ exports.createNewUser = function (mobile, password, callback) {
 exports.getUserInfoByID = function (userID, callback) {
     let condition = {
         status: User.STATUS.NORMAL,
-        id: userID,
+        _id: userID,
     };
 
     User.findOne(condition, callback)
@@ -149,7 +149,7 @@ exports.userLoginWithQQAccount = function (uid, unionID, username, avatar, callb
             name: username,
         }
     };
-    
+
     User.findOne(condition, function (err, user) {
         if(err){
             return callback(err)
@@ -315,11 +315,8 @@ exports.updateUserInfo = function (userID, userInfo, callback) {
  * @desc 更新用户的登录token信息
  * */
 exports.updateUserLoginToken = function (userID, token, expire, callback) {
-    
-    expire = ~~expire;
-
     let sessionExpire = Math.round( (expire - Date.now()) / 1000 );
-    
+
     if(sessionExpire < 0){
         return callback(new Error('expire lower current timestamp'));
     }
