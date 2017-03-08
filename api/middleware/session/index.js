@@ -17,15 +17,7 @@ module.exports = function () {
 
         req.session = {};
 
-        if(NODE_ENV === 'pre' || NODE_ENV === 'dev'){
-            req.session = {
-                id: '58aa50177ddbf5507c51f082',
-                username: 'synder',
-                expire: Date.now() + 100000000
-            };
 
-            return next();
-        }
 
         let token = null;
         let now = Date.now();
@@ -38,9 +30,15 @@ module.exports = function () {
         
         token = token ? token.trim() : null;
 
-        if(null){
+        if(!token && (NODE_ENV === 'pre' || NODE_ENV === 'dev')){
+            req.session = {
+                id: '58aa50177ddbf5507c51f082',
+                username: 'synder',
+                expire: Date.now() + 100000000
+            };
             return next();
         }
+
 
         userModel.getUserLoginToken(token,function (err, session) {
             if(err){
