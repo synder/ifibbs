@@ -38,6 +38,19 @@ module.exports = function () {
         
         token = token ? token.trim() : null;
 
-        next();
+        if(null){
+            return next();
+        }
+
+        userModel.getUserLoginToken(token,function (err, session) {
+            if(err){
+                return next();
+            }
+
+            req.session = session;
+            next();
+        });
+
+
     }
 };

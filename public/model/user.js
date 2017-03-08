@@ -82,7 +82,7 @@ exports.getUserInfoByID = function (userID, callback) {
 };
 
 /**
- * @desc 根据手机号获取
+ * @desc 根据手机号获取信息
  * */
 exports.getUserByMobile = function (phone, callback) {
 
@@ -90,6 +90,45 @@ exports.getUserByMobile = function (phone, callback) {
         user_mobile: {
             $exists: true, 
             $eq: phone}
+    };
+
+    User.findOne(condition, callback);
+};
+
+/**
+ * @desc 根据qq获取信息
+ * */
+exports.getUserByQQ = function (openID, callback) {
+
+    let condition ={
+        bind_tencent_qq: {$exists: true},
+        'bind_tencent_qq.uid': openID,
+    };
+
+    User.findOne(condition, callback);
+};
+
+/**
+ * @desc 根据微信获取信息
+ * */
+exports.getUserByWechat = function (openID, callback) {
+
+    let condition ={
+        bind_tencent_wechat: {$exists: true},
+        'bind_tencent_wechat.uid': uid,
+    };
+
+    User.findOne(condition, callback);
+};
+
+/**
+ * @desc 根据微博获取信息
+ * */
+exports.getUserByWeibo = function (openID, callback) {
+
+    let condition ={
+        bind_sina_weibo: {$exists: true},
+        'bind_sina_weibo.uid': uid,
     };
 
     User.findOne(condition, callback);

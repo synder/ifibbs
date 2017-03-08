@@ -186,4 +186,31 @@ describe('用户已登陆接口测试', function() {
             });
 
     });
+
+    it('#第三方账号检测', function (done) {
+        request(app)
+            .post('/user/account/check/third')
+            .send({
+                open_id: '58aa50177ddbf5507c51f083',
+                login_type: 2,
+            })
+            .expect(200)
+            .end(function(err, res) {
+                if (err) {
+                    throw err;
+                }
+
+                chai.expect(res.body).to.have.property('flag', '0000');
+                chai.expect(res.body).to.have.property('msg', '');
+
+                chai.expect(res.body).to.have.ownProperty('result');
+
+                chai.expect(res.body.result).to.have.ownProperty('is_bound');
+                chai.expect(res.body.result).to.have.ownProperty('user_name');
+
+
+                done();
+            });
+
+    });
 });
