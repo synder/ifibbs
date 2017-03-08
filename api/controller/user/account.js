@@ -3,10 +3,13 @@
  * @copyright
  * @desc
  */
+const uuid = require('uuid/v4');
+const async = require('async');
+
 const userModel = require('../../../public/model/user');
 const captchaModel = require('../../../public/model/captcha');
 const deviceModel = require('../../../public/model/device');
-const UUID = require('uuid/v4');
+
 
 
 /**
@@ -48,11 +51,13 @@ exports.getUserInfo = function (req, res, next) {
  * */
 exports.updateUserInfo = function (req, res, next) {
 
+    let userId = req.session.id;
+
     let userInfo = {
         userName: req.body.user_name,
         userProfile: req.body.user_profile,
         userAvatar: req.body.user_avatar,
-        userGender: req.body.user_gender,
+        userGender: req.body.user_gender ? req.body.user_gender == 1 : null,
         userMobile: req.body.user_mobile,
         workInfo: req.body.work_info,
         eduInfo: req.body.edu_info,
@@ -60,8 +65,6 @@ exports.updateUserInfo = function (req, res, next) {
         city: req.body.user_city,
         area: req.body.user_area,
     };
-
-    let userId = req.session.id;
 
     userModel.updateUserInfo(userId, userInfo, function (err, success) {
         if (err) {
@@ -90,13 +93,13 @@ exports.checkPhoneRegistered = function (req, res, next) {
         return next(new BadRequestError('phone is need'));
     }
 
-    let regex = /^1[34578]\d{9}$/;
+    let regex = /^1[0-9]\d{9}$/;
 
     if (!regex.test(phone.toString())) {
         return next(new BadRequestError('phone is illegal'));
     }
 
-    userModel.findUserByMobile(phone, function (err, user) {
+    userModel.getUserByMobile(phone, function (err, user) {
         if (err) {
             return next(err)
         }
@@ -116,33 +119,24 @@ exports.checkPhoneRegistered = function (req, res, next) {
  * @desc 用户注册接口
  * */
 exports.userRegisterWithPhone = function (req, res, next) {
+    
     let mobile = req.body.user_mobile;
     let password = req.body.user_password;
     let codeID = req.body.code_id;
     let code = req.body.code;
     let randomString = req.body.code_random;
     let registerPlatform = req.body.register_platform;
-    let device;
 
+    let  deviceInfo = null;
 
     if (registerPlatform == 1 || registerPlatform == 2) {//写入设备信息
-        device = {
+        deviceInfo = {
             deviceToken: req.body.register_deviceno,
             devicePlatform: registerPlatform,
-        };
-
-        if (req.body.device_resolution) {
-            device.deviceResolution = req.body.device_resolution;
+            deviceResolution : req.body.device_resolution,
+            deviceBrand : req.body.device_brand,
+            deviceVersion : req.body.device_version
         }
-
-        if (req.body.device_brand) {
-            device.deviceBrand = req.body.device_brand;
-        }
-
-        if (req.body.device_version) {
-            device.deviceVersion = req.body.device_version;
-        }
-
     }
 
     if (!mobile) {
@@ -161,40 +155,47 @@ exports.userRegisterWithPhone = function (req, res, next) {
         return next(new BadRequestError('code is need'));
     }
 
-    captchaModel.verifySmsSecurityCode(codeID, mobile, code, randomString, 5, true, function (err, result) {//验证验证码信息
+    //验证验证码信息
+    captchaModel.verifySmsSecurityCode(codeID, mobile, code, randomString, 5, true, function (err, result) {
         if (err) {
             return next(err);
         }
 
         if (!result) {
-            return next(new BadRequestError('code has Been tampered with'));
+            return next(new BadRequestError('this security code has been tampered with'));
         }
 
-        userModel.createNewUser(mobile, password, function (err, user) {//写入用户数据
+        //写入用户数据
+        userModel.createNewUser(mobile, password, function (err, user) {
             if (err) {
                 return next(err);
             }
 
             if (!user) {
-                return next(new BadRequestError('the mobile has Been used'));
+                return next(new BadRequestError('the mobile has been used'));
             }
 
             let userId = user._id;
-            let token = UUID();
+            let token = uuid();
             let expire = Date.now() + 1000 * 3600 * 24 * 30;
-
-            if(registerPlatform == 1 || registerPlatform == 2){
-                deviceModel.createNewDevice(userId, device, function (err, doc) {
-                    if (err) {
-                        logger.error(err);
+            
+            async.parallel({
+                updateDeviceInfo: function(cb) {
+                    if(deviceInfo){
+                        deviceModel.createNewDevice(userId, deviceInfo, cb);
+                    }else{
+                        cb();
                     }
-                });
-            }
-
-            userModel.updateUserLoginToken(userId, token, expire, function (err, success) {//更新session
-                if (err) {
-                    return next(err);
+                },
+                updateLoginToken: function(cb) {
+                    userModel.updateUserLoginToken(userId, token, expire, cb);
+                },
+            }, function (err, results) {
+            
+                if(err){
+                     return next(err);
                 }
+
                 res.json({
                     flag: '0000',
                     msg: '',
@@ -220,25 +221,17 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
     let mobile = req.body.user_mobile;
     let password = req.body.user_password;
     let registerPlatform = req.body.register_platform;  //1: ANDROID 2: IOS 3: PC 4: H5 5: OTHER
-    let device;
+    
+    let deviceInfo;
 
     if (registerPlatform == 1 || registerPlatform == 2) {//写入设备信息
-        device = {
+        deviceInfo = {
             deviceToken: req.body.register_deviceno,
             devicePlatform: registerPlatform,
+            deviceResolution : req.body.device_resolution,
+            deviceBrand : req.body.device_brand,
+            deviceVersion : req.body.device_version
         };
-
-        if (req.body.device_resolution) {
-            device.deviceResolution = req.body.device_resolution;
-        }
-
-        if (req.body.device_brand) {
-            device.deviceBrand = req.body.device_brand;
-        }
-
-        if (req.body.device_version) {
-            device.deviceVersion = req.body.device_version;
-        }
     }
 
 
@@ -260,19 +253,23 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
         }
 
         let userId = user._id;
-        let token = UUID();
+        let token = uuid();
         let expire = Date.now() + 1000 * 3600 * 24 * 30;
 
-        if(registerPlatform == 1 || registerPlatform == 2){
-            deviceModel.createNewDevice(userId, device, function (err, doc) {
-                if (err) {
-                    logger.error(err);
+        async.parallel({
+            updateDeviceInfo: function(cb) {
+                if(deviceInfo){
+                    deviceModel.createNewDevice(userId, deviceInfo, cb);
+                }else{
+                    cb();
                 }
-            });
-        }
+            },
+            updateLoginToken: function(cb) {
+                userModel.updateUserLoginToken(userId, token, expire, cb);
+            },
+        }, function (err, results) {
 
-        userModel.updateUserLoginToken(userId, token, expire, function (err, success) {
-            if (err) {
+            if(err){
                 return next(err);
             }
 
@@ -283,11 +280,12 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
                     user_id: userId,
                     login_token: token,
                     login_fashion: 0,
-                    bind_wechat: user.bind_tencent_wechat != '{}' ,
-                    bind_qq: user.bind_tencent_qq != '{}',
-                    bind_weibo: user.bind_sina_weibo != '{}',
+                    bind_wechat: !!user.bind_tencent_wechat ,
+                    bind_qq: !!user.bind_tencent_qq,
+                    bind_weibo: !!user.bind_sina_weibo,
+                    bind_phone: !!user.user_mobile,
                 }
-            });
+            })
         });
     });
 };
@@ -297,35 +295,30 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
  * @desc 用户使用第三方账户登录
  * */
 exports.userLoginWithThirdPartyAccount = function (req, res, next) {
+    
     let uid = req.body.open_id;
     let union_id = req.body.union_id;
     let userName = req.body.user_name;
     let registerPlatform = req.body.register_platform;  //1: ANDROID 2: IOS 3: PC 4: H5 5: OTHER
     let loginType = req.body.login_type; //1：微信 2: qq 3: 新浪微博 （0:手机账号密码）
-    let device;
+
+    let deviceInfo;
 
     if (registerPlatform == 1 || registerPlatform == 2) {//写入设备信息
-        device = {
+        deviceInfo = {
             deviceToken: req.body.register_deviceno,
             devicePlatform: registerPlatform,
+            deviceResolution : req.body.device_resolution,
+            deviceBrand : req.body.device_brand,
+            deviceVersion : req.body.device_version
         };
-
-        if (req.body.device_resolution) {
-            device.deviceResolution = req.body.device_resolution;
-        }
-
-        if (req.body.device_brand) {
-            device.deviceBrand = req.body.device_brand;
-        }
-
-        if (req.body.device_version) {
-            device.deviceVersion = req.body.device_version;
-        }
     }
 
     if (loginType != 1 && loginType != 2 && loginType != 3) {
         return next(new BadRequestError('login_type is not in [1,2,3]'));
     }
+    
+    //登录方式
     let loginFunction;
 
     if (loginType == 1) {
@@ -346,20 +339,24 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
         }
 
         let userId = user._id;
-        let token = UUID();
+        let token = uuid();
         let expire = Date.now() + 1000 * 3600 * 24 * 30;
 
-        if(registerPlatform == 1 || registerPlatform == 2){ //
-            deviceModel.createNewDevice(userId, device, function (err, doc) {
-                if (err) {
-                    logger.error(err);
+        async.parallel({
+            updateDeviceInfo: function(cb) {
+                if(deviceInfo){
+                    deviceModel.createNewDevice(userId, deviceInfo, cb);
+                }else{
+                    cb();
                 }
-            });
-        }
+            },
+            updateLoginToken: function(cb) {
+                userModel.updateUserLoginToken(userId, token, expire, cb);
+            },
+        }, function (err, results) {
 
-        userModel.updateUserLoginToken(userId, token, expire, function (err, success) {//更新session
-            if (err) {
-                return next(err)
+            if(err){
+                return next(err);
             }
 
             res.json({
@@ -369,12 +366,12 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
                     user_id: userId,
                     login_token: token,
                     login_fashion: loginType,
-                    bind_wechat: user.bind_tencent_wechat != '{}' ,
-                    bind_qq: user.bind_tencent_qq != '{}',
-                    bind_weibo: user.bind_sina_weibo != '{}',
+                    bind_wechat: !!user.bind_tencent_wechat ,
+                    bind_qq: !!user.bind_tencent_qq,
+                    bind_weibo: !!user.bind_sina_weibo,
                     bind_phone: !!user.user_mobile,
                 }
-            })
+            });
         });
     })
 };
@@ -438,11 +435,11 @@ exports.resetUserPassword = function (req, res, next) {
     }
 
     if (!codeID) {
-        return next(new BadRequestError('security_code is need'));
+        return next(new BadRequestError('code_id is need'));
     }
 
     if (!randomString) {
-        return next(new BadRequestError('security_code is need'));
+        return next(new BadRequestError('code_random is need'));
     }
 
     //验证验证码
@@ -452,7 +449,7 @@ exports.resetUserPassword = function (req, res, next) {
         }
 
         if (!result) {
-            return next(new BadRequestError('code has Been tampered with'));
+            return next(new BadRequestError('this code security has been tampered with'));
         }
 
         userModel.updateUserPasswordWithMobile(mobileNumber, newPassword, function (err, success) {

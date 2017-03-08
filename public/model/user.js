@@ -80,7 +80,10 @@ exports.getUserInfoByID = function (userID, callback) {
 exports.getUserByMobile = function (phone, callback) {
 
     let condition = {
-        user_mobile: {$exists: true, $eq: phone}
+        user_mobile: {
+            $exists: true, 
+            $eq: phone
+        }
     };
 
     User.findOne(condition, callback);
@@ -243,7 +246,9 @@ exports.updateUserInfo = function (userID, userInfo, callback) {
         _id: userID
     };
 
-    let updateSets = {update_time: new Date()};
+    let updateSets = {
+        update_time: new Date()
+    };
 
     if (userInfo.userName) {
         updateSets.user_name = userInfo.userName;
@@ -258,8 +263,7 @@ exports.updateUserInfo = function (userID, userInfo, callback) {
     }
 
     if (userInfo.userGender) {
-        //不能用'==='，传入sex可能为字符串;
-        updateSets.user_gender = userInfo.userGender ? userInfo.userGender == 1 : null;
+        updateSets.user_gender = userInfo.userGender;
     }
 
     if (userInfo.userMobile) {
