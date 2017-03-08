@@ -22,7 +22,7 @@ const genSmsCodeFrequencyKey = function (phone) {
 exports.sendSmsSecurityCode = function (phone, callback) {
     
     let code = Math.random().toString().substr(2, 6);
-    let message = `【网金院】您的验证码：${code}，打死都不告诉别人`;
+    let message = `您的验证码：${code}，打死都不告诉别人`;
     
     let now = Date.now();
     let frequency = 60000; //发送频率
