@@ -204,6 +204,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
                     result: {
                         user_id: userId,
                         login_token: token,
+                        user_mobile: user.user_mobile,
                         login_fashion: 0,
                         bind_wechat: false,
                         bind_qq: false,
@@ -280,6 +281,7 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
                 result: {
                     user_id: userId,
                     login_token: token,
+                    user_mobile: user.user_mobile,
                     login_fashion: 0,
                     bind_wechat: !!user.bind_tencent_wechat.uid ,
                     bind_qq: !!user.bind_tencent_qq.uid,
@@ -364,6 +366,7 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
                     user_id: userId,
                     login_token: token,
                     login_fashion: loginType,
+                    user_mobile: user.user_mobile,
                     bind_wechat: !!user.bind_tencent_wechat.uid ,
                     bind_qq: !!user.bind_tencent_qq.uid,
                     bind_weibo: !!user.bind_sina_weibo.uid,
