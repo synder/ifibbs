@@ -123,7 +123,7 @@ describe('用户已登陆接口测试', function() {
         request(app)
             .get('/user/account/info')
             .query({
-
+                user_id: '58aa50177ddbf5507c51f082'
             })
             .expect(200)
             .end(function(err, res) {

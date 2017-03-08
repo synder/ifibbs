@@ -158,19 +158,142 @@ exports.changeNotificationToNotified = function (userID, notificationIDS, callba
 
 
 //推送通知=======================================================================================
+
 /**
- * @desc 用户发布了新的问题，推送通知给关注该用户的用户
+ * @desc 问题被管理员加精
  * */
-exports.produceForUserPublishNewQuestionMQS = function (questionID, callback) {
+exports.produceForQuestionBeenStickiedMQS = function (questionID, callback) {
+
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    
+    let message = questionID + '';
+    
+    rabbit.client.produceMessage(QUEUE, message, callback);
+};
+
+exports.consumeForQuestionBeenStickiedMQS = function (callback) {
+    
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    
+    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+        if (err) {
+            return callback(err, channel);
+        }
+
+        let questionID = message.content.toString();
+
+        //查找问题的创建者
+        Question.findOne({_id: questionID})
+            .populate({
+                path: 'create_user_id',
+                select: 'getui_cid',
+                match: {
+                    getui_cid: {$exists: true}
+                }
+            })
+            .exec(function (err, question) {
+                if (err) {
+                    return callback(err, channel);
+                }
+
+                if (!question) {
+                    return callback(null, channel);
+                }
+
+                if (!(question.create_user_id && question.create_user_id.getui_cid)) {
+                    return callback(null, channel);
+                }
+
+                let getuiCID = question.create_user_id.getui_cid;
+                let questionTitle = question.title;
+                let message = questionTitle + '被管理员加精';
+
+                let content = {
+                    func: 'notification',
+                    type: UserNotification.CATEGORY.BUSINESS
+                };
+
+                //推送通知给问题的所有者
+                getui.notifyTransmissionMsg([getuiCID], message, content, function (err) {
+                    callback(err, channel);
+                });
+            });
+    });
+};
+
+
+/**
+ * @desc 问题被管理员删除
+ * */
+exports.produceForQuestionBeenDeletedMQS = function (questionID, callback) {
+
     questionID = questionID.toString();
 
-    const QUEUE = rabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_DELETED;
+    
+    rabbit.client.produceMessage(QUEUE, questionID, callback);
+};
+
+exports.consumeForQuestionBeenDeletedMQS = function (callback) {
+    
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_DELETED;
+    
+    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+        if (err) {
+            return callback(err, channel);
+        }
+
+        let questionID = message.content.toString();
+
+        //查找问题的创建者
+        Question.findOne({_id: questionID})
+            .populate({
+                path: 'create_user_id',
+                select: 'getui_cid',
+                match: {
+                    getui_cid: {$exists: true}
+                }
+            })
+            .exec(function (err, question) {
+                if (err) {
+                    return callback(err, channel);
+                }
+
+                if (!question) {
+                    return callback(null, channel);
+                }
+
+                if (question.create_user_id && question.create_user_id.getui_cid) {
+                    let getuiCID = question.create_user_id.getui_cid;
+                    let questionTitle = question.title;
+                    let message = questionTitle + '被管理员加精';
+
+                    //推送通知给问题的所有者
+                    getui.notifyTransmissionMsg(true, [getuiCID], message, function (err) {
+                        callback(err, channel);
+                    });
+                }else{
+                    callback(null, channel);
+                }
+            });
+    });
+};
+
+
+/**
+ * @desc 问题被关注
+ * */
+exports.produceForQuestionBeenAttentionMQS = function (questionID, callback) {
+    questionID = questionID.toString();
+
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_ATTENTION;
 
     rabbit.client.produceMessage(QUEUE, questionID, callback);
 };
 
-exports.consumeForUserPublishNewQuestionMQS = function (callback) {
-    const QUEUE = rabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
+exports.consumeForQuestionBeenAttentionMQS = function (callback) {
+    
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_ATTENTION;
 
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
@@ -185,7 +308,7 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
 
         //查找问题
         let questionCondition = {_id: questionID, status: Question.STATUS.NORMAL};
-        
+
         Question.findOne(questionCondition, function (err, question) {
             if (err) {
                 return callback(err, channel);
@@ -233,7 +356,7 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
                         callback(err, channel);
                     });
                 }
-                
+
             }).on('error', function (err) {
                 if (temp.length > 0) {
                     let clientIDS = temp;
@@ -261,22 +384,17 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
 };
 
 
+
 /**
- * @desc 问题有了新的回答，推送通知给关注该问题的用户和问题的发布者
+ * @desc 问题有了新的回答
  * */
 exports.produceForQuestionBeenAnsweredMQS = function (questionID, answerID, callback) {
+    
     answerID = answerID.toString();
-    //通知相关用户
-    async.parallel({
-        notifyQuestionOwner: function (cb) {
-            const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_ANSWERED;
-            rabbit.client.produceMessage(QUEUE, questionID + ':' + answerID, cb);
-        },
-        notifyQuestionAttentionUser: function (cb) {
-            const QUEUE = rabbit.queues.notifications.ATTENTION_QUESTION_BEEN_ANSWERED;
-            rabbit.client.produceMessage(QUEUE, answerID, cb);
-        },
-    }, callback);
+
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_ANSWERED;
+
+    rabbit.client.produceMessage(QUEUE, questionID + ':' + answerID, callback);
 };
 
 exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
@@ -405,19 +523,136 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
     });
 };
 
+
+
 /**
- * @desc 问题被管理员加精，推送通知给关注该问题的发布者
+ * @desc 问题被收藏
  * */
-exports.produceForQuestionBeenStickiedMQS = function (questionID, callback) {
+exports.produceForQuestionBeenCollectedMQS = function (questionID, userID, callback) {
+
+    questionID = questionID.toString();
+
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_COLLECTED;
+    
+    let message = questionID + ':' + userID;
+    
+    rabbit.client.produceMessage(QUEUE, questionID, callback);
+};
+
+exports.consumeForQuestionBeenCollectedMQS = function (callback) {
+    
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_COLLECTED;
+    
+    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+        if (err) {
+            return callback(err, channel);
+        }
+
+        let content = message.content.toString();
+
+        
+    });
+};
+
+
+
+/**
+ * @desc 问题被分享
+ * */
+exports.produceForQuestionBeenSharedMQS = function (questionID, userID, callback) {
 
     questionID = questionID.toString();
 
     const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    
+    let message = questionID + ':' + userID;
+    
     rabbit.client.produceMessage(QUEUE, questionID, callback);
 };
 
-exports.consumeForQuestionBeenStickiedMQS = function (callback) {
+exports.consumeForQuestionBeenSharedMQS = function (callback) {
     const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+        if (err) {
+            return callback(err, channel);
+        }
+
+        let content = message.content.toString();
+
+       
+    });
+};
+
+
+/**
+ * @desc 回答被点赞
+ * */
+exports.produceForAnswerBeenFavouredMQS = function (questionID, userID, callback) {
+
+    questionID = questionID.toString();
+
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    
+    let message = questionID + ':' + userID;
+    
+    rabbit.client.produceMessage(QUEUE, questionID, callback);
+};
+
+exports.consumeForAnswerBeenFavouredMQS = function (callback) {
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+        if (err) {
+            return callback(err, channel);
+        }
+
+        let content = message.content.toString();
+
+       
+    });
+};
+
+
+/**
+ * @desc 回答被评论
+ * */
+exports.produceForAnswerBeenCommendedMQS = function (answerID, commentID, callback) {
+    
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    
+    let message = answerID + ':' + commentID;
+    
+    rabbit.client.produceMessage(QUEUE, message, callback);
+    
+};
+
+exports.consumeForAnswerBeenCommendedMQS = function (callback) {
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+        if (err) {
+            return callback(err, channel);
+        }
+
+        let content = message.content.toString();
+        
+    });
+};
+
+
+
+/**
+ * @desc 用户发布了新的问题
+ * */
+exports.produceForUserPublishNewQuestionMQS = function (questionID, callback) {
+    questionID = questionID.toString();
+
+    const QUEUE = rabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
+
+    rabbit.client.produceMessage(QUEUE, questionID, callback);
+};
+
+exports.consumeForUserPublishNewQuestionMQS = function (callback) {
+    const QUEUE = rabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
+
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel);
@@ -425,51 +660,104 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
 
         let questionID = message.content.toString();
 
-        //查找问题的创建者
-        Question.findOne({_id: questionID})
-            .populate({
-                path: 'create_user_id',
-                select: 'getui_cid',
-                match: {
-                    getui_cid: {$exists: true}
-                }
-            })
-            .exec(function (err, question) {
-                if (err) {
-                    return callback(err, channel);
+        if (!questionID) {
+            return callback(null, channel);
+        }
+
+        //查找问题
+        let questionCondition = {_id: questionID, status: Question.STATUS.NORMAL};
+
+        Question.findOne(questionCondition, function (err, question) {
+            if (err) {
+                return callback(err, channel);
+            }
+
+            let questionCreateUserID = question.create_user_id;
+            let questionTitle = question.title;
+
+            let message = questionTitle + '有了新的回答';
+
+
+            //推送通知给问题的发布者和关注者
+            let attentionUserCondition = {
+                to_user_id: questionCreateUserID,        //关注用户ID
+                status: AttentionUser.STATUS.ATTENTION
+            };
+
+            let temp = [];
+
+            let stream = AttentionUser
+                .find(attentionUserCondition)
+                .populate({
+                    path: 'user_id',
+                    select: 'getui_cid',
+                    match: {
+                        getui_cid: {$exists: true}
+                    }
+                })
+                .stream();
+
+            stream.on('data', function (doc) {
+
+                if (doc.user_id && doc.user_id.getui_cid) {
+                    let getuiCID = doc.user_id.getui_cid;
+                    temp.push(getuiCID);
                 }
 
-                if (!question) {
-                    return callback(null, channel);
+                //一次批量推送20条
+                if (temp.length > 19) {
+                    stream.pause();
+                    let clientIDS = temp;
+                    temp = [];
+                    getui.notifyTransmissionMsg(true, clientIDS, message, function (err, result) {
+                        stream.resume();
+                        callback(err, channel);
+                    });
                 }
 
-                if (question.create_user_id && question.create_user_id.getui_cid) {
-                    let getuiCID = question.create_user_id.getui_cid;
-                    let questionTitle = question.title;
-                    let message = questionTitle + '被管理员加精';
-
-                    //推送通知给问题的所有者
-                    getui.notifyTransmissionMsg(true, [getuiCID], message, function (err) {
+            }).on('error', function (err) {
+                if (temp.length > 0) {
+                    let clientIDS = temp;
+                    temp = [];
+                    getui.notifyTransmissionMsg(true, clientIDS, message, function (err) {
                         callback(err, channel);
                     });
                 }else{
+                    callback(err, channel);
+                }
+            }).on('close', function () {
+
+                if (temp.length > 0) {
+                    let clientIDS = temp;
+                    temp = [];
+                    getui.notifyTransmissionMsg(true, clientIDS, message, function (err) {
+                        callback(err, channel);
+                    });
+                }else {
                     callback(null, channel);
                 }
             });
+        });
     });
 };
 
+
 /**
- * @desc 用户关注的专题有了新的文章，推送通知给关注专题的用户
+ * @desc 用户关注的专题有了新的文章
  * */
 exports.produceForAttentionSubjectHasNewArticleMQS = function (subjectID, articleID, callback) {
+    
     const QUEUE = rabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
+    
+    let message = subjectID + ':' + articleID;
 
-    rabbit.client.produceMessage(QUEUE, subjectID + ':' + articleID, callback);
+    rabbit.client.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForAttentionSubjectHasNewArticleMQS = function (callback) {
+    
     const QUEUE = rabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
+    
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel);
@@ -487,5 +775,33 @@ exports.consumeForAttentionSubjectHasNewArticleMQS = function (callback) {
         let articleID = content[1];
 
         callback(null, channel);
+    });
+};
+
+
+/**
+ * @desc 用户被关注
+ * */
+exports.produceForUserBeenAttentionMQS = function (userID, toUserID, callback) {
+
+    const QUEUE = rabbit.queues.notifications.USER_BEEN_ATTENTION;
+
+    let message = userID + ':' + toUserID;
+
+    rabbit.client.produceMessage(QUEUE, message, callback);
+};
+
+exports.consumeForUserBeenAttentionMQS = function (callback) {
+
+    const QUEUE = rabbit.queues.notifications.USER_BEEN_ATTENTION;
+
+    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+        if (err) {
+            return callback(err, channel);
+        }
+
+        let content = message.content.toString();
+
+        
     });
 };

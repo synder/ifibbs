@@ -7,6 +7,7 @@
 const async = require('async');
 
 const shareModel = require('../../../public/model/share');
+const notificationModel = require('../../../public/model/notification');
 
 /**
  * @desc 创建分享
@@ -35,6 +36,12 @@ exports.createUserShare = function (req, res, next) {
                 shareModel.createUserShareArticle(userID, shareID, cb);
             }else{
                 shareModel.createUserShareQuestion(userID, shareID, cb);
+
+                notificationModel.produceForQuestionBeenSharedMQS(shareID, userID, function (err) {
+                    if(err){
+                        logger.error(err);
+                    }
+                });
             }
         }
     ], function (err, result) {

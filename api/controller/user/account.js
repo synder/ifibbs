@@ -16,7 +16,12 @@ const deviceModel = require('../../../public/model/device');
  * @desc 获取用户信息
  * */
 exports.getUserInfo = function (req, res, next) {
+    
     let userID = req.query.user_id;
+    
+    if(!userID){
+        return next(new BadRequestError('user_id is need')) 
+    }
 
     userModel.getUserInfoByID(userID, function (err, result) {
         if (err) {
@@ -24,7 +29,11 @@ exports.getUserInfo = function (req, res, next) {
         }
 
         if(!result){
-            return next(new BadRequestError('without the user data'))
+            return res.json({
+                flag: '0000',
+                msg: '',
+                result: null
+            });
         }
 
         let userInfo = {
