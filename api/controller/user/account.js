@@ -170,7 +170,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
         }
 
         //写入用户数据
-        userModel.createNewUser(mobile, password, function (err, user) {//todo mysql
+        userModel.createNewUser(mobile, password, function (err, user) {
             if (err) {
                 return next(err);
             }
@@ -437,10 +437,6 @@ exports.resetUserPassword = function (req, res, next) {
 
     if (!codeID) {
         return next(new BadRequestError('code_id is need'));
-    }
-
-    if (!randomString) {
-        return next(new BadRequestError('code_random is need'));
     }
 
     //验证验证码

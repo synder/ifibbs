@@ -28,6 +28,10 @@ const hashUserPassword = function (salt, password) {
     return crypto.createHash('md5').update(`${salt}&${password}`).digest('hex');
 };
 
+const genTokenCacheKey = function (token) {
+    return 'LT:' + token;  
+};
+
 /**
  * @desc 创建新的用户
  * */
@@ -56,6 +60,9 @@ exports.createNewUser = function (mobile, password, callback) {
         if (user) {
             return callback(null, false)
         }
+        
+        //todo insert into mysql
+        
         User.create(userDoc, callback);
     });
 
@@ -328,8 +335,10 @@ exports.updateUserLoginToken = function (userID, token, expire, callback) {
     };
     
     let sessionString = JSON.stringify(session);
+    
+    let cacheTokenKey = genTokenCacheKey(token);
 
-    redis.setex(token, sessionExpire, sessionString, function (err, result) {
+    redis.setex(cacheTokenKey, sessionExpire, sessionString, function (err, result) {
         if (err) {
             return callback(err)
         }
@@ -362,7 +371,9 @@ exports.getUserLoginToken = function (token, callback) {
     //过期时间30天
     let sessionExpire = Date.now() + 1000 * 3600 * 24 * 30;
 
-    redis.get(token, function (err, session) {
+    let cacheTokenKey = genTokenCacheKey(token);
+
+    redis.get(cacheTokenKey, function (err, session) {
         if (err) {
             return callback(err)
         }
