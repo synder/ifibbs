@@ -118,98 +118,122 @@ exports.getUserByMobileAndPassword = function (phone, pass, callback) {
 };
 
 /*
- * @desc 第三方登录
+ * @desc QQ第三方登录
  * */
-exports.userLoginWithThirdPartyAccount = function (uid, socialType, name, union_id, callback) {
-    let condition = {};
-    let userDoc = {};
+exports.userLoginWithQQAccount = function (uid, socialType, name, union_id, callback) {
     let now = new Date();
-    if(socialType == 1){
-        condition ={
-            bind_tencent_wechat: {$exists: true},
-            'bind_tencent_wechat.uid': uid,
-        };
+    let condition ={
+        bind_tencent_qq: {$exists: true},
+        'bind_tencent_qq.uid': uid,
+    };
 
-        userDoc = {
-            status: User.STATUS.NORMAL,
-            user_name: '',
-            user_profile: '',
-            user_avatar: '',
-            user_mobile: '',
-            user_password: '',
-            create_time: now,
-            update_time: now,
-            pass_salt_str: '',
-            bind_tencent_wechat:{
-                uid: uid,
-                union_id: union_id,
-                name: name,
-            }
-        };
-    }
-
-    if(socialType == 2){
-        condition ={
-            bind_tencent_qq: {$exists: true},
-            'bind_tencent_qq.uid': uid,
-        };
-
-        userDoc = {
-            status: User.STATUS.NORMAL,
-            user_name: '',
-            user_profile: '',
-            user_avatar: '',
-            user_mobile: '',
-            user_password: '',
-            create_time: now,
-            update_time: now,
-            pass_salt_str: '',
-            bind_tencent_qq:{
-                uid: uid,
-                union_id: union_id,
-                name: name,
-            }
-        };
-    }
-
-    if(socialType == 3){
-        condition ={
-            bind_sina_weibo: {$exists: true},
-            'bind_sina_weibo.uid': uid,
-        };
-
-        userDoc = {
-            status: User.STATUS.NORMAL,
-            user_name: '',
-            user_profile: '',
-            user_avatar: '',
-            user_mobile: '',
-            user_password: '',
-            create_time: now,
-            update_time: now,
-            pass_salt_str: '',
-            bind_sina_weibo:{
-                uid: uid,
-                union_id: union_id,
-                name: name,
-            }
-        };
-    }
+    let userDoc = {
+        status: User.STATUS.NORMAL,
+        user_name: '',
+        user_profile: '',
+        user_avatar: '',
+        user_mobile: '',
+        user_password: '',
+        create_time: now,
+        update_time: now,
+        pass_salt_str: '',
+        bind_tencent_qq:{
+            uid: uid,
+            union_id: union_id,
+            name: name,
+        }
+    };
     User.findOne(condition, function (err, user) {
         if(err){
             return callback(err)
         }
 
         if(user){
-           return callback(null, user, true)
+           return callback(null, user)
         }
 
-        User.create(userDoc, function (err, userInfo) {
-            callback(null, userInfo, false)
-        })
+        User.create(userDoc, callback)
     })
 };
 
+/*
+ * @desc wechat第三方登录
+ * */
+exports.userLoginWithWechatAccount = function (uid, socialType, name, union_id, callback) {
+    let now = new Date();
+
+    let condition ={
+        bind_tencent_wechat: {$exists: true},
+        'bind_tencent_wechat.uid': uid,
+    };
+
+    let userDoc = {
+        status: User.STATUS.NORMAL,
+        user_name: '',
+        user_profile: '',
+        user_avatar: '',
+        user_mobile: '',
+        user_password: '',
+        create_time: now,
+        update_time: now,
+        pass_salt_str: '',
+        bind_tencent_wechat:{
+            uid: uid,
+            union_id: union_id,
+            name: name,
+        }
+    };
+    User.findOne(condition, function (err, user) {
+        if(err){
+            return callback(err)
+        }
+
+        if(user){
+           return callback(null, user)
+        }
+
+        User.create(userDoc, callback)
+    })
+};
+
+/*
+ * @desc weibo第三方登录
+ * */
+exports.userLoginWithWeiBoAccount = function (uid, socialType, name, union_id, callback) {
+    let now = new Date();
+    let condition ={
+        bind_sina_weibo: {$exists: true},
+        'bind_sina_weibo.uid': uid,
+    };
+
+    let userDoc = {
+        status: User.STATUS.NORMAL,
+        user_name: '',
+        user_profile: '',
+        user_avatar: '',
+        user_mobile: '',
+        user_password: '',
+        create_time: now,
+        update_time: now,
+        pass_salt_str: '',
+        bind_sina_weibo:{
+            uid: uid,
+            union_id: union_id,
+            name: name,
+        }
+    };
+    User.findOne(condition, function (err, user) {
+        if(err){
+            return callback(err)
+        }
+
+        if(user){
+            return callback(null, user)
+        }
+
+        User.create(userDoc, callback)
+    })
+};
 /**
  * @desc 更新用户信息
  * */
@@ -244,6 +268,18 @@ exports.updateUserInfo = function (userID, userInfo, callback) {
 
     if (userInfo.workInfo) {
         updateSets.work_info = userInfo.workInfo;
+    }
+
+    if (userInfo.province) {
+        updateSets.user_province = userInfo.province;
+    }
+
+    if (userInfo.city) {
+        updateSets.user_city = userInfo.city;
+    }
+
+    if (userInfo.area) {
+        updateSets.user_area = userInfo.area;
     }
 
     if (userInfo.eduInfo) {

@@ -21,13 +21,16 @@ exports.getUserInfo = function (req, res, next) {
         }
 
         let userInfo = {
-            head_pic: result.user_avatar,
-            username: result.user_name,
-            signature: result.user_profile,
-            sex: result.user_gender == null ? null : (result.user_gender ? 1 : 0),
+            user_avatar: result.user_avatar,
+            user_name: result.user_name,
+            user_profile: result.user_profile,
+            user_gender: result.user_gender == null ? null : (result.user_gender ? 1 : 0),
             user_mobile: result.user_mobile ? result.user_mobile : null,
             work_info: result.work_info ? result.work_info : null,
-            edu_info: result.edu_info ? result.edu_info : null
+            edu_info: result.edu_info ? result.edu_info : null,
+            user_province: result.user_province ? result.user_province : null,
+            user_city: result.user_city ? result.user_city : null,
+            user_area: result.user_area ? result.user_area : null,
         };
 
         res.json({
@@ -53,6 +56,9 @@ exports.updateUserInfo = function (req, res, next) {
         userMobile: req.body.user_mobile,
         workInfo: req.body.work_info,
         eduInfo: req.body.edu_info,
+        province: req.body.user_province,
+        city: req.body.user_city,
+        area: req.body.user_area,
     };
 
     let userId = req.session.id;
@@ -115,7 +121,29 @@ exports.userRegisterWithPhone = function (req, res, next) {
     let codeID = req.body.code_id;
     let code = req.body.code;
     let randomString = req.body.code_random;
-    let registerPlatform = req.body.registerPlatform;
+    let registerPlatform = req.body.register_platform;
+    let device;
+
+
+    if (registerPlatform == 1 || registerPlatform == 2) {//写入设备信息
+        device = {
+            deviceToken: req.body.register_deviceno,
+            devicePlatform: registerPlatform,
+        };
+
+        if (req.body.device_resolution) {
+            device.deviceResolution = req.body.device_resolution;
+        }
+
+        if (req.body.device_brand) {
+            device.deviceBrand = req.body.device_brand;
+        }
+
+        if (req.body.device_version) {
+            device.deviceVersion = req.body.device_version;
+        }
+
+    }
 
     if (!mobile) {
         return next(new BadRequestError('mobile_number is need'));
@@ -135,7 +163,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
 
     captchaModel.verifySmsSecurityCode(codeID, mobile, code, randomString, 5, true, function (err, result) {//验证验证码信息
         if (err) {
-            return next(err)
+            return next(err);
         }
 
         if (!result) {
@@ -144,7 +172,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
 
         userModel.createNewUser(mobile, password, function (err, user) {//写入用户数据
             if (err) {
-                return next(err)
+                return next(err);
             }
 
             if (!user) {
@@ -155,64 +183,30 @@ exports.userRegisterWithPhone = function (req, res, next) {
             let token = UUID();
             let expire = Date.now() + 1000 * 3600 * 24 * 30;
 
+            if(registerPlatform == 1 || registerPlatform == 2){
+                deviceModel.createNewDevice(userId, device, function (err, doc) {
+                    if (err) {
+                        logger.error(err);
+                    }
+                });
+            }
+
             userModel.updateUserLoginToken(userId, token, expire, function (err, success) {//更新session
-                if(err){
-                    return next(err)
+                if (err) {
+                    return next(err);
                 }
-
-                if(registerPlatform == 1 || registerPlatform == 2){//写入设备信息
-                    let device = {
-                        deviceToken: req.body.registerDeviceNo,
-                        devicePlatform: registerPlatform,
-                    };
-
-                    if(req.body.device_resolution){
-                        device.deviceResolution = req.body.device_resolution;
+                res.json({
+                    flag: '0000',
+                    msg: '',
+                    result: {
+                        user_id: userId,
+                        login_token: token,
+                        login_fashion: 0,
+                        bind_wechat: false,
+                        bind_qq: false,
+                        bind_weibo: false,
                     }
-
-                    if(req.body.device_brand){
-                        device.deviceBrand = req.body.device_brand;
-                    }
-
-                    if(req.body.device_version){
-                        device.deviceVersion = req.body.device_version;
-                    }
-
-                    deviceModel.createNewDevice(userId, device, function (err, doc) {
-                        if(err){
-                            return next(err)
-                        }
-
-                        res.json({
-                            flag: '0000',
-                            msg: '',
-                            result: {
-                                juid: userId,
-                                login_token: token,
-                                loginFashion: 'phone',
-                                ok: true,
-                                bindWeChat: false,
-                                bindQQ: false,
-                                bindWeibo: false,
-                            }
-                        })
-                    })
-                } else {
-
-                    res.json({
-                        flag: '0000',
-                        msg: '',
-                        result: {
-                            juid: userId,
-                            login_token: token,
-                            loginFashion: 'phone',
-                            ok: true,
-                            bindWeChat: false,
-                            bindQQ: false,
-                            bindWeibo: false,
-                        }
-                    })
-                }
+                })
             });
         })
     });
@@ -225,6 +219,27 @@ exports.userRegisterWithPhone = function (req, res, next) {
 exports.userLoginWithSystemAccount = function (req, res, next) {
     let mobile = req.body.user_mobile;
     let password = req.body.user_password;
+    let registerPlatform = req.body.register_platform;  //1: ANDROID 2: IOS 3: PC 4: H5 5: OTHER
+    let device;
+
+    if (registerPlatform == 1 || registerPlatform == 2) {//写入设备信息
+        device = {
+            deviceToken: req.body.register_deviceno,
+            devicePlatform: registerPlatform,
+        };
+
+        if (req.body.device_resolution) {
+            device.deviceResolution = req.body.device_resolution;
+        }
+
+        if (req.body.device_brand) {
+            device.deviceBrand = req.body.device_brand;
+        }
+
+        if (req.body.device_version) {
+            device.deviceVersion = req.body.device_version;
+        }
+    }
 
 
     if (!mobile) {
@@ -236,7 +251,7 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
     }
 
     userModel.getUserByMobileAndPassword(mobile, password, function (err, user) {
-        if(err){
+        if (err) {
             return next(err)
         }
 
@@ -248,29 +263,33 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
         let token = UUID();
         let expire = Date.now() + 1000 * 3600 * 24 * 30;
 
+        if(registerPlatform == 1 || registerPlatform == 2){
+            deviceModel.createNewDevice(userId, device, function (err, doc) {
+                if (err) {
+                    logger.error(err);
+                }
+            });
+        }
+
         userModel.updateUserLoginToken(userId, token, expire, function (err, success) {
-            if(err){
-                return next(err)
+            if (err) {
+                return next(err);
             }
 
             res.json({
                 flag: '0000',
                 msg: '',
                 result: {
-                    ok: true,
-                    juid: userId,
+                    user_id: userId,
                     login_token: token,
-                    loginFashion: 'phone',
-                    bindWeChat: !!user.bind_tencent_wechat,
-                    bindQQ: !!user.bind_tencent_qq,
-                    bindWeibo: !!user.bind_sina_weibo,
+                    login_fashion: 0,
+                    bind_wechat: user.bind_tencent_wechat != '{}' ,
+                    bind_qq: user.bind_tencent_qq != '{}',
+                    bind_weibo: user.bind_sina_weibo != '{}',
                 }
-            })
+            });
         });
-
-
-
-    })
+    });
 };
 
 
@@ -278,24 +297,51 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
  * @desc 用户使用第三方账户登录
  * */
 exports.userLoginWithThirdPartyAccount = function (req, res, next) {
-    let uid = req.body.openid;
-    let union_id = req.body.union_id || null;
-    let name = req.body.name;
-    let registerPlatform = req.body.registerPlatform;  //1: ANDROID 2: IOS 3: PC 4: H5 5: OTHER
-    let socialType = req.body.socialType; //1：微信 2: qq 3: 新浪微博
+    let uid = req.body.open_id;
+    let union_id = req.body.union_id;
+    let userName = req.body.user_name;
+    let registerPlatform = req.body.register_platform;  //1: ANDROID 2: IOS 3: PC 4: H5 5: OTHER
+    let loginType = req.body.login_type; //1：微信 2: qq 3: 新浪微博 （0:手机账号密码）
+    let device;
 
-    let loginFashion = '';
+    if (registerPlatform == 1 || registerPlatform == 2) {//写入设备信息
+        device = {
+            deviceToken: req.body.register_deviceno,
+            devicePlatform: registerPlatform,
+        };
 
-    if(socialType == 1){
-        loginFashion = 'wechat';
-    }else if(socialType == 2){
-        loginFashion = 'qq';
-    }else{
-        loginFashion = 'weibo'
+        if (req.body.device_resolution) {
+            device.deviceResolution = req.body.device_resolution;
+        }
+
+        if (req.body.device_brand) {
+            device.deviceBrand = req.body.device_brand;
+        }
+
+        if (req.body.device_version) {
+            device.deviceVersion = req.body.device_version;
+        }
     }
 
-    userModel.userLoginWithThirdPartyAccount(uid, socialType, name, union_id, function (err, user, oldUser) {
-        if(err){
+    if (loginType != 1 && loginType != 2 && loginType != 3) {
+        return next(new BadRequestError('login_type is not in [1,2,3]'));
+    }
+    let loginFunction;
+
+    if (loginType == 1) {
+        loginFunction = userModel.userLoginWithWechatAccount;
+    }
+
+    if (loginType == 2) {
+        loginFunction = userModel.userLoginWithQQAccount;
+    }
+
+    if (loginType == 3) {
+        loginFunction = userModel.userLoginWithWeiBoAccount;
+    }
+
+    loginFunction(uid, loginType, userName, union_id, function (err, user) {
+        if (err) {
             return next(err)
         }
 
@@ -303,65 +349,32 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
         let token = UUID();
         let expire = Date.now() + 1000 * 3600 * 24 * 30;
 
+        if(registerPlatform == 1 || registerPlatform == 2){ //
+            deviceModel.createNewDevice(userId, device, function (err, doc) {
+                if (err) {
+                    logger.error(err);
+                }
+            });
+        }
+
         userModel.updateUserLoginToken(userId, token, expire, function (err, success) {//更新session
-            if(err){
+            if (err) {
                 return next(err)
             }
 
-            if(!oldUser && (registerPlatform == 1 || registerPlatform == 2)){//第一次进入用户且为app进入写入设备信息
-                let device = {
-                    deviceToken: req.body.registerDeviceNo,
-                    devicePlatform: registerPlatform,
-                };
-
-                if(req.body.device_resolution){
-                    device.deviceResolution = req.body.device_resolution;
+            res.json({
+                flag: '0000',
+                msg: '',
+                result: {
+                    user_id: userId,
+                    login_token: token,
+                    login_fashion: loginType,
+                    bind_wechat: user.bind_tencent_wechat != '{}' ,
+                    bind_qq: user.bind_tencent_qq != '{}',
+                    bind_weibo: user.bind_sina_weibo != '{}',
+                    bind_phone: !!user.user_mobile,
                 }
-
-                if(req.body.device_brand){
-                    device.deviceBrand = req.body.device_brand;
-                }
-
-                if(req.body.device_version){
-                    device.deviceVersion = req.body.device_version;
-                }
-
-                deviceModel.createNewDevice(user._id, device, function (err, doc) {
-                    if(err){
-                        return next(err)
-                    }
-
-                    res.json({
-                        flag: '0000',
-                        msg: '',
-                        result: {
-                            ok: true,
-                            juid: userId,
-                            login_token: token,
-                            loginFashion: loginFashion,
-                            bindWeChat: !!user.bind_tencent_wechat,
-                            bindQQ: !!user.bind_tencent_qq,
-                            bindWeibo: !!user.bind_sina_weibo,
-                            bindPhone: !!user.user_mobile,
-                        }
-                    })
-                })
-            }else{
-                res.json({
-                    flag: '0000',
-                    msg: '',
-                    result: {
-                        ok: true,
-                        juid: userId,
-                        login_token: token,
-                        loginFashion: loginFashion,
-                        bindWeChat: !!user.bind_tencent_wechat,
-                        bindQQ: !!user.bind_tencent_qq,
-                        bindWeibo: !!user.bind_sina_weibo,
-                        bindPhone: !!user.user_mobile,
-                    }
-                })
-            }
+            })
         });
     })
 };

@@ -35,6 +35,9 @@ const UserSchema = new Schema({
     work_info    : {type: String,  required: false},  //用户性别
     edu_info     : {type: String,  required: false},  //用户性别
     getui_cid    : {type: String,  required: false},  //个推CID
+    user_province: {type: String,  required: false},  //用户所在省
+    user_city    : {type: String,  required: false},  //用户所在市
+    user_area    : {type: String,  required: false},  //用户所在地区
     bind_tencent_qq      : ThirdBindSchema,                  //qq绑定
     bind_tencent_wechat  : ThirdBindSchema,                  //微信绑定
     bind_sina_weibo      : ThirdBindSchema,                  //微博绑定
