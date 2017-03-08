@@ -4,22 +4,40 @@
  * @desc
  */
 
-
+const request = require('request');
 
 class DefaultSMSClient {
     
-    // constructor(options){
-    //     this.protocol = options.protocol;
-    //     this.hostname = options.host;
-    //     this.port = options.port;
-    //     this.pathname = options.pathname;
-    // }
-
-    //todo options属性不全
+    static url(){
+        return 'http://114.55.176.84/msg/HttpBatchSendSM'
+    };
     
-    send(msg, callback){
-        let x = this.hostname;
-        callback(null, true);
+    constructor(username, password){
+        this.username = username;
+        this.password = password;
+    }
+    
+    send(mobile, msg, callback){
+
+        request.post(DefaultSMSClient.url())
+            .timeout(2000)
+            .set('Accept', 'application/text')
+            .send({
+                account: this.username,
+                pswd: this.password,
+                mobile: mobile,
+                msg: msg,
+                needstatus: true,
+                extno: '',
+                product: '验证码专用-发送',
+            })
+            .end(function (err, res) {
+                if(err){
+                    return callback(err);
+                }
+
+                console.log(res);
+            });
     }
 }
 

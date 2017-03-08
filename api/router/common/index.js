@@ -8,5 +8,6 @@ const captcha = require('../../controller/common/captcha');
 
 
 exports.map = function (app) {
-    app.get('/common/sms/code', captcha.getSmsSecurityCode);      //获取短信验证码
+    app.get('/common/sms/code', captcha.getSmsSecurityCode);          //获取短信验证码
+    app.post('/common/sms/code', captcha.verifySmsSecurityCode);      //验证短信验证码
 };

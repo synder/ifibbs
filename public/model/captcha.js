@@ -3,11 +3,17 @@
  * @copyright
  * @desc 验证码
  */
-const async = require('async');
+
+const uuid = require('uuid/v4');
 const mongodb = require('../service/mongodb').db;
+const redis = require('../service/redis').client;
 const sms = require('../service/sms').client;
 
 const SecurityCode = mongodb.model('SecurityCode');
+
+const genSmsCodeFrequencyKey = function (phone) {
+    return 'SSC:' + phone;
+};
 
 
 /**
@@ -16,58 +22,81 @@ const SecurityCode = mongodb.model('SecurityCode');
 exports.sendSmsSecurityCode = function (phone, callback) {
     
     let code = Math.random().toString().substr(2, 6);
-    let msg = '短信验证码是:' + code;
-    let random = Math.random() + '';
-    let now = new Date();
-    let expireTime = new Date();
-    expireTime.setMinutes(expireTime.getMinutes() + 30);
+    let message = `【网金院】您的验证码：${code}，打死都不告诉别人`;
+    
+    let now = Date.now();
+    let frequency = 60000; //发送频率
+    let expireTime = Date.now() + 1800000;
 
     let securityCodeDoc = {
-        status       : SecurityCode.STATUS.ENABLE,   //验证码状态
-        random       : random,       //随机串
-        mobile       : phone,        //手机号码
-        code         : code,         //验证码
-        use_count    : 0,            //已验证次数
-        expire_time  : expireTime,   //过期时间
-        create_time  : now,          //创建时间
-        update_time  : now,          //更新次数
+        uid          : uuid(),
+        status       : SecurityCode.STATUS.ENABLE,
+        mobile       : phone,
+        code         : code,
+        use_count    : 0,
+        expire_time  : expireTime,
+        create_time  : now,
+        update_time  : now,
     };
     
-    SecurityCode.create(securityCodeDoc, function (err, doc) {
+    //发送频率验证
+    let key = genSmsCodeFrequencyKey(phone);
+    
+    redis.get(key, function (err, val) {
+        
         if(err){
             return callback(err);
         }
         
-        if(!doc){
-            return callback(new Error('sms security code save failed'));
+        if(val){
+            return callback(null, null);
         }
 
-        sms.send(msg, function (err, result) {
+        SecurityCode.create(securityCodeDoc, function (err, doc) {
             if(err){
                 return callback(err);
             }
 
-            if(result !== true){
-                return callback(new Error('sms security code send failed'));
+            if(!doc){
+                return callback(new Error('sms security code save failed'));
             }
 
-            callback(null, doc);
+            sms.send(message, function (err, result) {
+                if(err){
+                    return callback(err);
+                }
+
+                if(result !== true){
+                    return callback(new Error('sms security code send failed'));
+                }
+                
+                redis.setex(key, code, frequency, function (err, ok) {
+                    if(err){
+                        return callback(err);
+                    }
+
+                    callback(null, doc);
+                });
+            });
         });
-        
-        callback(null, doc);
     });
 };
 
 /**
  * @desc 查找验证码
+ * @param codeID 短信ID
+ * @param phoneNumber 手机号
+ * @param smsCode 短信验证码
+ * @param maxVerifyCount 最大验证次数
+ * @param isLast 是否是最后一次验证
+ * @param callback
  * */
-exports.verifySmsSecurityCode = function (codeID, phoneNumber, smsCode, randomString, maxVerifyCount, isLast, callback) { //isLast表示该验证码是否为最后一次使用
+exports.verifySmsSecurityCode = function (codeID, phoneNumber, smsCode, maxVerifyCount, isLast, callback) {
     
     let condition = {
-        _id: codeID,
+        uid: codeID,
         mobile: phoneNumber,
         code: smsCode,
-        random: randomString,
         status: SecurityCode.STATUS.ENABLE,
         use_count: {$lt: maxVerifyCount},
         expire_time: {$gt: new Date()},
@@ -82,8 +111,7 @@ exports.verifySmsSecurityCode = function (codeID, phoneNumber, smsCode, randomSt
         update = {
             $set: {
                 status: SecurityCode.STATUS.DISABLED,
-            },
-            $inc: {use_count: 1}
+            }
         }
     }
     

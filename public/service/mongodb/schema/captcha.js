@@ -12,8 +12,8 @@ const ObjectId = Schema.Types.ObjectId;
 
 //用户===================================================
 const SecurityCodeSchema = new Schema({
+    uid          : {type: String,  required: true},   //验证码状态
     status       : {type: Number,  required: true},   //验证码状态
-    random       : {type: String,  required: true},   //随机串
     mobile       : {type: String,  required: true},   //手机号码
     code         : {type: String,  required: true},   //验证码
     use_count    : {type: Number,  required: true},   //已验证次数
@@ -27,7 +27,7 @@ SecurityCodeSchema.virtual('id').get(function () {
 });
 
 
-SecurityCodeSchema.index({mobile: 1, code: 1});
+SecurityCodeSchema.index({uid: 1, mobile: 1, code});
 
 
 //验证码状态

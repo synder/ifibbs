@@ -66,6 +66,7 @@ module.exports =  {
      * 短消息服务
      * */
     sms: {
-
+        username: 'nx-keluo',
+        password: 'KEluo1205'
     }
 };

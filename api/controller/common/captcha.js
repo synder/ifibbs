@@ -32,9 +32,32 @@ exports.getSmsSecurityCode = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                code_id: captcha._id,
-                random: captcha.random
+                uid: captcha.uid,
             }
         });
     });
+};
+
+/**
+ * @desc 验证验证码是否正确
+ * */
+exports.verifySmsSecurityCode = function (req, res, next) {
+    let smsCode = req.body.code;
+    let phoneNumber = req.body.phone;
+    let smsCodeUid = req.body.uid;
+    
+    captchaModel.verifySmsSecurityCode(smsCodeUid, phoneNumber, smsCode, 1000000, false, function (err, success) {
+       if(err){
+           return next(err);
+       } 
+       
+       res.json({
+           flag: '0000',
+           msg: '',
+           result: {
+               ok: !!success
+           }
+       });
+    });
+    
 };
