@@ -29,6 +29,9 @@ exports.getUserArticleCollections = function(req, res, next){
         results.collections.forEach(function (collection) {
             collections.push({
                 collection_id: collection._id,
+                subject_id: collection.subject_id ? collection.subject_id._id : null,
+                subject_title: collection.subject_id ? collection.subject_id.title : null,
+                subject_icon: collection.subject_id ? collection.subject_id.icon : null,
                 article_id: collection.article_id ? collection.article_id._id : null,
                 article_title: collection.article_id ? collection.article_id.title : null,
                 article_favour_count: collection.article_id ? collection.article_id.favour_count : null,

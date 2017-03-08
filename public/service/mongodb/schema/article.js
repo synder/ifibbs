@@ -25,7 +25,7 @@ const ArticleSchema = new Schema({
     collect_count   : {type: Number,  required: true},    //被收藏次数
     create_time     : {type: Date,    required: true},    //创建时间
     update_time     : {type: Date,    required: true},    //更新时间
-    subject_id      : {type: ObjectId, required: false, ref: 'Subject'},  //文章所属主题
+    subject_id      : {type: ObjectId, required: true, ref: 'Subject'},  //文章所属主题
     create_user_id  : {type: ObjectId, required: false, ref: 'User'}      //创建人
 });
 

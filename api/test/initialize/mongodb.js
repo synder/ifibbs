@@ -236,7 +236,7 @@ const initArticle = function (callback) {
     let cover = 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518';
     
     let docs = [{
-        _id: ARTICLE_ID,
+        _id             : ARTICLE_ID,
         status          : Article.STATUS.PUBLISHED,    //文章状态
         top             : true,    //是否置顶
         title           : Mock.Random.ctitle(10, 20),    //文章标题
@@ -434,7 +434,7 @@ const initRecommend = function (callback) {
             collect_count   : 0,    //被收藏次数
             create_time     : new Date(),    //创建时间
             update_time     : new Date(),    //更新时间
-            subject_id      : null,  //文章所属主题
+            subject_id      : SUBJECT_ID,  //文章所属主题
             create_user_id  : null   //创建人
         };
         
@@ -647,8 +647,8 @@ const initMongodbSecurityCode = function (callback) {
 
     let securityCodeDoc = {
         _id          : '58bce997fc71500981a75187',
+        uid          : '58bce997fc71500981a75187',
         status       : SecurityCode.STATUS.ENABLE,   //验证码状态
-        random       : '0.8504996783854122',       //随机串
         mobile       : '13550501566',        //手机号码
         code         : '903488',         //验证码
         use_count    : 0,            //已验证次数

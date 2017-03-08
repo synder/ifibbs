@@ -11,19 +11,19 @@ const captchaModel = require('../../../public/model/captcha');
  * @desc 发送短信验证码
  * */
 exports.getSmsSecurityCode = function (req, res, next) {
-    let mobileNumber = req.query.mobile;
+    let phoneNumber = req.query.phone;
     
-    if(!mobileNumber){
+    if(!phoneNumber){
         return next(new BadRequestError('mobile is need'));
     }
     
     let regex = /^1[0-9]{10}$/;
 
-    if(regex.test(mobileNumber.toString()) !== true){
+    if(regex.test(phoneNumber.toString()) !== true){
         return next(new BadRequestError('mobile is illegal'));
     }
 
-    captchaModel.sendSmsSecurityCode(mobileNumber, function (err, captcha) {
+    captchaModel.sendSmsSecurityCode(phoneNumber, function (err, captcha) {
         if(err){
             return next(err);
         }
