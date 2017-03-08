@@ -82,8 +82,7 @@ exports.getUserByMobile = function (phone, callback) {
     let condition = {
         user_mobile: {
             $exists: true, 
-            $eq: phone
-        }
+            $eq: phone}
     };
 
     User.findOne(condition, callback);
@@ -122,9 +121,13 @@ exports.getUserByMobileAndPassword = function (phone, pass, callback) {
 
 /*
  * @desc QQ第三方登录
+ * uid
+ * unionID
  * */
-exports.userLoginWithQQAccount = function (uid, socialType, name, union_id, callback) {
+exports.userLoginWithQQAccount = function (uid, unionID, username, avatar, callback) {
+    
     let now = new Date();
+    
     let condition ={
         bind_tencent_qq: {$exists: true},
         'bind_tencent_qq.uid': uid,
@@ -132,20 +135,21 @@ exports.userLoginWithQQAccount = function (uid, socialType, name, union_id, call
 
     let userDoc = {
         status: User.STATUS.NORMAL,
-        user_name: '',
-        user_profile: '',
-        user_avatar: '',
-        user_mobile: '',
-        user_password: '',
+        user_name: username,
+        user_profile: null,
+        user_avatar: avatar,
+        user_mobile: null,
+        user_password: null,
         create_time: now,
         update_time: now,
-        pass_salt_str: '',
+        pass_salt_str: null,
         bind_tencent_qq:{
             uid: uid,
-            union_id: union_id,
-            name: name,
+            union_id: unionID,
+            name: username,
         }
     };
+    
     User.findOne(condition, function (err, user) {
         if(err){
             return callback(err)
@@ -162,7 +166,7 @@ exports.userLoginWithQQAccount = function (uid, socialType, name, union_id, call
 /*
  * @desc wechat第三方登录
  * */
-exports.userLoginWithWechatAccount = function (uid, socialType, name, union_id, callback) {
+exports.userLoginWithWechatAccount = function (uid, unionID, username, avatar, callback) {
     let now = new Date();
 
     let condition ={
@@ -172,18 +176,18 @@ exports.userLoginWithWechatAccount = function (uid, socialType, name, union_id, 
 
     let userDoc = {
         status: User.STATUS.NORMAL,
-        user_name: '',
-        user_profile: '',
-        user_avatar: '',
-        user_mobile: '',
-        user_password: '',
+        user_name: username,
+        user_profile: null,
+        user_avatar: avatar,
+        user_mobile: null,
+        user_password: null,
         create_time: now,
         update_time: now,
-        pass_salt_str: '',
+        pass_salt_str: null,
         bind_tencent_wechat:{
             uid: uid,
-            union_id: union_id,
-            name: name,
+            union_id: unionID,
+            name: username,
         }
     };
     User.findOne(condition, function (err, user) {
@@ -202,7 +206,7 @@ exports.userLoginWithWechatAccount = function (uid, socialType, name, union_id, 
 /*
  * @desc weibo第三方登录
  * */
-exports.userLoginWithWeiBoAccount = function (uid, socialType, name, union_id, callback) {
+exports.userLoginWithWeiBoAccount = function (uid, unionID, username, avatar, callback) {
     let now = new Date();
     let condition ={
         bind_sina_weibo: {$exists: true},
@@ -211,17 +215,17 @@ exports.userLoginWithWeiBoAccount = function (uid, socialType, name, union_id, c
 
     let userDoc = {
         status: User.STATUS.NORMAL,
-        user_name: '',
-        user_profile: '',
-        user_avatar: '',
-        user_mobile: '',
-        user_password: '',
+        user_name: username,
+        user_profile: null,
+        user_avatar: avatar,
+        user_mobile: null,
+        user_password: null,
         create_time: now,
         update_time: now,
-        pass_salt_str: '',
+        pass_salt_str: null,
         bind_sina_weibo:{
             uid: uid,
-            union_id: union_id,
+            union_id: unionID,
             name: name,
         }
     };
@@ -237,6 +241,8 @@ exports.userLoginWithWeiBoAccount = function (uid, socialType, name, union_id, c
         User.create(userDoc, callback)
     })
 };
+
+
 /**
  * @desc 更新用户信息
  * */
@@ -304,28 +310,37 @@ exports.updateUserInfo = function (userID, userInfo, callback) {
 };
 
 
+//用户token==================================================================
 /**
  * @desc 更新用户的登录token信息
  * */
 exports.updateUserLoginToken = function (userID, token, expire, callback) {
+    
+    expire = ~~expire;
 
-    let condition = {
-        _id: userID
-    };
+    let sessionExpire = Math.round( (expire - Date.now()) / 1000 );
+    
+    if(sessionExpire < 0){
+        return callback(new Error('expire lower current timestamp'));
+    }
 
     let session = {
         id: userID,
         token: token,
         expire: expire,
     };
+    
+    let sessionString = JSON.stringify(session);
 
-    let sessionExpire = parseInt((expire - Date.now())/1000);
-
-    redis.setex(token, sessionExpire, JSON.stringify(session), function (err, result) {
+    redis.setex(token, sessionExpire, sessionString, function (err, result) {
         if (err) {
             return callback(err)
         }
 
+        let condition = {
+            _id: userID
+        };
+        
         User.findOne(condition, function (err, result) {
             if (err) {
                 return callback(err);
@@ -347,53 +362,78 @@ exports.updateUserLoginToken = function (userID, token, expire, callback) {
  * @desc 获取用户session信息
  * */
 exports.getUserLoginToken = function (token, callback) {
+    
+    //过期时间30天
     let sessionExpire = Date.now() + 1000 * 3600 * 24 * 30;
 
     redis.get(token, function (err, session) {
         if (err) {
             return callback(err)
         }
+        
+        async.waterfall([
+            function(cb) {
+                if(session){
+                    
+                    let sessionObject;
+                    
+                    try{
+                        sessionObject = JSON.parse(session);
+                    }catch (ex){
+                        return cb(ex);
+                    }
 
-        if (session) {
-            let session = JSON.parse(session);
+                    return cb(sessionObject);
+                    
+                }else{
+                    let condition = {
+                        'login_token.token': token,
+                        'login_token.expire': {$gt: new Date()},
+                    };
 
-
-            if (session.expire - Date.now() < 1000 * 3600 * 24 * 5) {
-                self.updateUserLoginToken(session.id, token, sessionExpire);
-            }
-
-            return callback(null, session)
-        }
-
-        let condition = {
-            'login_token.token': token,
-            'login_token.expire': {$gt: new Date()},
-        };
-
-        User.findOne(condition, function (err, doc) {
-            if (err) {
-                return callback(err)
-            }
-
-            if (doc) {
-                let session = {
-                    id: doc._id,
-                    token: token,
-                    expire: doc.login_token.expire,
-                };
-
-                if (new Date(session.expire).getTime() - Date.now() < 1000 * 3600 * 24 * 5) {
-                    self.updateUserLoginToken(session.id, token, sessionExpire);
+                    User.findOne(condition, function (err, doc) {
+                        if(err){
+                            return cb(err);
+                        }
+                        
+                        if(!doc){
+                            return cb(null, null);
+                        }
+                        
+                        cb(null, {
+                            id: doc._id,
+                            token: token,
+                            expire: doc.login_token.expire,
+                        });
+                    });
+                }
+            },
+            function(session, cb) {
+                if(!session){
+                    return cb(null, null);
                 }
 
-                return callback(null, session)
+                if (session.expire - Date.now() < 1000 * 3600 * 24 * 5) {
+                    let userID = session.id;
+                    self.updateUserLoginToken(userID, token, sessionExpire);
+                }
+                
+                cb(null, session);
+                
+            },
+        ], function (err, session) {
+            if(err){
+                return callback(err);
             }
-
-            callback(null, null)
-        })
+            
+            callback(null, session);
+        });
+        
     })
 };
 
+
+//更新密码==================================================================
 /**
  * @desc 更新用户密码(修改)
  * */
@@ -464,6 +504,7 @@ exports.updateUserPasswordWithMobile = function (phone, newPassword, callback) {
     });
 };
 
+//绑定账号==================================================================
 /**
  * @desc 绑定手机号
  * */
