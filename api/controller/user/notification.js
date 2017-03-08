@@ -59,8 +59,9 @@ exports.getUserSystemNotification = function (req, res, next) {
         results.notifications.forEach(function(notification) {
             list.push({
                 id: notification._id,
-                title: notification.title,
-                content: notification.content,
+                title: notification.push_title,
+                content: notification.push_content,
+                add_on: notification.push_content_id,
                 type: notification.type,
                 status: notification.status,
             })
@@ -97,8 +98,9 @@ exports.getUserBusinessNotification = function (req, res, next) {
         results.notifications.forEach(function(notification) {
             list.push({
                 id: notification._id,
-                title: notification.title,
-                content: notification.content,
+                title: notification.push_title,
+                content: notification.push_content,
+                add_on: notification.push_content_id,
                 type: notification.type,
                 status: notification.status,
             })
