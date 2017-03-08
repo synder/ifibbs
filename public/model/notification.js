@@ -44,8 +44,6 @@ exports.getNotReadBusinessNotificationCount = function (userID, callback) {
     UserNotification.count(condition, callback);
 };
 
-
-
 /*
  * @desc 获取用户系统通知
  * */
@@ -807,4 +805,4 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
 };
 
 
-//=================================================================================
+//系统推送=======================================================================
