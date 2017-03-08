@@ -19,25 +19,21 @@ class DefaultSMSClient {
     
     send(mobile, msg, callback){
 
-        request.post(DefaultSMSClient.url())
-            .timeout(2000)
-            .set('Accept', 'application/text')
-            .send({
-                account: this.username,
-                pswd: this.password,
-                mobile: mobile,
-                msg: msg,
-                needstatus: true,
-                extno: '',
-                product: '验证码专用-发送',
-            })
-            .end(function (err, res) {
-                if(err){
-                    return callback(err);
-                }
-
-                console.log(res);
-            });
+        request.post({url:DefaultSMSClient.url(), form: {
+            account: this.username,
+            pswd: this.password,
+            mobile: mobile,
+            msg: msg,
+            needstatus: true,
+            extno: '',
+            product: '',
+        }}, function optionalCallback(err, httpResponse, body) {
+            if (err) {
+                return callback(err);
+            }
+            
+            callback(null, body);
+        });
     }
 }
 

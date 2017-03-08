@@ -20,6 +20,7 @@ const SecurityCodeSchema = new Schema({
     expire_time  : {type: Date,    required: true},   //过期时间
     create_time  : {type: Date,    required: true},   //创建时间
     update_time  : {type: Date,    required: true},   //更新次数
+    server_res   : {type: String,  required: false},  //服务器返回
 });
 
 SecurityCodeSchema.virtual('id').get(function () {

@@ -61,12 +61,12 @@ exports.sendSmsSecurityCode = function (phone, callback) {
                 return callback(new Error('sms security code save failed'));
             }
 
-            sms.send(message, function (err, result) {
+            sms.send(phone, message, function (err, result) {
                 if(err){
                     return callback(err);
                 }
 
-                if(result !== true){
+                if(!result){
                     return callback(new Error('sms security code send failed'));
                 }
                 
