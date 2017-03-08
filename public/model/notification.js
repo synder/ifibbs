@@ -54,7 +54,7 @@ exports.getSysNotificationList = function (userId, pageSkip, pageSize, callback)
     let condition = {
         user_id: userId,
         category: UserNotification.CATEGORY.SYSTEM,
-        status: UserNotification.STATUS.UNREAD
+        status: {$ne: UserNotification.STATUS.DELETED}
     };
 
     async.parallel({
@@ -79,7 +79,7 @@ exports.getBusinessNotificationList = function (userId, pageSkip, pageSize, call
     let condition = {
         user_id: userId,
         category: UserNotification.CATEGORY.BUSINESS,
-        status: UserNotification.STATUS.UNREAD
+        status: {$ne: UserNotification.STATUS.DELETED}
     };
 
     async.parallel({

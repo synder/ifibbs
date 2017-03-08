@@ -33,8 +33,6 @@ UserNotificationSchema.index({user_id : 1, create_time: 1});
 
 //通知状态
 UserNotificationSchema.statics.STATUS = {
-    UN_NOTIFIED: -2, //未通知
-    NOTIFIED: -1,    //已经通知
     DELETED : 0,     //删除
     UNREAD : 1,      //未读
     READ : 2,        //已读
