@@ -28,7 +28,6 @@ exports.map = function(app){
     app.post('/account/login', account.userLoginWithSystemAccount);            //账户密码登录
     app.post('/account/login/third', account.userLoginWithThirdPartyAccount);  //第三方账户登录
     
-    app.post('/account/password', account.modifyUserPassword);                //修改密码
     app.put('/account/password', account.resetUserPassword);                  //找回密码
     
     

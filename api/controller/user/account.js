@@ -160,7 +160,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
     }
 
     //验证验证码信息
-    captchaModel.verifySmsSecurityCode(codeID, mobile, code, 5, true, function (err, result) {
+    captchaModel.verifySmsSecurityCode(codeID, mobile, code, 6, true, function (err, result) {
         if (err) {
             return next(err);
         }
@@ -170,7 +170,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
         }
 
         //写入用户数据
-        userModel.createNewUser(mobile, password, function (err, user) {
+        userModel.createNewUser(mobile, password, function (err, user) {//todo mysql
             if (err) {
                 return next(err);
             }
@@ -281,10 +281,9 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
                     user_id: userId,
                     login_token: token,
                     login_fashion: 0,
-                    bind_wechat: !!user.bind_tencent_wechat ,
-                    bind_qq: !!user.bind_tencent_qq,
-                    bind_weibo: !!user.bind_sina_weibo,
-                    bind_phone: !!user.user_mobile,
+                    bind_wechat: !!user.bind_tencent_wechat.uid ,
+                    bind_qq: !!user.bind_tencent_qq.uid,
+                    bind_weibo: !!user.bind_sina_weibo.uid,
                 }
             })
         });
@@ -333,7 +332,7 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
     if (loginType == 3) {
         loginFunction = userModel.userLoginWithWeiBoAccount;
     }
-    loginFunction(uid, union_id, userName, userAvatar, function (err, user) {
+    loginFunction(uid, union_id, userName, userAvatar, function (err, user) {//todo mysql
         if (err) {
             return next(err)
         }
@@ -365,9 +364,9 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
                     user_id: userId,
                     login_token: token,
                     login_fashion: loginType,
-                    bind_wechat: !!user.bind_tencent_wechat ,
-                    bind_qq: !!user.bind_tencent_qq,
-                    bind_weibo: !!user.bind_sina_weibo,
+                    bind_wechat: !!user.bind_tencent_wechat.uid ,
+                    bind_qq: !!user.bind_tencent_qq.uid,
+                    bind_weibo: !!user.bind_sina_weibo.uid,
                     bind_phone: !!user.user_mobile,
                 }
             });
@@ -421,9 +420,8 @@ exports.resetUserPassword = function (req, res, next) {
 
     let mobileNumber = req.body.mobile_number;
     let newPassword = req.body.new_password;
-    let securityCode = req.body.security_code;
+    let securityCode = req.body.code;
     let codeID = req.body.code_id;
-    let randomString = req.body.code_random;
 
     if (!mobileNumber) {
         return next(new BadRequestError('mobile_number is need'));
@@ -446,7 +444,7 @@ exports.resetUserPassword = function (req, res, next) {
     }
 
     //验证验证码
-    captchaModel.verifySmsSecurityCode(codeID, mobileNumber, securityCode, 5, true, function (err, result) {
+    captchaModel.verifySmsSecurityCode(codeID, mobileNumber, securityCode, 6, true, function (err, result) {
         if (err) {
             return next(err)
         }
