@@ -16,6 +16,7 @@ const UserNotificationSchema = new Schema({
     type         : {type: Number, required: true},      //通知类型
     push_title        : {type: String, required: true},      //通知标题
     push_content      : {type: String, required: true},      //通知内容
+    push_content_id   : {type: String, required: false},     //通知内容ID
     push_client_id    : {type: String, required: false},     //客户端ID，详见个推文档
     push_task_id      : {type: String, required: false},     //任务ID，详见个推文档
     push_time         : {type: Date,     required: false},   //推送时间
@@ -33,8 +34,6 @@ UserNotificationSchema.index({user_id : 1, create_time: 1});
 
 //通知状态
 UserNotificationSchema.statics.STATUS = {
-    UN_NOTIFIED: -2, //未通知
-    NOTIFIED: -1,    //已经通知
     DELETED : 0,     //删除
     UNREAD : 1,      //未读
     READ : 2,        //已读

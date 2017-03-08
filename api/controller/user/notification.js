@@ -3,8 +3,43 @@
  * @copyright
  * @desc
  */
+const async = require('async');
 
 const notificationModel = require('../../../public/model/notification');
+
+/**
+ * @desc 检测用户是否有通知
+ * */
+exports.checkUserHasNewNotification = function (req, res, next) {
+    let userId = req.session.id;
+    
+    async.parallel({
+        getSystemNotificationCount: function(cb) { 
+            notificationModel.getNotReadSysNotificationCount(userId, cb);
+        },
+        getBusinessNotificationCount: function(cb) {
+            notificationModel.getNotReadBusinessNotificationCount(userId, cb);
+        },
+    }, function (err, results) {
+    
+        if(err){
+             return next(err);
+        }
+        
+        let systemNotificationCount = results.getSystemNotificationCount;
+        let businessNotificationCount = results.getBusinessNotificationCount;
+        
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                system_unread_count: systemNotificationCount,
+                business_unread_count: businessNotificationCount,
+            }
+        });
+        
+    });
+};
 
 /**
  * @desc 获取用户系统通知
@@ -24,9 +59,11 @@ exports.getUserSystemNotification = function (req, res, next) {
         results.notifications.forEach(function(notification) {
             list.push({
                 id: notification._id,
-                title: notification.title,
-                content: notification.content,
+                title: notification.push_title,
+                content: notification.push_content,
+                add_on: notification.push_content_id,
                 type: notification.type,
+                status: notification.status,
             })
         });
 
@@ -61,9 +98,11 @@ exports.getUserBusinessNotification = function (req, res, next) {
         results.notifications.forEach(function(notification) {
             list.push({
                 id: notification._id,
-                title: notification.title,
-                content: notification.content,
+                title: notification.push_title,
+                content: notification.push_content,
+                add_on: notification.push_content_id,
                 type: notification.type,
+                status: notification.status,
             })
         });
 

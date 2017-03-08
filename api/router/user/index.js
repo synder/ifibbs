@@ -24,9 +24,12 @@ exports.map = function(app){
     //用户账户非登录下接口
     app.get('/account/phone', account.checkPhoneRegistered);                  //检测手机是否登录
     app.put('/account/register', account.userRegisterWithPhone);              //注册账户
-    app.put('/account/login', account.userLoginWithSystemAccount);            //账户密码登录
-    app.put('/account/login/third', account.userLoginWithThirdPartyAccount);  //第三方账户登录
-    app.post('/account/password', account.userLoginWithThirdPartyAccount);    //找回密码
+    
+    app.post('/account/login', account.userLoginWithSystemAccount);            //账户密码登录
+    app.post('/account/login/third', account.userLoginWithThirdPartyAccount);  //第三方账户登录
+    
+    app.post('/account/password', account.modifyUserPassword);                //修改密码
+    app.put('/account/password', account.resetUserPassword);                  //找回密码
     
     
     //其他用户的相关接口
@@ -103,6 +106,7 @@ exports.map = function(app){
     app.put('/user/notification/status',authority.check,notification.changeNotificationToRead);           //修改通知阅读状态
     app.get('/user/notification/systems', authority.check, notification.getUserSystemNotification);       //获取系统通知
     app.get('/user/notification/businesses', authority.check, notification.getUserBusinessNotification);  //获取业务通知
+    app.get('/user/notifications/unread/count', authority.check, notification.checkUserHasNewNotification);     //获取业务通知
     
     //获取用户统计数据
     app.get('/user/statistics', authority.check, statistics.getUserStatisticsData);  //获取用户统计数据(关注人数，收藏数，被赞数)

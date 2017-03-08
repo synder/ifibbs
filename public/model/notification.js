@@ -18,6 +18,34 @@ const AttentionSubject = mongodb.model('AttentionSubject');
 const AttentionQuestion = mongodb.model('AttentionQuestion');
 
 
+/**
+ * @desc 获取未读系统通知
+ * */
+exports.getNotReadSysNotificationCount = function (userID, callback) {
+    let condition = {
+        user_id: userID,
+        category: UserNotification.CATEGORY.SYSTEM,
+        status: UserNotification.STATUS.UNREAD
+    };
+    
+    UserNotification.count(condition, callback);
+};
+
+/**
+ * @desc 获取未读业务通知
+ * */
+exports.getNotReadBusinessNotificationCount = function (userID, callback) {
+    let condition = {
+        user_id: userID,
+        category: UserNotification.CATEGORY.BUSINESS,
+        status: UserNotification.STATUS.UNREAD
+    };
+
+    UserNotification.count(condition, callback);
+};
+
+
+
 /*
  * @desc 获取用户系统通知
  * */
@@ -26,7 +54,7 @@ exports.getSysNotificationList = function (userId, pageSkip, pageSize, callback)
     let condition = {
         user_id: userId,
         category: UserNotification.CATEGORY.SYSTEM,
-        status: UserNotification.STATUS.UNREAD
+        status: {$ne: UserNotification.STATUS.DELETED}
     };
 
     async.parallel({
@@ -51,7 +79,7 @@ exports.getBusinessNotificationList = function (userId, pageSkip, pageSize, call
     let condition = {
         user_id: userId,
         category: UserNotification.CATEGORY.BUSINESS,
-        status: UserNotification.STATUS.UNREAD
+        status: {$ne: UserNotification.STATUS.DELETED}
     };
 
     async.parallel({

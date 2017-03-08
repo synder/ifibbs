@@ -35,6 +35,7 @@ describe('用户消息推送', function(){
                     chai.expect(list[0]).to.have.ownProperty('title');
                     chai.expect(list[0]).to.have.ownProperty('content');
                     chai.expect(list[0]).to.have.ownProperty('type');
+                    chai.expect(list[0]).to.have.ownProperty('status');
                     chai.expect(list[0]).to.have.ownProperty('add_on');
                 }
                 done();
