@@ -27,7 +27,7 @@ SecurityCodeSchema.virtual('id').get(function () {
 });
 
 
-SecurityCodeSchema.index({uid: 1, mobile: 1, code});
+SecurityCodeSchema.index({uid: 1, mobile: 1, code:1});
 
 
 //验证码状态
