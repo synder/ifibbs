@@ -359,7 +359,6 @@ exports.updateUserLoginToken = function (userID, token, expire, callback) {
  * @desc 获取用户session信息
  * */
 exports.getUserLoginToken = function (token, callback) {
-    
     //过期时间30天
     let sessionExpire = Date.now() + 1000 * 3600 * 24 * 30;
 
@@ -367,7 +366,7 @@ exports.getUserLoginToken = function (token, callback) {
         if (err) {
             return callback(err)
         }
-        
+
         async.waterfall([
             function(cb) {
                 if(session){
@@ -379,8 +378,7 @@ exports.getUserLoginToken = function (token, callback) {
                     }catch (ex){
                         return cb(ex);
                     }
-
-                    return cb(sessionObject);
+                    return cb(null,sessionObject);
                     
                 }else{
                     let condition = {
@@ -428,7 +426,6 @@ exports.getUserLoginToken = function (token, callback) {
         
     })
 };
-
 
 //更新密码==================================================================
 /**
