@@ -48,6 +48,7 @@ exports.map = function(app){
     app.get('/user/account/info', authority.check, account.getUserInfo);             //获取用户信息
     app.post('/user/account/info',authority.check, account.updateUserInfo);          //更新用户信息
     app.post('/user/account/password',authority.check, account.modifyUserPassword);  //修改密码
+    app.post('/user/account/check/third',authority.check, account.checkThirdParty);  //检测第三方账号是否存在
     
     
     //用户的提问

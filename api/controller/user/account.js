@@ -119,6 +119,48 @@ exports.checkPhoneRegistered = function (req, res, next) {
     });
 };
 
+/*
+ * @desc 验证第三方账号是否存在
+ * */
+exports.checkThirdParty = function (req, res, next) {
+    let openID = req.body.open_id;
+    let loginType = req.body.login_type; //1：微信 2: qq 3: 新浪微博 （0:手机账号密码）
+    let userID = req.session.id;
+
+    if (loginType != 1 && loginType != 2 && loginType != 3) {
+        return next(new BadRequestError('login_type is not in [1,2,3]'));
+    }
+
+    let checkFunction;
+
+    if(loginType == 1){
+        checkFunction = userModel.getUserByWechat;
+    }
+
+    if(loginType == 2){
+        checkFunction = userModel.getUserByQQ;
+    }
+
+    if(loginType == 3){
+        checkFunction = userModel.getUserByWeibo();
+    }
+
+    checkFunction(openID, function (err, userInfo) {
+        if(err){
+            return next(err)
+        }
+
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                is_bound: !!userInfo,
+                user_name: userInfo.user_name,
+            }
+        });
+    })
+
+};
 
 /**
  * @desc 用户注册接口
