@@ -78,4 +78,20 @@ module.exports =  {
             ssl: true
         }
     },
+
+    //拼接地址配置
+    hosts: {
+        //app中h5页面地址配置
+        h5: {
+            protocol: 'http',
+            port: 80,
+            host: '192.168.1.193',
+        },
+        //图片拼接地址
+        image: {
+            protocol: 'http',
+            port: 80,
+            host: '192.168.1.193'
+        }
+    }
 };

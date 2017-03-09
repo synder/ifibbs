@@ -6,11 +6,15 @@
 
 
 const async = require('async');
+const url = require('url');
 
 const config = global.config.hosts;
 
-if(!(config && config.article)){
-    
+//文章详情H5页面
+const ARTICLE_H5_PAGE_NAME = 'article.html';
+
+if(!(config && config.h5)){
+    throw new Error('please provide h5 host config');
 }
 
 const recommendModel = require('../../../public/model/recommend');
@@ -20,6 +24,8 @@ exports.getRecommendList = function(req, res, next){
     let pageSkip = req.query.page_skip;
     
     let userID = req.session.id;
+    
+    
 
     recommendModel.getUserRecommend(userID, pageSkip, pageSize, function (err, results) {
         if(err){
@@ -85,6 +91,16 @@ exports.getRecommendList = function(req, res, next){
                 
             }else if(recommend.type === 3){
                 if(recommend.article){
+                    
+                    let articleUrl = url.format({
+                        protocol : config.h5.protocol,
+                        hostname: config.h5.host,
+                        port : config.h5.port,
+                        pathname : ARTICLE_H5_PAGE_NAME,
+                        query : {
+                            article_id: recommend.article._id
+                        }
+                    });
 
                     let temp = {
                         id : recommend.article._id,
@@ -98,7 +114,7 @@ exports.getRecommendList = function(req, res, next){
                         collect_count: recommend.article.collect_count,
                         answer_count: 0,
                         create_time: recommend.article.create_time,
-                        url:'http://www.baidu.com', //todo 拼接文章详情链接
+                        url: articleUrl,
                         eg_answer_id: null,
                         eg_answer_time: null,
                         eg_answer_content: null,

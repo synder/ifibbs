@@ -4,6 +4,16 @@
  * @desc
  */
 const async = require('async');
+const url = require('url');
+
+const config = global.config.hosts;
+
+if(!(config && config.h5)){
+    throw new Error('please provide h5 host config');
+}
+
+//文章详情H5页面
+const ARTICLE_H5_PAGE_NAME = 'article.html';
 
 const articleModel = require('../../../public/model/article');
 const collectionModel = require('../../../public/model/collection');
@@ -23,6 +33,17 @@ exports.getRecommendArticleList = function (req, res, next) {
         let articles = results.articles;
 
         articles = articles.map(function (article) {
+
+            let articleUrl = url.format({
+                protocol : config.h5.protocol,
+                hostname: config.h5.host,
+                port : config.h5.port,
+                pathname : ARTICLE_H5_PAGE_NAME,
+                query : {
+                    article_id: article._id
+                }
+            });
+            
             return {
                 id : article._id,
                 title : article.title,
@@ -33,7 +54,7 @@ exports.getRecommendArticleList = function (req, res, next) {
                 favour_count: article.favour_count,
                 collect_count: article.collect_count,
                 create_time: article.create_time,
-                url: 'http://www.baidu.com',  //todo change url
+                url: articleUrl,
             };
         });
 
@@ -69,6 +90,17 @@ exports.getSubjectArticleList = function (req, res, next) {
         let articles = results.articles;
 
         articles = articles.map(function (article) {
+            
+            let articleUrl = url.format({
+                protocol : config.h5.protocol,
+                hostname: config.h5.host,
+                port : config.h5.port,
+                pathname : ARTICLE_H5_PAGE_NAME,
+                query : {
+                    article_id: article._id
+                }
+            });
+            
             return {
                 id : article._id,
                 title : article.title,
@@ -79,7 +111,7 @@ exports.getSubjectArticleList = function (req, res, next) {
                 favour_count: article.favour_count,
                 collect_count: article.collect_count,
                 create_time: article.create_time,
-                url: 'http://www.baidu.com', //todo change url
+                url: articleUrl,
             };
         });
         

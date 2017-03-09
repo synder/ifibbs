@@ -419,7 +419,7 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
     if (loginType == 3) {
         loginFunction = userModel.userLoginWithWeiBoAccount;
     }
-    loginFunction(uid, union_id, userName, userAvatar, getuiCID, function (err, user) {//todo mysql
+    loginFunction(uid, union_id, userName, userAvatar, getuiCID, function (err, user) {
         if (err) {
             return next(err)
         }

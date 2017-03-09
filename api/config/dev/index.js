@@ -81,12 +81,17 @@ module.exports =  {
     
     //拼接地址配置
     hosts: {
-        //文章拼接地址配置
-        article: {
+        //app中h5页面地址配置
+        h5: {
             protocol: 'http',
             port: 80,
             host: '192.168.1.193',
-            path: 'article.html'
+        },
+        //图片拼接地址
+        image: {
+            protocol: 'http',
+            port: 80,
+            host: '192.168.1.193'
         }
     }
 };
