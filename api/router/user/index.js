@@ -118,8 +118,8 @@ exports.map = function(app){
     app.post('/user/notification',authority.check,notification.changeNotificationToRead);           //修改通知阅读状态
     app.delete('/user/notification',authority.check,notification.removeNotification);               //删除通知
     
-    app.get('/user/notification/systems', authority.check, notification.getUserSystemNotification);       //获取系统通知
-    app.get('/user/notification/businesses', authority.check, notification.getUserBusinessNotification);  //获取业务通知
+    app.get('/user/notifications/system', authority.check, notification.getUserSystemNotification);       //获取系统通知
+    app.get('/user/notifications/business', authority.check, notification.getUserBusinessNotification);  //获取业务通知
     app.get('/user/notifications/unread/count', authority.check, notification.checkUserHasNewNotification);     //获取业务通知
     
     //获取用户统计数据
