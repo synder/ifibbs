@@ -144,58 +144,7 @@ const initUserNotification = function (callback) {
 
     for (let i = 0; i < 10; i++) {
         docs.push({
-            status: UserNotification.STATUS.READ,      //通知状态
-            category: UserNotification.CATEGORY.BUSINESS,      //通知类别
-            type: UserNotification.TYPE.USER_PUBLISH_QUESTION,      //通知类型
-            push_title: Mock.Random.ctitle(10, 20),      //通知标题
-            push_content: Mock.Random.ctitle(10, 20),      //通知内容
-            push_content_id: QUESTION_ID,      //通知内容
-            push_client_id: 'xxx',     //客户端ID，详见个推文档
-            push_task_id: 'xxx',     //任务ID，详见个推文档
-            push_time: null,   //推送时间
-            create_time: new Date(),    //创建时间
-            update_time: new Date(),    //更新时间
-            user_id: USER_ID,    //用户ID
-        });
-    }
-
-    for (let i = 0; i < 10; i++) {
-        docs.push({
-            status: UserNotification.STATUS.READ,      //通知状态
-            category: UserNotification.CATEGORY.BUSINESS,      //通知类别
-            type: UserNotification.TYPE.USER_QUESTION_BEEN_ATTENTION,      //通知类型
-            push_content_id: QUESTION_ID,      //通知内容
-            push_title: Mock.Random.ctitle(10, 20),      //通知标题
-            push_content: Mock.Random.ctitle(10, 20),      //通知内容
-            push_client_id: 'xxx',     //客户端ID，详见个推文档
-            push_task_id: 'xxx',     //任务ID，详见个推文档
-            push_time: null,   //推送时间
-            create_time: new Date(),    //创建时间
-            update_time: new Date(),    //更新时间
-            user_id: USER_ID,    //用户ID
-        });
-    }
-
-    for (let i = 0; i < 10; i++) {
-        docs.push({
             status: UserNotification.STATUS.UNREAD,      //通知状态
-            category: UserNotification.CATEGORY.SYSTEM,      //通知类别
-            type: UserNotification.TYPE.USER_PUBLISH_QUESTION,      //通知类型
-            push_content_id: QUESTION_ID,      //通知内容
-            push_title: Mock.Random.ctitle(10, 20),      //通知标题
-            push_content: Mock.Random.ctitle(10, 20),      //通知内容
-            push_client_id: 'xxx',     //客户端ID，详见个推文档
-            push_task_id: 'xxx',     //任务ID，详见个推文档
-            push_time: null,   //推送时间
-            create_time: new Date(),    //创建时间
-            update_time: new Date(),    //更新时间
-            user_id: USER_ID,    //用户ID
-        });
-    }
-
-    for (let i = 0; i < 10; i++) {
-        docs.push({
-            status: UserNotification.STATUS.READ,      //通知状态
             category: UserNotification.CATEGORY.SYSTEM,      //通知类别
             type: UserNotification.TYPE.USER_PUBLISH_QUESTION,      //通知类型
             push_content_id: QUESTION_ID,      //通知内容
