@@ -21,7 +21,7 @@ exports.userComplaint = function (req, res, next) {
     let reason = req.body.reason; //举报原因
     let complaintID = req.body.complaint_id; //举报原因
     
-    if(!(type == 1 && type == 2 && type == 3 && type == 4)){
+    if(type != 1 && type != 2 && type != 3 && type != 4){
         return next(new BadRequestError('type should be in [1,2,3,4]'));
     }
     
