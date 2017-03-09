@@ -212,7 +212,7 @@ const initUserNotification = function (callback) {
 
     for (let i = 0; i < 10; i++) {
         docs.push({
-            status: UserNotification.STATUS.READ,      //通知状态
+            status: UserNotification.STATUS.UNREAD,      //通知状态
             category: UserNotification.CATEGORY.SYSTEM,      //通知类别
             type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
             push_content_id: QUESTION_ID,      //通知内容
