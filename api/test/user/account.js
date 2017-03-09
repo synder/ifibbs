@@ -6,7 +6,7 @@ const Mock = require('mockjs');
 const app = require('../../app').app;
 
 
-
+let token;
 describe('用户未登录相关接口测试', function() {
     it('#用户注册', function (done) {
 
@@ -110,6 +110,7 @@ describe('用户未登录相关接口测试', function() {
                 chai.expect(res.body.result).to.have.ownProperty('bind_qq');
                 chai.expect(res.body.result).to.have.ownProperty('bind_weibo');
                 chai.expect(res.body.result).to.have.ownProperty('bind_phone');
+                token = res.body.result.login_token;
 
 
                 done();
@@ -122,7 +123,7 @@ describe('用户已登陆接口测试', function() {
         request(app)
             .get('/user/account/info')
             .query({
-                user_id: '58aa50177ddbf5507c51f082',
+                user_id: '58aa50177ddbf5507c51f083',
             })
             .expect(200)
             .end(function(err, res) {
@@ -156,6 +157,7 @@ describe('用户已登陆接口测试', function() {
         request(app)
             .post('/user/account/info')
             .send({
+                token: token,
                 user_name: 'liqp',
                 // user_profile,
                 // user_avatar,

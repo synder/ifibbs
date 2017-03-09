@@ -8,6 +8,7 @@ const async = require('async');
 
 const userModel = require('../../../public/model/user');
 const captchaModel = require('../../../public/model/captcha');
+const attentionModel = require('../../../public/model/attention');
 const deviceModel = require('../../../public/model/device');
 
 
@@ -17,37 +18,53 @@ const deviceModel = require('../../../public/model/device');
  * */
 exports.getUserInfo = function (req, res, next) {
     let userID = req.query.user_id;
+    let myID = req.session.id;
 
-    userModel.getUserInfoByID(userID, function (err, result) {
+    async.parallel({
+        attention: function(cb){
+            if(userID == myID){
+                return cb(null,null);
+            }
+
+            attentionModel.findUserAttentionByUserID(myID, userID, cb)
+        },
+        userInfo: function(cb){
+            userModel.getUserInfoByID(userID, cb)
+        }
+    },function (err, result) {
         if (err) {
             return next(err);
         }
 
-        if(!result){
+        if(!result.userInfo){
             return next(new BadRequestError('without the user data'))
         }
 
         let userInfo = {
             user_id: userID,
-            user_avatar: result.user_avatar,
-            user_name: result.user_name,
-            user_profile: result.user_profile,
-            user_gender: result.user_gender == null ? null : (result.user_gender ? 1 : 0),
-            user_mobile: result.user_mobile ? result.user_mobile : null,
-            work_info: result.work_info ? result.work_info : null,
-            edu_info: result.edu_info ? result.edu_info : null,
-            user_province: result.user_province ? result.user_province : null,
-            user_city: result.user_city ? result.user_city : null,
-            user_area: result.user_area ? result.user_area : null,
+            user_avatar: result.userInfo.user_avatar,
+            user_name: result.userInfo.user_name,
+            user_profile: result.userInfo.user_profile,
+            user_gender: result.userInfo.user_gender == null ? null : (result.userInfo.user_gender ? 1 : 0),
+            user_mobile: result.userInfo.user_mobile ? result.userInfo.user_mobile : null,
+            work_info: result.userInfo.work_info ? result.userInfo.work_info : null,
+            edu_info: result.userInfo.edu_info ? result.userInfo.edu_info : null,
+            user_province: result.userInfo.user_province ? result.userInfo.user_province : null,
+            user_city: result.userInfo.user_city ? result.userInfo.user_city : null,
+            user_area: result.userInfo.user_area ? result.userInfo.user_area : null,
         };
+
+        if(myID != userID){
+            userInfo.whether_attention = !!result.attention
+        }
 
         res.json({
             flag: '0000',
             msg: '',
             result: userInfo
         })
-    })
 
+    });
 };
 
 
