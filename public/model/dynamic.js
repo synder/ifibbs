@@ -5,15 +5,15 @@
  */
 
 const async = require('async');
-const mongodb = require('../service/mongodb').db;
+const ifibbs = require('../service/mongodb').ifibbs;
 
-const UserDynamic = mongodb.model('UserDynamic');
-const User = mongodb.model('User');
-const Question = mongodb.model('Question');
-const QuestionAnswer = mongodb.model('QuestionAnswer');
-const AnswerComment = mongodb.model('AnswerComment');
-const Subject = mongodb.model('Subject');
-const Article = mongodb.model('Article');
+const UserDynamic = ifibbs.model('UserDynamic');
+const User = ifibbs.model('User');
+const Question = ifibbs.model('Question');
+const QuestionAnswer = ifibbs.model('QuestionAnswer');
+const AnswerComment = ifibbs.model('AnswerComment');
+const Subject = ifibbs.model('Subject');
+const Article = ifibbs.model('Article');
 
 
 /**

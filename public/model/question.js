@@ -5,12 +5,12 @@
  */
 
 const async = require('async');
-const mongodb = require('../service/mongodb').db;
+const ifibbs = require('../service/mongodb').ifibbs;
 const elasticsearch = require('../service/elasticsearch').client;
 const rabbit = require('../service/rabbit');
 
-const Question = mongodb.model('Question');
-const UserDynamic = mongodb.model('UserDynamic');
+const Question = ifibbs.model('Question');
+const UserDynamic = ifibbs.model('UserDynamic');
 
 /**
  * @desc 新建问题

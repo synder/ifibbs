@@ -13,31 +13,31 @@ const Mock = require('mockjs');
 const mongodb = require('../../../public/service/mongodb');
 const elasticsearch = require('../../../public/service/elasticsearch').client;
 
-const db = mongodb.db;
+const ifibbs = mongodb.ifibbs;
 
-const Activity = db.model('Activity');
-const QuestionAnswer = db.model('QuestionAnswer');
-const Article = db.model('Article');
-const AttentionQuestion = db.model('AttentionQuestion');
-const AttentionSubject = db.model('AttentionSubject');
-const AttentionUser = db.model('AttentionUser');
-const SecurityCode = db.model('SecurityCode');
-const UserAnswerCollection = db.model('UserAnswerCollection');
-const UserArticleCollection = db.model('UserArticleCollection');
-const AnswerComment = db.model('AnswerComment');
-const UserDevice = db.model('UserDevice');
-const UserFavourAnswer = db.model('UserFavourAnswer');
-const UserFavourArticle = db.model('UserFavourArticle');
-const UserFavourAnswerComment = db.model('UserFavourAnswerComment');
-const UserHistory = db.model('UserHistory');
-const UserNotification = db.model('UserNotification');
-const Question = db.model('Question');
-const Recommend = db.model('Recommend');
-const QuestionTag = db.model('QuestionTag');
-const Subject = db.model('Subject');
-const User = db.model('User');
-const UserDynamic = db.model('UserDynamic');
-const UserShare = db.model('UserShare');
+const Activity = ifibbs.model('Activity');
+const QuestionAnswer = ifibbs.model('QuestionAnswer');
+const Article = ifibbs.model('Article');
+const AttentionQuestion = ifibbs.model('AttentionQuestion');
+const AttentionSubject = ifibbs.model('AttentionSubject');
+const AttentionUser = ifibbs.model('AttentionUser');
+const SecurityCode = ifibbs.model('SecurityCode');
+const UserAnswerCollection = ifibbs.model('UserAnswerCollection');
+const UserArticleCollection = ifibbs.model('UserArticleCollection');
+const AnswerComment = ifibbs.model('AnswerComment');
+const UserDevice = ifibbs.model('UserDevice');
+const UserFavourAnswer = ifibbs.model('UserFavourAnswer');
+const UserFavourArticle = ifibbs.model('UserFavourArticle');
+const UserFavourAnswerComment = ifibbs.model('UserFavourAnswerComment');
+const UserHistory = ifibbs.model('UserHistory');
+const UserNotification = ifibbs.model('UserNotification');
+const Question = ifibbs.model('Question');
+const Recommend = ifibbs.model('Recommend');
+const QuestionTag = ifibbs.model('QuestionTag');
+const Subject = ifibbs.model('Subject');
+const User = ifibbs.model('User');
+const UserDynamic = ifibbs.model('UserDynamic');
+const UserShare = ifibbs.model('UserShare');
 
 const USER_ID = "58aa50177ddbf5507c51f082";
 const USER_ID_OTHER = "58aa50177ddbf5507c51f083";
@@ -604,7 +604,6 @@ const initCollection = function (callback) {
         "create_time": new Date(),
         "update_time": new Date(),
     };
-
 
     let article = {
         _id: articleID,

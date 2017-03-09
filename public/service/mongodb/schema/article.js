@@ -43,5 +43,33 @@ ArticleSchema.statics.STATUS = {
     DELETED: 0,         //已删除
 };
 
+
+//文章评论
+const ArticleCommentSchema = new Schema({
+    status          : {type: Number,  required: true},    //文章状态
+    content         : {type: String,  required: true},    //评论内容
+    create_time     : {type: Date,    required: true},    //创建时间
+    update_time     : {type: Date,    required: true},    //更新时间
+    article_id      : {type: ObjectId, required: false, ref: 'Article'},  //文章ID
+    create_user_id  : {type: ObjectId, required: false, ref: 'User'}      //创建人
+});
+
+ArticleCommentSchema.virtual('id', function () {
+    return this._id.toString();
+});
+
+ArticleCommentSchema.index({create_time : 1});
+ArticleCommentSchema.index({create_user_id : 1});
+ArticleCommentSchema.index({article_id : 1});
+
+//文章状态
+ArticleCommentSchema.statics.STATUS = {
+    DISABLE : 0,     //不可用
+    ENABLE : 1,      //可用
+};
+
+
+
 exports.ArticleSchema = ArticleSchema;
+exports.ArticleCommentSchema = ArticleCommentSchema;
 

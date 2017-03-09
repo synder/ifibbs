@@ -5,13 +5,13 @@
  */
 
 const async = require('async');
-const mongodb = require('../service/mongodb').db;
+const ifibbs = require('../service/mongodb').ifibbs;
 const elasticsearch = require('../service/elasticsearch').client;
 
-const User = mongodb.model('User');
-const Question = mongodb.model('Question');
-const Article = mongodb.model('Article');
-const UserHistory = mongodb.model('UserHistory');
+const User = ifibbs.model('User');
+const Question = ifibbs.model('Question');
+const Article = ifibbs.model('Article');
+const UserHistory = ifibbs.model('UserHistory');
 
 /**
  * @desc 获取用户浏览历史记录

@@ -29,6 +29,7 @@ exports.getRecommendArticleList = function (req, res, next) {
                 summary : article.summary,
                 icon : article.icon,
                 cover : article.cover,
+                url: '',
             };
         });
 
@@ -70,6 +71,7 @@ exports.getSubjectArticleList = function (req, res, next) {
                 summary : article.summary,
                 icon : article.icon,
                 cover : article.cover,
+                url: '',
             };
         });
         

@@ -5,17 +5,17 @@
  */
 
 const async = require('async');
-const mongodb = require('../service/mongodb').db;
+const ifibbs = require('../service/mongodb').ifibbs;
 const rabbit = require('../service/rabbit');
 const getui = require('../service/getui');
 
-const User = mongodb.model('User');
-const Question = mongodb.model('Question');
-const QuestionAnswer = mongodb.model('QuestionAnswer');
-const UserNotification = mongodb.model('UserNotification');
-const AttentionUser = mongodb.model('AttentionUser');
-const AttentionSubject = mongodb.model('AttentionSubject');
-const AttentionQuestion = mongodb.model('AttentionQuestion');
+const User = ifibbs.model('User');
+const Question = ifibbs.model('Question');
+const QuestionAnswer = ifibbs.model('QuestionAnswer');
+const UserNotification = ifibbs.model('UserNotification');
+const AttentionUser = ifibbs.model('AttentionUser');
+const AttentionSubject = ifibbs.model('AttentionSubject');
+const AttentionQuestion = ifibbs.model('AttentionQuestion');
 
 
 /**

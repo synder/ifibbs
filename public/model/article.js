@@ -6,11 +6,11 @@
 
 
 const async = require('async');
-const mongodb = require('../service/mongodb').db;
+const ifibbs = require('../service/mongodb').ifibbs;
 const elasticsearch = require('../service/elasticsearch').client;
 
-const Article = mongodb.model('Article');
-const Subject = mongodb.model('Subject');
+const Article = ifibbs.model('Article');
+const Subject = ifibbs.model('Subject');
 
 /**
  * @desc 创建新的文章

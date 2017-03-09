@@ -6,18 +6,18 @@
 
 
 const async = require('async');
-const mongodb = require('../service/mongodb').db;
+const ifibbs = require('../service/mongodb').ifibbs;
 const elasticsearch = require('../service/elasticsearch').client;
 
-const User = mongodb.model('User');
-const UserDynamic = mongodb.model('UserDynamic');
-const Article = mongodb.model('Article');
-const Question = mongodb.model('Question');
-const QuestionAnswer = mongodb.model('QuestionAnswer');
-const AnswerComment = mongodb.model('AnswerComment');
-const UserFavourAnswer = mongodb.model('UserFavourAnswer');
-const UserFavourArticle = mongodb.model('UserFavourArticle');
-const UserFavourAnswerComment = mongodb.model('UserFavourAnswerComment');
+const User = ifibbs.model('User');
+const UserDynamic = ifibbs.model('UserDynamic');
+const Article = ifibbs.model('Article');
+const Question = ifibbs.model('Question');
+const QuestionAnswer = ifibbs.model('QuestionAnswer');
+const AnswerComment = ifibbs.model('AnswerComment');
+const UserFavourAnswer = ifibbs.model('UserFavourAnswer');
+const UserFavourArticle = ifibbs.model('UserFavourArticle');
+const UserFavourAnswerComment = ifibbs.model('UserFavourAnswerComment');
 
 /**
  * @desc 查询获取用户赞的回答(根据用户ID和关注ID)

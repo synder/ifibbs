@@ -6,10 +6,10 @@
 
 
 const async = require('async');
-const mongodb = require('../service/mongodb').db;
+const ifibbs = require('../service/mongodb').ifibbs;
 const elasticsearch = require('../service/elasticsearch').client;
 
-const Subject = mongodb.model('Subject');
+const Subject = ifibbs.model('Subject');
 
 /**
  * @desc 获取专题列表

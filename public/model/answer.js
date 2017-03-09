@@ -5,14 +5,14 @@
  */
 
 const async = require('async');
-const mongodb = require('../service/mongodb').db;
+const ifibbs = require('../service/mongodb').ifibbs;
 const elasticsearch = require('../service/elasticsearch').client;
 const rabbit = require('../service/rabbit');
 
-const QuestionAnswer = mongodb.model('QuestionAnswer');
-const User = mongodb.model('User');
-const Question = mongodb.model('Question');
-const UserDynamic = mongodb.model('UserDynamic');
+const QuestionAnswer = ifibbs.model('QuestionAnswer');
+const User = ifibbs.model('User');
+const Question = ifibbs.model('Question');
+const UserDynamic = ifibbs.model('UserDynamic');
 
 /**
  * @desc 获取最热回答列表

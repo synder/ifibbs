@@ -21,7 +21,13 @@ gulp.task('test_init_env', function (done) {
  * */
 gulp.task('test_init_data', ['test_init_env'], function (done) {
     const initializeMongodb = require('./test/initialize/mongodb');
-    initializeMongodb.init(done);
+    initializeMongodb.init(function (err) {
+        if(err){
+            return console.error(err.stack);
+        }
+        
+        done();
+    });
 });
 
 /**

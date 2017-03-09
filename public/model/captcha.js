@@ -5,11 +5,11 @@
  */
 
 const uuid = require('uuid/v4');
-const mongodb = require('../service/mongodb').db;
+const ifibbs = require('../service/mongodb').ifibbs;
 const redis = require('../service/redis').client;
 const sms = require('../service/sms').client;
 
-const SecurityCode = mongodb.model('SecurityCode');
+const SecurityCode = ifibbs.model('SecurityCode');
 
 const genSmsCodeFrequencyKey = function (phone) {
     return 'SSC:' + phone;
