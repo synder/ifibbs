@@ -557,39 +557,43 @@ exports.updateUserPasswordWithMobile = function (phone, newPassword, callback) {
 //绑定账号==================================================================
 
 /**
- * @desc 验证该账号是否满足绑定条件(此处不验证手机号)
- * */
-exports.checkBoundMeetTheCondition = function (openID, bound_type, callback) {
-    let type = bound_type;  //需要绑定的平台
-
-    let condition;
-
-    if(type == 1){
-        condition ={
-            bind_tencent_wechat: {$exists: true},
-            'bind_tencent_wechat.uid': openID,
-        };
-    }
-
-    if(type == 2){
-        condition ={
-            bind_tencent_qq: {$exists: true},
-            'bind_tencent_qq.uid': openID,
-        };
-    }
-
-    if(type == 3){
-        condition ={
-            bind_sina_weibo: {$exists: true},
-            'bind_sina_weibo.uid': openID,
-        };
-    }
-};
-/**
  * @desc 绑定手机号
  * */
-exports.updateUserPhone = function (userID, phone) {
+exports.updateUserPhone = function (userID, mobile, password, callback) {
+    let salt = Math.random().toString();
+    let now = new Date();
 
+    let oldCondition = {
+        status: User.STATUS.NORMAL,
+        user_mobile: {$exists: true, $eq: mobile},
+    };
+    
+    let userCondition = {
+        _id: userID,
+    };
+    
+    let userUpdate = {
+        $set: {
+            user_mobile: mobile,
+            user_password: hashUserPassword(salt, password),
+            pass_salt_str: salt,
+            update_time: now,
+        }
+    };
+    
+    User.findOne(oldCondition, function (err, userInfo) {
+        if (err){
+            return callback(err);
+        }
+        
+        if (userInfo){
+            return callback(null, false);
+        }
+        
+        User.update(userCondition, userUpdate, function (err, result) {
+            callback(err, result.nModified === 1)
+        })
+    })
 };
 
 
@@ -597,7 +601,10 @@ exports.updateUserPhone = function (userID, phone) {
  * @desc 绑定微信
  * */
 exports.updateUserTencentWechat = function (uid, unionID, username, userID, callback) {
-    let condition ={
+    let now = new Date();
+
+    let oldCondition ={
+        status: User.STATUS.NORMAL,
         bind_tencent_wechat: {$exists: true},
         'bind_tencent_wechat.uid': uid,
     };
@@ -606,19 +613,25 @@ exports.updateUserTencentWechat = function (uid, unionID, username, userID, call
         _id: userID,
     };
 
-    let update = {
+    let oldUpdate = {
+        $set:{
+            update_time: now,
+        },
         $unset:{
-            bind_tencent_wechat: true
+            bind_tencent_wechat: true,
         }
     };
 
-    let boundInfo = {
-            uid: uid,
-            union_id: unionID,
-            name: username,
+    let userUpdate = {
+        $set:{
+            update_time: now,
+            'bind_tencent_wechat.uid': uid,
+            'bind_tencent_wechat.union_id': unionID,
+            'bind_tencent_wechat.name': username,
+        }
     };
 
-    User.findOne(condition, function (err, result) {
+    User.findOne(oldCondition, function (err, result) {
         if(err){
             return callback(err)
         }
@@ -649,42 +662,24 @@ exports.updateUserTencentWechat = function (uid, unionID, username, userID, call
             return callback(null, false)
         }
 
+        async.waterfall([
+            function(cb) {
+                if (!result){
+                    return cb(null, null)
+                }
 
-
-        User.findOne(userCondition,function (err, userInfo) {//查询当前用户信息
+                User.update(oldCondition, oldUpdate, cb)
+            },
+            function(boo, cb) {
+                User.update(userCondition, userUpdate, cb)
+            }
+        ], function (err, success) {
             if(err){
                 return callback(err)
             }
 
-            userInfo.bind_tencent_wechat = boundInfo;//添加新的绑定信息
-
-            if(result){
-                User.update(condition,update,function (err, result) {
-                    if(err){
-                        return callback(err)
-                    }
-
-                    userInfo.save(function (err, userInfo) { //保存当前用户信息
-                        if(err){
-                            return callback(err)
-                        }
-
-                        callback(null, true)
-                    })
-                });
-            }else{
-                userInfo.save(function (err, userInfo) { //保存当前用户信息
-                    if(err){
-                        return callback(err)
-                    }
-
-                    callback(null, true)
-                })
-            }
-
-
-
-        })
+            callback(null, success.nModified === 1)
+        });
     });
 };
 
@@ -692,18 +687,242 @@ exports.updateUserTencentWechat = function (uid, unionID, username, userID, call
 /**
  * @desc 绑定QQ
  * */
-exports.updateUserTencentQQ = function (userID) {
+exports.updateUserTencentQQ = function (uid, unionID, username, userID, callback) {
+    let now = new Date();
 
+    let oldCondition ={
+        status: User.STATUS.NORMAL,
+        bind_tencent_qq: {$exists: true},
+        'bind_tencent_qq.uid': uid,
+    };
+
+    let userCondition = {
+        _id: userID,
+    };
+
+    let oldUpdate = {
+        $set:{
+            update_time: now,
+        },
+        $unset:{
+            bind_tencent_qq: true
+        }
+    };
+
+    let userUpdate = {
+        $set:{
+            update_time: now,
+            'bind_tencent_qq.uid': uid,
+            'bind_tencent_qq.union_id': unionID,
+            'bind_tencent_qq.name': username,
+        }
+
+    };
+
+    User.findOne(oldCondition, function (err, result) {
+        if(err){
+            return callback(err)
+        }
+
+        let num = 0;
+
+        if(!result){
+            num = 3;
+        }
+
+        if(result && result.bind_tencent_wechat.uid){
+            num +=1;
+        }
+
+        if(result && result.bind_sina_weibo.uid){
+            num +=1;
+        }
+
+        if(result && result.bind_tencent_qq.uid){
+            num +=1;
+        }
+
+        if(result && result.user_mobile){
+            num +=1;
+        }
+
+        if(num < 2){ //判断是否满足换绑条件
+            return callback(null, false)
+        }
+
+        async.waterfall([
+            function(cb) {
+                if (!result){
+                    return cb(null, null)
+                }
+
+                User.update(oldCondition, oldUpdate, cb)
+            },
+            function(boo, cb) {
+                User.update(userCondition, userUpdate, cb)
+            }
+        ], function (err, success) {
+            if(err){
+                return callback(err)
+            }
+
+            callback(null, success.nModified === 1)
+        });
+    });
 };
 
 
 /**
  * @desc 绑定新浪微博
  * */
-exports.updateUserSinaWeibo = function (userID) {
+exports.updateUserSinaWeibo = function (uid, unionID, username, userID, callback) {
+    let now = new Date();
 
+    let oldCondition ={
+        status: User.STATUS.NORMAL,
+        bind_sina_weibo: {$exists: true},
+        'bind_sina_weibo.uid': uid,
+    };
+
+    let userCondition = {
+        _id: userID,
+    };
+
+    let oldUpdate = {
+        $set:{
+            update_time: now,
+        },
+        $unset:{
+            bind_sina_weibo: true
+        }
+    };
+
+    let userUpdate = {
+        $set:{
+            update_time: now,
+            'bind_sina_weibo.uid': uid,
+            'bind_sina_weibo.union_id': unionID,
+            'bind_sina_weibo.name': username,
+        }
+    };
+
+    User.findOne(oldCondition, function (err, result) {
+        if(err){
+            return callback(err)
+        }
+
+        let num = 0;
+
+        if(!result){
+            num = 3;
+        }
+
+        if(result && result.bind_tencent_wechat.uid){
+            num +=1;
+        }
+
+        if(result && result.bind_sina_weibo.uid){
+            num +=1;
+        }
+
+        if(result && result.bind_tencent_qq.uid){
+            num +=1;
+        }
+
+        if(result && result.user_mobile){
+            num +=1;
+        }
+
+        if(num < 2){ //判断是否满足换绑条件
+            return callback(null, false)
+        }
+
+        async.waterfall([
+            function(cb) {
+                if (!result){
+                    return cb(null, null)
+                }
+
+                User.update(oldCondition, oldUpdate, cb)
+            },
+            function(boo, cb) {
+                User.update(userCondition, userUpdate, cb)
+            }
+        ], function (err, success) {
+            if(err){
+                return callback(err)
+            }
+
+            callback(null, success.nModified === 1)
+        });
+    });
 };
 
+/*
+ * @desc 解绑微信
+ * */
+exports.removeUserTencentWechat = function (userID, callback) {
+    let now = new Date();
+
+    let condition = {
+        _id: userID,
+    };
+
+    let update = {
+        $set:{
+            update_time: now,
+        },
+        $unset:{
+            bind_tencent_wechat: true,
+        }
+    };
+
+    User.update(condition, update, callback)
+};
+
+/*
+ * @desc 解绑qq
+ * */
+exports.removeUserTencentQQ = function (userID, callback) {
+    let now = new Date();
+
+    let condition = {
+        _id: userID,
+    };
+
+    let update = {
+        $set:{
+            update_time: now,
+        },
+        $unset:{
+            bind_tencent_qq: true,
+        }
+    };
+
+    User.update(condition, update, callback)
+};
+
+/*
+ * @desc 解绑新浪微博
+ * */
+exports.removeUserSinaWeibo = function (userID, callback) {
+    let now = new Date();
+
+    let condition = {
+        _id: userID,
+    };
+
+    let update = {
+        $set:{
+            update_time: now,
+        },
+        $unset:{
+            bind_sina_weibo: true,
+        }
+    };
+
+    User.update(condition, update, callback)
+};
 
 //用户统计信息================================================================
 /**

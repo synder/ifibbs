@@ -51,8 +51,11 @@ exports.map = function(app){
     app.get('/user/account/info', authority.check, account.getUserInfo);             //获取用户信息
     app.post('/user/account/info',authority.check, account.updateUserInfo);          //更新用户信息
     app.post('/user/account/password',authority.check, account.modifyUserPassword);  //修改密码
+    app.post('/user/account/bind/phone',authority.check, account.userBindPhone);  //绑定手机
     app.post('/user/account/check/third',authority.check, account.checkThirdParty);  //检测第三方账号是否存在
-    app.post('/user/account/bound/third',authority.check, account.userBoundThirdParty);  //绑定第三方账号
+    app.post('/user/account/third',authority.check, account.userBindThirdParty);  //绑定第三方账号
+    app.delete('/user/account/third',authority.check, account.userRemoveThirdParty);  //解绑第三方账号
+
     
     
     //用户的提问
