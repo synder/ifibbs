@@ -35,9 +35,10 @@ exports.createUserShare = function (req, res, next) {
             if(shareType === 'article'){
                 shareModel.createUserShareArticle(userID, shareID, cb);
             }else{
+                //问题被分享
                 shareModel.createUserShareQuestion(userID, shareID, cb);
 
-                notificationModel.produceForQuestionBeenSharedMQS(shareID, userID, function (err) {
+                notificationModel.produceForQuestionBeenSharedMQS(userID, shareID, function (err) {
                     if(err){
                         logger.error(err);
                     }
