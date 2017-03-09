@@ -159,7 +159,7 @@ exports.addQuestionToAttention = function (req, res, next) {
             return next(err);
         }
         
-        notificationModel.produceForQuestionBeenAttentionMQS(questionID, function (err) {
+        notificationModel.produceForQuestionBeenAttentionMQS(userID, questionID, function (err) {
             if(err){
                 logger.error(err);
             } 

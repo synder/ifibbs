@@ -84,7 +84,25 @@ exports.createNewComment = function (userID, articleID, comment, callback) {
         create_user_id  : userID      //创建人
     };
     
-    Article.create(commentDoc, callback);
+    ArticleComment.create(commentDoc, function (err, comment) {
+        
+        if(err){
+            return callback(err);
+        }
+        
+        //更新评论数
+        
+        let condition = {
+            _id: articleID
+        };
+        
+        let update = {$inc: {comment_count: 1}};
+        
+        Article.update(condition, update, function (err) {
+            callback(err, comment);
+        });
+        
+    });
 };
 
 

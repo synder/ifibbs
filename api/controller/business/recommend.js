@@ -66,6 +66,7 @@ exports.getRecommendList = function(req, res, next){
                         collect_count: recommend.activity.collect_count, 
                         answer_count: 0,
                         create_time: recommend.activity.create_time,
+                        url: recommend.activity.url,
                         eg_answer_id: null,
                         eg_answer_time: null,
                         eg_answer_content: null,
@@ -91,6 +92,7 @@ exports.getRecommendList = function(req, res, next){
                         collect_count: recommend.article.collect_count,
                         answer_count: 0,
                         create_time: recommend.article.create_time,
+                        url:'http://www.baidu.com', //todo 拼接文章详情链接
                         eg_answer_id: null,
                         eg_answer_time: null,
                         eg_answer_content: null,

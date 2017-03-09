@@ -16,7 +16,7 @@ const UserArticleCollectionSchema = new Schema({
     status    : {type: Number, required: true},   //收藏状态
     create_time : {type: Date, required: true},   //创建时间
     update_time : {type: Date, required: true},   //更新时间
-    subject_id  : {type: ObjectId, required: false, ref: 'Article'},         //收藏对象ID
+    subject_id  : {type: ObjectId, required: false, ref: 'Subject'},         //收藏对象ID
     article_id  : {type: ObjectId, required: true, ref: 'Article'},          //收藏对象ID
     user_id     : {type: ObjectId, required: true, ref: 'User'},             //收藏用户ID
 });

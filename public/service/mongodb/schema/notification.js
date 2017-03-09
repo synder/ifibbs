@@ -41,8 +41,8 @@ UserNotificationSchema.statics.STATUS = {
 
 //业务类型
 UserNotificationSchema.statics.CATEGORY = {
-    SYSTEM   : 1,   //系统通知
-    BUSINESS : 2,   //业务通知
+    SYSTEM   : 0,   //系统通知
+    BUSINESS : 1,   //业务通知
 };
 
 //通知分类
