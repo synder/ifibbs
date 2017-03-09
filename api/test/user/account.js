@@ -13,11 +13,10 @@ describe('用户未登录相关接口测试', function() {
         request(app)
             .put('/account/register')
             .send({
-                user_mobile: '13550501566',
+                user_mobile: '13550501565',
                 user_password: '12345678',
                 code_id: '58bce997fc71500981a75187',
                 code: '903488',
-                code_random: '0.8504996783854122',
                 register_platform: 1,
                 register_deviceno: 'zhuce',
                 device_resolution: [1080,1024],
@@ -123,7 +122,7 @@ describe('用户已登陆接口测试', function() {
         request(app)
             .get('/user/account/info')
             .query({
-                user_id: '58aa50177ddbf5507c51f082'
+                user_id: '58aa50177ddbf5507c51f082',
             })
             .expect(200)
             .end(function(err, res) {

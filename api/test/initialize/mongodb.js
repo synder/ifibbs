@@ -694,7 +694,9 @@ const initMongodbUserCollection = function (callback) {
             create_time: new Date(),     //创建时间
             update_time: new Date(),     //更新时间
             user_gender: false, //用户性别
-            user_mobile: '13120975917',  //用户手机
+            user_mobile: '13550501566',  //用户手机
+            user_password : "36a3c303c90eadf908acae5526163235", //用户密码
+            pass_salt_str : "0.7487739197849146", //盐
             work_info: Mock.Random.ctitle(10, 20),  //用户性别
             edu_info: Mock.Random.ctitle(10, 20),  //用户性别
         },
@@ -806,7 +808,7 @@ const initMongodbSecurityCode = function (callback) {
         _id: '58bce997fc71500981a75187',
         uid: '58bce997fc71500981a75187',
         status: SecurityCode.STATUS.ENABLE,   //验证码状态
-        mobile: '13550501566',        //手机号码
+        mobile: '13550501565',        //手机号码
         code: '903488',         //验证码
         use_count: 0,            //已验证次数
         expire_time: expireTime,   //过期时间
