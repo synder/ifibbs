@@ -701,6 +701,21 @@ const initMongodbUserCollection = function (callback) {
             edu_info: Mock.Random.ctitle(10, 20),  //用户性别
         },
         {
+            _id: '58aa50177ddbf5507c51f084',
+            status: User.STATUS.NORMAL, //用户状态
+            user_name: 'synder',   //用户名
+            user_profile: Mock.Random.ctitle(10, 20),   //用户简介
+            user_avatar: avatar,   //用户头像
+            create_time: new Date(),     //创建时间
+            update_time: new Date(),     //更新时间
+            user_gender: false, //用户性别
+            user_mobile: '15921116190',  //用户手机
+            user_password : "36a3c303c90eadf908acae5526163235", //用户密码
+            pass_salt_str : "0.7487739197849146", //盐
+            work_info: Mock.Random.ctitle(10, 20),  //用户性别
+            edu_info: Mock.Random.ctitle(10, 20),  //用户性别
+        },
+        {
             _id: USER_ID_OTHER,
             status: User.STATUS.NORMAL,   //用户状态
             user_name: 'sam',   //用户名
