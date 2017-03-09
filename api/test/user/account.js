@@ -46,39 +46,7 @@ describe('用户未登录相关接口测试', function() {
             });
     });
 
-    it('#用户账号登录', function (done) {
 
-        request(app)
-            .post('/account/login')
-            .send({
-                user_mobile: '13550501566',
-                user_password: '12345678',
-                register_platform: 2,
-                register_deviceno: 'zhanghao',
-                device_resolution: [100,1024],
-                device_version: '7.0',
-                getui_cid: '12345678'
-            })
-            .expect(200)
-            .end(function(err, res) {
-                if (err) {
-                    throw err;
-                }
-
-                chai.expect(res.body).to.have.property('flag', '0000');
-                chai.expect(res.body).to.have.property('msg', '');
-
-                chai.expect(res.body).to.have.ownProperty('result');
-                chai.expect(res.body.result).to.have.ownProperty('user_id');
-                chai.expect(res.body.result).to.have.ownProperty('login_token');
-                chai.expect(res.body.result).to.have.ownProperty('login_fashion');
-                chai.expect(res.body.result).to.have.ownProperty('bind_wechat');
-                chai.expect(res.body.result).to.have.ownProperty('bind_qq');
-                chai.expect(res.body.result).to.have.ownProperty('bind_weibo');
-
-                done();
-            });
-    });
 
     it('#用户第三方登录', function (done) {
 
@@ -215,5 +183,115 @@ describe('用户已登陆接口测试', function() {
                 done();
             });
 
+    });
+
+    it('#第三方账号绑定', function (done) {
+        request(app)
+            .post('/user/account/third')
+            .send({
+                open_id: '58aa50177ddbf5507c51f083',
+                user_name: 'liqp',
+                login_type: 2,
+            })
+            .expect(200)
+            .end(function(err, res) {
+                if (err) {
+                    throw err;
+                }
+
+                chai.expect(res.body).to.have.property('flag', '0000');
+                chai.expect(res.body).to.have.property('msg', '');
+
+                chai.expect(res.body).to.have.ownProperty('result');
+
+                chai.expect(res.body.result).to.have.ownProperty('ok');
+
+                done();
+            });
+
+    });
+
+    it('#第三方账号解绑', function (done) {
+        request(app)
+            .delete('/user/account/third')
+            .send({
+                login_type: 1,
+            })
+            .expect(200)
+            .end(function(err, res) {
+                if (err) {
+                    throw err;
+                }
+
+                chai.expect(res.body).to.have.property('flag', '0000');
+                chai.expect(res.body).to.have.property('msg', '');
+
+                chai.expect(res.body).to.have.ownProperty('result');
+
+                chai.expect(res.body.result).to.have.ownProperty('ok');
+
+                done();
+            });
+
+    });
+
+    it('#绑定手机号', function (done) {
+        request(app)
+            .post('/user/account/bind/phone')
+            .send({
+                user_mobile: '13550501566',
+                user_password: '12345678',
+                code_id: '58bce997fc71500981a75188',
+                code: '903487'
+            })
+            .expect(200)
+            .end(function(err, res) {
+                if (err) {
+                    throw err;
+                }
+
+                chai.expect(res.body).to.have.property('flag', '0000');
+                chai.expect(res.body).to.have.property('msg', '');
+
+                chai.expect(res.body).to.have.ownProperty('result');
+
+                chai.expect(res.body.result).to.have.ownProperty('ok');
+                done();
+            });
+
+    });
+
+    it('#用户账号登录', function (done) {
+
+        request(app)
+            .post('/account/login')
+            .send({
+                user_mobile: '13550501566',
+                user_password: '12345678',
+                register_platform: 2,
+                register_deviceno: 'zhanghao',
+                device_resolution: [100,1024],
+                device_version: '7.0',
+                getui_cid: '12345678'
+            })
+            .expect(200)
+            .end(function(err, res) {
+                if (err) {
+                    throw err;
+                }
+
+                chai.expect(res.body).to.have.property('flag', '0000');
+                chai.expect(res.body).to.have.property('msg', '');
+
+                chai.expect(res.body).to.have.ownProperty('result');
+                chai.expect(res.body.result).to.have.ownProperty('user_id');
+                chai.expect(res.body.result).to.have.ownProperty('login_token');
+                chai.expect(res.body.result).to.have.ownProperty('login_fashion');
+                chai.expect(res.body.result).to.have.ownProperty('bind_wechat');
+                chai.expect(res.body.result).to.have.ownProperty('bind_qq');
+                chai.expect(res.body.result).to.have.ownProperty('bind_weibo');
+
+                done();
+            });
     });
 });

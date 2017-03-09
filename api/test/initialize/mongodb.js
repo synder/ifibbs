@@ -696,11 +696,16 @@ const initUser = function (callback) {
             create_time: new Date(),     //创建时间
             update_time: new Date(),     //更新时间
             user_gender: false, //用户性别
-            user_mobile: '13550501566',  //用户手机
-            user_password : "36a3c303c90eadf908acae5526163235", //用户密码
-            pass_salt_str : "0.7487739197849146", //盐
+            user_mobile: '',  //用户手机
+            user_password : "", //用户密码
+            pass_salt_str : "", //盐
             work_info: Mock.Random.ctitle(10, 20),  //用户性别
             edu_info: Mock.Random.ctitle(10, 20),  //用户性别
+            bind_tencent_wechat : {
+                "uid" : "58aa50177ddbf5507c51f086",
+                "union_id" : null,
+                "name" : "liqp"
+            }
         },
         {
             _id: '58aa50177ddbf5507c51f084',
@@ -823,17 +828,30 @@ const initMongodbSecurityCode = function (callback) {
     let expireTime = new Date();
     expireTime.setMinutes(expireTime.getMinutes() + 30);
 
-    let securityCodeDoc = {
-        _id: '58bce997fc71500981a75187',
-        uid: '58bce997fc71500981a75187',
-        status: SecurityCode.STATUS.ENABLE,   //验证码状态
-        mobile: '13550501565',        //手机号码
-        code: '903488',         //验证码
-        use_count: 0,            //已验证次数
-        expire_time: expireTime,   //过期时间
-        create_time: now,          //创建时间
-        update_time: now,          //更新次数
-    };
+    let securityCodeDoc = [
+        {
+            _id: '58bce997fc71500981a75187',
+            uid: '58bce997fc71500981a75187',
+            status: SecurityCode.STATUS.ENABLE,   //验证码状态
+            mobile: '13550501565',        //手机号码
+            code: '903488',         //验证码
+            use_count: 0,            //已验证次数
+            expire_time: expireTime,   //过期时间
+            create_time: now,          //创建时间
+            update_time: now,          //更新次数
+        },
+        {
+            _id: '58bce997fc71500981a75188',
+            uid: '58bce997fc71500981a75188',
+            status: SecurityCode.STATUS.ENABLE,   //验证码状态
+            mobile: '13550501566',        //手机号码
+            code: '903487',         //验证码
+            use_count: 0,            //已验证次数
+            expire_time: expireTime,   //过期时间
+            create_time: now,          //创建时间
+            update_time: now,          //更新次数
+        }
+    ];
 
     SecurityCode.create(securityCodeDoc, callback);
 };

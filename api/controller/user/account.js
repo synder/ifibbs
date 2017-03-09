@@ -281,7 +281,6 @@ exports.userRegisterWithPhone = function (req, res, next) {
     });
 };
 
-
 /**
  * @desc 用户系统手机账户登录接口
  * */
@@ -361,7 +360,6 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
         });
     });
 };
-
 
 /**
  * @desc 用户使用第三方账户登录
@@ -462,6 +460,147 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
     })
 };
 
+/*
+ * @desc 绑定手机
+ * */
+exports.userBindPhone = function (req, res, next) {
+    let mobile = req.body.user_mobile;
+    let password = req.body.user_password;
+    let codeID = req.body.code_id;
+    let code = req.body.code;
+    let userID = req.session.id;
+
+    if (!mobile) {
+        return next(new BadRequestError('mobile_number is need'));
+    }
+
+    if (!password) {
+        return next(new BadRequestError('user_password is need'));
+    }
+
+    if (!codeID) {
+        return next(new BadRequestError('code_id is need'));
+    }
+
+    if (!code) {
+        return next(new BadRequestError('code is need'));
+    }
+
+    captchaModel.verifySmsSecurityCode(codeID, mobile, code, 6, true, function (err, result) {
+        if (err) {
+            return next(err);
+        }
+
+        if (!result) {
+            return next(new BadRequestError('this security code has been tampered with'));
+        }
+
+        userModel.updateUserPhone(userID, mobile, password, function (err, success) {
+            if (err) {
+                return next(err);
+            }
+
+            res.json({
+                flag: '0000',
+                msg: '',
+                result: {
+                    ok: !!success
+                }
+            })
+        })
+    });
+};
+
+/*
+ * @desc 第三方账户绑定
+ * */
+exports.userBindThirdParty = function (req, res, next) {
+    let uid = req.body.open_id;
+    let union_id = req.body.union_id;
+    let userName = req.body.user_name;
+    let userId = req.session.id;
+    let loginType = req.body.login_type; //1：微信 2: qq 3: 新浪微博 （0:手机账号密码）
+
+    if (loginType != 1 && loginType != 2 && loginType != 3) {
+        return next(new BadRequestError('login_type is not in [1,2,3]'));
+    }
+
+    if (!uid) {
+        return next(new BadRequestError('open_id is need'));
+    }
+
+    if (!userName) {
+        return next(new BadRequestError('open_id is user_name'));
+    }
+
+    let bindFunction;
+
+    if (loginType == 1) {
+        bindFunction = userModel.updateUserTencentWechat;
+    }
+
+    if (loginType == 2) {
+        bindFunction = userModel.updateUserTencentQQ;
+    }
+
+    if (loginType == 3) {
+        bindFunction = userModel.updateUserSinaWeibo;
+    }
+
+    bindFunction(uid, union_id, userName, userId, function (err, success) {
+        if (err) {
+            return next(err);
+        }
+
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                ok: !!success
+            }
+        })
+    })
+};
+
+/*
+ * @desc 第三方账户解绑
+ * */
+exports.userRemoveThirdParty = function (req, res, next) {
+    let userId = req.session.id;
+    let loginType = req.body.login_type; //1：微信 2: qq 3: 新浪微博 （0:手机账号密码）
+
+    if (loginType != 1 && loginType != 2 && loginType != 3) {
+        return next(new BadRequestError('login_type is not in [1,2,3]'));
+    }
+
+    let removeFunction;
+
+    if (loginType == 1) {
+        removeFunction = userModel.removeUserTencentWechat;
+    }
+
+    if (loginType == 2) {
+        removeFunction = userModel.removeUserTencentQQ;
+    }
+
+    if (loginType == 3) {
+        removeFunction = userModel.removeUserSinaWeibo;
+    }
+
+    removeFunction(userId, function (err, success) {
+        if (err) {
+            return next(err);
+        }
+
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                ok: true
+            }
+        })
+    })
+};
 
 /**
  * @desc 修改密码接口，根据老密码修改或者找回密码
@@ -553,27 +692,4 @@ exports.resetUserPassword = function (req, res, next) {
     });
 };
 
-/*
- * @desc 第三方账户绑定
- * */
 
-exports.userBoundThirdParty = function (req, res, next) {
-    let uid = req.body.open_id;
-    let union_id = req.body.union_id;
-    let userName = req.body.user_name;
-    let userId = req.session.id;
-
-    userModel.updateUserTencentWechat(uid, union_id, userName, userId, function (err, success) {
-        if (err) {
-            return next(err);
-        }
-
-        res.json({
-            flag: '0000',
-            msg: '',
-            result: {
-                ok: !!success
-            }
-        })
-    })
-};
