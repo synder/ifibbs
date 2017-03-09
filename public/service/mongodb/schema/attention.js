@@ -21,7 +21,7 @@ const AttentionQuestionSchema = new Schema({
     create_time : {type: Date, required: true},    //创建时间
     update_time : {type: Date, required: true},    //更新时间
     question_id : {type: ObjectId, required: true, ref: 'Question'},  //关注对象ID
-    question_user_id : {type: ObjectId, required: true, ref: 'User'}, //关注对象ID
+    question_user_id : {type: ObjectId, required: true, ref: 'User'}, //问题所属用户
 });
 
 

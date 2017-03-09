@@ -32,6 +32,7 @@ exports.getRecommendArticleList = function (req, res, next) {
                 comment_count: article.comment_count,
                 favour_count: article.favour_count,
                 collect_count: article.collect_count,
+                create_time: article.create_time,
                 url: 'http://www.baidu.com',  //todo change url
             };
         });
@@ -77,6 +78,7 @@ exports.getSubjectArticleList = function (req, res, next) {
                 comment_count: article.comment_count,
                 favour_count: article.favour_count,
                 collect_count: article.collect_count,
+                create_time: article.create_time,
                 url: 'http://www.baidu.com', //todo change url
             };
         });
