@@ -71,8 +71,6 @@ exports.getUserAnswerCollections = function(req, res, next){
 
         let count = results.count;
         let collections = [];
-        
-        
 
         results.collections.forEach(function (collection) {
             
@@ -81,6 +79,9 @@ exports.getUserAnswerCollections = function(req, res, next){
                 question_id: collection.question_id ? collection.question_id._id : null,
                 question_title: collection.question_id ? collection.question_id.title : null,
                 question_tags: collection.question_id ? collection.question_id.tags : null,
+                answer_user_id: collection.user_id ? collection.user_id._id : null,
+                answer_user_name: collection.user_id ? collection.user_id.user_name : null,
+                answer_user_avatar: collection.user_id ? collection.user_id.user_avatar : null,
                 answer_id: collection.answer_id ? collection.answer_id._id : null,
                 answer_content: collection.answer_id ? collection.answer_id.content : null,
                 answer_comment_count: collection.answer_id ? collection.answer_id.comment_count : null,

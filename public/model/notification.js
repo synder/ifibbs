@@ -12,6 +12,7 @@ const getui = require('../service/getui');
 const User = ifibbs.model('User');
 const Question = ifibbs.model('Question');
 const QuestionAnswer = ifibbs.model('QuestionAnswer');
+const AnswerComment = ifibbs.model('AnswerComment');
 const UserNotification = ifibbs.model('UserNotification');
 const AttentionUser = ifibbs.model('AttentionUser');
 const AttentionSubject = ifibbs.model('AttentionSubject');
@@ -201,6 +202,7 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
                 let createUserID = question.create_user_id ? question.create_user_id._id : null;
                 let createUserName = question.create_user_id ? question.create_user_id.user_name : null;
                 let createUserGetuiCID = question.create_user_id ? question.create_user_id.getui_cid : null;
+                let questionTitle = question.title;
 
                 if (!createUserID) {
                     return callback(null, channel);
@@ -231,7 +233,7 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
                                     category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                                     type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
                                     push_title: message,      //通知标题
-                                    push_content: JSON.stringify(content),      //通知内容
+                                    push_content: questionTitle,      //通知内容
                                     push_content_id: questionID,     //通知内容ID
                                     push_client_id: createUserGetuiCID,     //客户端ID，详见个推文档
                                     push_task_id: null,     //任务ID，详见个推文档
@@ -312,7 +314,7 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
                                     category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                                     type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
                                     push_title: message,      //通知标题
-                                    push_content: JSON.stringify(content),      //通知内容
+                                    push_content: questionTitle,      //通知内容
                                     push_content_id: questionID,     //通知内容ID
                                     push_client_id: getuiCID,     //客户端ID，详见个推文档
                                     push_task_id: null,     //任务ID，详见个推文档
@@ -818,15 +820,17 @@ exports.produceForQuestionBeenSharedMQS = function (userID, questionID, callback
 
     questionID = questionID.toString();
 
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_SHARED;
 
     let message = userID + ':' + questionID;
 
-    rabbit.client.produceMessage(QUEUE, questionID, callback);
+    rabbit.client.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForQuestionBeenSharedMQS = function (callback) {
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+
+    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_SHARED;
+
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel);
@@ -834,7 +838,83 @@ exports.consumeForQuestionBeenSharedMQS = function (callback) {
 
         let content = message.content.toString();
 
+        if (!content) {
+            return callback(null, channel);
+        }
 
+        content = content.split(':');
+
+        let userID = content[0];
+        let questionID = content[1];
+
+        async.parallel({
+            shareUser: function (cb) {
+                User.findOne({_id: userID}, cb);
+            },
+            question: function (cb) {
+                Question.findOne({_id: questionID})
+                    .populate('create_user_id')
+                    .exec(cb);
+            },
+        }, function (err, results) {
+
+            if (err) {
+                return callback(err, channel);
+            }
+
+            let shareUser = results.shareUser;
+            let question = results.question;
+
+            if (!shareUser) {
+                return callback(null, channel);
+            }
+
+            if (!question) {
+                return callback(null, channel);
+            }
+
+            //推送通知给问题所有者
+            let shareUserID = shareUser._id;
+            let shareUserName = shareUser.user_name;
+            let questionOwnerID = question.create_user_id ? question.create_user_id._id : null;
+            let questionOwnerGetuiCID = question.create_user_id ? question.create_user_id.getui_cid : null;
+            let questionTitle = question.title;
+
+            if (!(shareUserID && questionOwnerID && questionOwnerGetuiCID)) {
+                return callback(null, channel);
+            }
+
+            let message = shareUserName + ' 分享了您发布的问题';
+            const content = {
+                func: 'notification',
+                type: UserNotification.CATEGORY.BUSINESS
+            };
+
+            async.parallel({
+                push: function (cb) {
+                    //推送通知给问题的所有者
+                    getui.notifyTransmissionMsg([questionOwnerGetuiCID], message, content, cb);
+                },
+                save: function (cb) {
+                    UserNotification.create({
+                        status: UserNotification.STATUS.UNREAD,      //通知状态
+                        category: UserNotification.CATEGORY.SYSTEM,      //通知类别
+                        type: UserNotification.TYPE.USER_QUESTION_BEEN_SHARED,      //通知类型
+                        push_title: message,      //通知标题
+                        push_content: questionTitle,      //通知内容
+                        push_content_id: questionID,     //通知内容ID
+                        push_client_id: questionOwnerGetuiCID,     //客户端ID，详见个推文档
+                        push_task_id: null,     //任务ID，详见个推文档
+                        push_time: new Date(),   //推送时间
+                        create_time: new Date(),    //创建时间
+                        update_time: new Date(),    //更新时间
+                        user_id: questionOwnerID,    //用户ID
+                    }, cb);
+                },
+            }, function (err) {
+                callback(err, channel);
+            });
+        });
     });
 };
 
@@ -842,19 +922,19 @@ exports.consumeForQuestionBeenSharedMQS = function (callback) {
 /**
  * @desc 回答被点赞
  * */
-exports.produceForAnswerBeenFavouredMQS = function (questionID, userID, callback) {
+exports.produceForAnswerBeenFavouredMQS = function (userID, answerID, callback) {
 
-    questionID = questionID.toString();
+    const QUEUE = rabbit.queues.notifications.USER_ANSWER_BEEN_FAVOURED;
 
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    let message = userID + ':' + answerID;
 
-    let message = questionID + ':' + userID;
-
-    rabbit.client.produceMessage(QUEUE, questionID, callback);
+    rabbit.client.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForAnswerBeenFavouredMQS = function (callback) {
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+
+    const QUEUE = rabbit.queues.notifications.USER_ANSWER_BEEN_FAVOURED;
+
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel);
@@ -862,7 +942,84 @@ exports.consumeForAnswerBeenFavouredMQS = function (callback) {
 
         let content = message.content.toString();
 
+        if (!content) {
+            return callback(null, channel);
+        }
 
+        content = content.split(':');
+
+        let userID = content[0];
+        let answerID = content[1];
+
+        async.parallel({
+            favourUser: function (cb) {
+                User.findOne({_id: userID}, cb);
+            },
+            answer: function (cb) {
+                QuestionAnswer.findOne({_id: answerID})
+                    .populate('create_user_id')
+                    .exec(cb);
+            },
+        }, function (err, results) {
+            if (err) {
+                return callback(err, channel);
+            }
+
+            let favourUser = results.favourUser;
+            let answer = results.answer;
+
+            if (!favourUser) {
+                return callback(null, channel);
+            }
+
+            if (!answer) {
+                return callback(null, channel);
+            }
+
+            //推送通知给回答所有者
+            let favourUserID = favourUser._id;
+            let favourUserName = favourUser.user_name;
+            let answerUserID = answer.create_user_id ? answer.create_user_id._id : null;
+            let answerUserName = answer.create_user_id ? answer.create_user_id.user_name : null;
+            let answerUserGetuiCID = answer.create_user_id ? answer.create_user_id.getui_cid : null;
+            let answerContent = answer.content;
+
+            if (!(favourUserID && answerUserID && answerUserGetuiCID)) {
+                return callback(null, channel);
+            }
+
+            let message = favourUserName + ' 赞了您的回答';
+
+            const content = {
+                func: 'notification',
+                type: UserNotification.CATEGORY.BUSINESS
+            };
+
+            async.parallel({
+                push: function (cb) {
+                    //推送通知给问题的所有者
+                    getui.notifyTransmissionMsg([answerUserGetuiCID], message, content, cb);
+                },
+                save: function (cb) {
+                    UserNotification.create({
+                        status: UserNotification.STATUS.UNREAD,      //通知状态
+                        category: UserNotification.CATEGORY.SYSTEM,      //通知类别
+                        type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
+                        push_title: message,      //通知标题
+                        push_content: answerContent,      //通知内容
+                        push_content_id: answerID,        //通知内容ID
+                        push_client_id: answerUserGetuiCID,     //客户端ID，详见个推文档
+                        push_task_id: null,     //任务ID，详见个推文档
+                        push_time: new Date(),   //推送时间
+                        create_time: new Date(),    //创建时间
+                        update_time: new Date(),    //更新时间
+                        user_id: answerUserID,    //用户ID
+                    }, cb);
+                },
+            }, function (err) {
+                callback(err, channel);
+            });
+        });
     });
 };
 
@@ -872,7 +1029,7 @@ exports.consumeForAnswerBeenFavouredMQS = function (callback) {
  * */
 exports.produceForAnswerBeenCommendedMQS = function (answerID, commentID, callback) {
 
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    const QUEUE = rabbit.queues.notifications.USER_ANSWER_BEEN_COMMEND;
 
     let message = answerID + ':' + commentID;
 
@@ -881,13 +1038,98 @@ exports.produceForAnswerBeenCommendedMQS = function (answerID, commentID, callba
 };
 
 exports.consumeForAnswerBeenCommendedMQS = function (callback) {
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+
+    const QUEUE = rabbit.queues.notifications.USER_ANSWER_BEEN_COMMEND;
+
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel);
         }
 
         let content = message.content.toString();
+
+        if (!content) {
+            return callback(null, channel);
+        }
+
+        content = content.split(':');
+
+        let answerID = content[0];
+        let commentID = content[1];
+
+        async.parallel({
+            comment: function (cb) {
+                AnswerComment.findOne({_id: commentID})
+                    .populate('create_user_id')
+                    .exec(cb);
+            },
+            answer: function (cb) {
+                QuestionAnswer.findOne({_id: answerID})
+                    .populate('create_user_id')
+                    .exec(cb);
+            },
+        }, function (err, results) {
+
+            if (err) {
+                return;
+            }
+
+            let comment = results.comment;
+            let answer = results.answer;
+
+            if (!comment) {
+                return callback(null, channel);
+            }
+
+            if (!answer) {
+                return callback(null, channel);
+            }
+
+            let commentUserID = comment.create_user_id ? comment.create_user_id._id : null;
+            let commentUserName = comment.create_user_id ? comment.create_user_id.user_name : null;
+            let commentContent = comment.content;
+
+            let answerUserID = answer.create_user_id ? answer.create_user_id._id : null;
+            let answerUserGetuiCID = answer.create_user_id ? answer.create_user_id.getui_cid : null;
+            let answerContent = answer.content;
+
+            if (!(commentUserID && answerUserID && answerUserGetuiCID)) {
+                return callback(null, channel);
+            }
+
+            let message = commentUserName + ' 评论了您的回答';
+
+            const content = {
+                func: 'notification',
+                type: UserNotification.CATEGORY.BUSINESS
+            };
+
+            async.parallel({
+                push: function (cb) {
+                    //推送通知给问题的所有者
+                    getui.notifyTransmissionMsg([answerUserGetuiCID], message, content, cb);
+                },
+                save: function (cb) {
+                    UserNotification.create({
+                        status: UserNotification.STATUS.UNREAD,      //通知状态
+                        category: UserNotification.CATEGORY.SYSTEM,      //通知类别
+                        type: UserNotification.TYPE.USER_ANSWER_BEEN_COMMEND,      //通知类型
+                        push_title: message,      //通知标题
+                        push_content: answerContent,      //通知内容
+                        push_content_id: answerID,        //通知内容ID
+                        push_client_id: answerUserGetuiCID,     //客户端ID，详见个推文档
+                        push_task_id: null,     //任务ID，详见个推文档
+                        push_time: new Date(),   //推送时间
+                        create_time: new Date(),    //创建时间
+                        update_time: new Date(),    //更新时间
+                        user_id: answerUserID,    //用户ID
+                    }, cb);
+                },
+            }, function (err) {
+                callback(err, channel);
+            });
+
+        });
 
     });
 };
@@ -897,11 +1139,12 @@ exports.consumeForAnswerBeenCommendedMQS = function (callback) {
  * @desc 用户发布了新的问题
  * */
 exports.produceForUserPublishNewQuestionMQS = function (questionID, callback) {
-    questionID = questionID.toString();
 
     const QUEUE = rabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
 
-    rabbit.client.produceMessage(QUEUE, questionID, callback);
+    let message = questionID.toString();
+
+    rabbit.client.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForUserPublishNewQuestionMQS = function (callback) {
@@ -919,79 +1162,137 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
         }
 
         //查找问题
-        let questionCondition = {_id: questionID, status: Question.STATUS.NORMAL};
 
-        Question.findOne(questionCondition, function (err, question) {
-            if (err) {
-                return callback(err, channel);
-            }
-
-            let questionCreateUserID = question.create_user_id;
-            let questionTitle = question.title;
-
-            let message = questionTitle + '有了新的回答';
-
-
-            //推送通知给问题的发布者和关注者
-            let attentionUserCondition = {
-                to_user_id: questionCreateUserID,        //关注用户ID
-                status: AttentionUser.STATUS.ATTENTION
-            };
-
-            let temp = [];
-
-            let stream = AttentionUser
-                .find(attentionUserCondition)
-                .populate({
-                    path: 'user_id',
-                    select: 'getui_cid',
-                    match: {
-                        getui_cid: {$exists: true}
-                    }
-                })
-                .stream();
-
-            stream.on('data', function (doc) {
-
-                if (doc.user_id && doc.user_id.getui_cid) {
-                    let getuiCID = doc.user_id.getui_cid;
-                    temp.push(getuiCID);
+        Question.findOne({_id: questionID, status: Question.STATUS.NORMAL})
+            .populate('create_user_id')
+            .exec(function (err, question) {
+                if (err) {
+                    return callback(err, channel);
                 }
 
-                //一次批量推送20条
-                if (temp.length > 19) {
-                    stream.pause();
-                    let clientIDS = temp;
-                    temp = [];
-                    getui.notifyTransmissionMsg(true, clientIDS, message, function (err, result) {
-                        stream.resume();
-                        callback(err, channel);
+                let questionCreateUserID = question.create_user_id ? question.create_user_id._id : null;
+                let questionCreateUserName = question.create_user_id ? question.create_user_id.user_name : null;
+                
+                let questionTitle = question.title;
+
+                if (!questionCreateUserID){
+                    return callback(null, channel);
+                }
+
+                let attentionQuestionCondition = {
+                    question_id: questionID,        //关注用户ID
+                    status: AttentionQuestion.STATUS.ATTENTION
+                };
+
+                let message = questionCreateUserName + ' 发布了新的问题';
+
+                const content = {
+                    func: 'notification',
+                    type: UserNotification.CATEGORY.BUSINESS
+                };
+
+                let stream = AttentionUser
+                    .find(attentionQuestionCondition)
+                    .populate({
+                        path: 'user_id',
+                        select: '_id getui_cid',
+                        match: {
+                            getui_cid: {$exists: true}
+                        }
+                    })
+                    .stream();
+
+                let clientIDS = [];
+                let notifications = [];
+
+                //推送函数
+                let pushAndSaveFunction = function (clientIDS, notifications, callback) {
+                    async.parallel({
+                        save: function (cb) {
+                            UserNotification.create(notifications, cb);
+                        },
+                        push: function (cb) {
+                            getui.notifyTransmissionMsg(true, clientIDS, message, content, cb);
+                        },
+                    }, function (err) {
+
+                        clientIDS = [];
+                        notifications = [];
+
+                        callback(err);
                     });
-                }
+                };
 
-            }).on('error', function (err) {
-                if (temp.length > 0) {
-                    let clientIDS = temp;
-                    temp = [];
-                    getui.notifyTransmissionMsg(true, clientIDS, message, function (err) {
-                        callback(err, channel);
-                    });
-                } else {
-                    callback(err, channel);
-                }
-            }).on('close', function () {
+                //流的方式处理
+                stream
+                    .on('data', function (doc) {
 
-                if (temp.length > 0) {
-                    let clientIDS = temp;
-                    temp = [];
-                    getui.notifyTransmissionMsg(true, clientIDS, message, function (err) {
-                        callback(err, channel);
+                        let getuiCID = doc.user_id ? doc.user_id.getui_cid : null;
+                        let userID = doc.user_id ? doc.user_id._id : null;
+
+                        if (!getuiCID) {
+                            return;
+                        }
+
+                        if (!userID) {
+                            return;
+                        }
+
+                        clientIDS.push(getuiCID);
+                        notifications.push({
+                            status: UserNotification.STATUS.UNREAD,      //通知状态
+                            category: UserNotification.CATEGORY.SYSTEM,      //通知类别
+                            type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
+                            push_title: message,      //通知标题
+                            push_content: questionTitle,      //通知内容
+                            push_content_id: questionID,     //通知内容ID
+                            push_client_id: getuiCID,     //客户端ID，详见个推文档
+                            push_task_id: null,     //任务ID，详见个推文档
+                            push_time: new Date(),   //推送时间
+                            create_time: new Date(),    //创建时间
+                            update_time: new Date(),    //更新时间
+                            user_id: userID,    //用户ID
+                        });
+
+                        if (clientIDS.length > 19) {
+
+                            stream.pause();
+
+                            pushAndSaveFunction(clientIDS, notifications, function (err) {
+                                if (err) {
+                                    console.error(err.stack);
+                                }
+
+                                stream.resume();
+                            });
+                        }
+                    })
+                    .on('error', function (err) {
+
+                        if (clientIDS.length > 0) {
+                            pushAndSaveFunction(clientIDS, notifications, function (err) {
+                                if (err) {
+                                    console.error(err.stack);
+                                }
+                            });
+                        }
+
+                        callback(err);
+
+                    })
+                    .on('close', function () {
+
+                        if (clientIDS.length > 0) {
+                            pushAndSaveFunction(clientIDS, notifications, function (err) {
+                                if (err) {
+                                    console.error(err.stack);
+                                }
+                            });
+                        }
+
+                        callback();
                     });
-                } else {
-                    callback(null, channel);
-                }
             });
-        });
     });
 };
 
@@ -1056,6 +1357,70 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
 
         let content = message.content.toString();
 
+        if (!content) {
+            return callback(null, channel);
+        }
+
+        content = content.split(':');
+
+        let userID = content[0];
+        let toUserID = content[1];
+        
+        async.parallel({
+            user: function(cb) { 
+                User.findOne({_id: userID}, cb);
+            },
+            toUser: function(cb) {
+                User.findOne({_id: toUserID}, cb);
+            },
+        }, function (err, results) {
+        
+            if(err){
+                 return ;
+            }
+            
+            let user = results.user;
+            let toUser = results.toUser;
+            
+            if(!(user && toUser)){
+                return callback(null, channel);
+            }
+            
+            let userName = user.user_name;
+            let toUserGetuiCID = toUser.getui_cid;
+
+            let message = userName + ' 关注了您';
+
+            const content = {
+                func: 'notification',
+                type: UserNotification.CATEGORY.BUSINESS
+            };
+
+            async.parallel({
+                push: function (cb) {
+                    //推送通知给问题的所有者
+                    getui.notifyTransmissionMsg([toUserGetuiCID], message, content, cb);
+                },
+                save: function (cb) {
+                    UserNotification.create({
+                        status: UserNotification.STATUS.UNREAD,      //通知状态
+                        category: UserNotification.CATEGORY.SYSTEM,      //通知类别
+                        type: UserNotification.TYPE.USER_ANSWER_BEEN_COMMEND,      //通知类型
+                        push_title: message,      //通知标题
+                        push_content: '',      //通知内容
+                        push_content_id: userID,        //通知内容ID
+                        push_client_id: toUserGetuiCID,     //客户端ID，详见个推文档
+                        push_task_id: null,     //任务ID，详见个推文档
+                        push_time: new Date(),   //推送时间
+                        create_time: new Date(),    //创建时间
+                        update_time: new Date(),    //更新时间
+                        user_id: toUserID,    //用户ID
+                    }, cb);
+                },
+            }, function (err) {
+                callback(err, channel);
+            });
+        });
 
     });
 };
