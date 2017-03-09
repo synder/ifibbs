@@ -168,18 +168,38 @@ exports.searchQuestionsByAnswer = function(req, res, next){
     let content = req.query.content;
     
     if(!content){
-        return res.json({
+        return next(BadRequestError('content is need'));
+    }
+
+    questionModel.searchQuestionByAnswer(content, pageSkip, pageSize, function (err, results) {
+        
+        if(err){
+            return next();
+        }
+        
+        let count = results.count;
+        let questions = [];
+
+        results.questions.forEach(function (question) {
+            questions.push({
+                id: question._id,
+                title: question.title,
+                tags: question.tags || [],
+                describe: question.describe,
+                answer_count: question.answer_count || 0,
+                favour_count: question.favour_count || 0,
+                type: 2,
+            });
+        });
+
+        res.json({
             flag: '0000',
             msg: '',
             result: {
-                count: 0,
-                list: []
+                count: count,
+                list: questions
             }
         });
-    }
-
-    questionModel.searchQuestionByAnswer(content, pageSkip, pageSize, function (err, question) {
-        
     });
     
 };
