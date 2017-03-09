@@ -343,6 +343,11 @@ exports.consumeForQuestionBeenDeletedMQS = function (callback) {
 
     const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_DELETED;
 
+    const content = {
+        func: 'notification',
+        type: UserNotification.CATEGORY.SYSTEM
+    };
+
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel);
@@ -367,19 +372,19 @@ exports.consumeForQuestionBeenDeletedMQS = function (callback) {
                 if (!question) {
                     return callback(null, channel);
                 }
-
-                if (question.create_user_id && question.create_user_id.getui_cid) {
-                    let getuiCID = question.create_user_id.getui_cid;
-                    let questionTitle = question.title;
-                    let message = questionTitle + '被管理员加精';
-
-                    //推送通知给问题的所有者
-                    getui.notifyTransmissionMsg(true, [getuiCID], message, function (err) {
-                        callback(err, channel);
-                    });
-                } else {
-                    callback(null, channel);
+                
+                let getuiID = question.create_user_id ? question.create_user_id.getui_cid : null;
+                
+                if(!getuiID){
+                    return callback(null, channel);
                 }
+                
+                let message = "您的问题被管理员加精";
+
+                //推送通知给问题的所有者
+                getui.notifyTransmissionMsg(true, [getuiCID], message, content, function (err) {
+                    callback(err, channel);
+                });
             });
     });
 };
