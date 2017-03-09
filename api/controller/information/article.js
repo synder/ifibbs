@@ -6,9 +6,9 @@
 const async = require('async');
 const url = require('url');
 
-const config = global.config.hosts;
+const hosts = global.config.hosts;
 
-if(!(config && config.h5)){
+if(!(hosts && hosts.h5)){
     throw new Error('please provide h5 host config');
 }
 
@@ -35,9 +35,9 @@ exports.getRecommendArticleList = function (req, res, next) {
         articles = articles.map(function (article) {
 
             let articleUrl = url.format({
-                protocol : config.h5.protocol,
-                hostname: config.h5.host,
-                port : config.h5.port,
+                protocol : hosts.h5.protocol,
+                hostname: hosts.h5.host,
+                port : hosts.h5.port,
                 pathname : ARTICLE_H5_PAGE_NAME,
                 query : {
                     article_id: article._id
@@ -92,9 +92,9 @@ exports.getSubjectArticleList = function (req, res, next) {
         articles = articles.map(function (article) {
             
             let articleUrl = url.format({
-                protocol : config.h5.protocol,
-                hostname: config.h5.host,
-                port : config.h5.port,
+                protocol : hosts.h5.protocol,
+                hostname: hosts.h5.host,
+                port : hosts.h5.port,
                 pathname : ARTICLE_H5_PAGE_NAME,
                 query : {
                     article_id: article._id
