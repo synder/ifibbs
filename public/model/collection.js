@@ -12,6 +12,7 @@ const UserAnswerCollection = ifibbs.model('UserAnswerCollection');
 const UserArticleCollection = ifibbs.model('UserArticleCollection');
 const QuestionAnswer = ifibbs.model('QuestionAnswer');
 const Article = ifibbs.model('Article');
+const Subject = ifibbs.model('Subject');
 const User = ifibbs.model('User');
 const UserDynamic = ifibbs.model('UserDynamic');
 
@@ -40,10 +41,10 @@ exports.getUserArticleCollectionList = function (userID, pageSkip, pageSize, cal
                     }
                 })
                 .populate({
-                    path: 'user_id',
+                    path: 'subject_id',
                     match: {
                         _id: {$exists : true},
-                        status: User.STATUS.NORMAL
+                        status: Subject.STATUS.ENABLE
                     }
                 })
                 .sort('create_time _id')
