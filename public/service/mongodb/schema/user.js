@@ -25,7 +25,8 @@ const UserSchema = new Schema({
     status       : {type: Number,  required: true},   //用户状态
     create_time  : {type: Date,    required: true},   //创建时间
     update_time  : {type: Date,    required: true},   //更新时间
-    user_name    : {type: String,  required: false},   //用户名
+    user_name    : {type: String,  required: true},   //用户名
+    getui_cid    : {type: String,  required: true},  //个推CID
     user_profile : {type: String,  required: false},   //用户简介
     user_avatar  : {type: String,  required: false,},  //用户头像
     user_password: {type: String,  required: false,},  //用户密码
@@ -34,7 +35,6 @@ const UserSchema = new Schema({
     user_mobile  : {type: String,  required: false},  //用户手机
     work_info    : {type: String,  required: false},  //用户性别
     edu_info     : {type: String,  required: false},  //用户性别
-    getui_cid    : {type: String,  required: false},  //个推CID
     user_province: {type: String,  required: false},  //用户所在省
     user_city    : {type: String,  required: false},  //用户所在市
     user_area    : {type: String,  required: false},  //用户所在地区
