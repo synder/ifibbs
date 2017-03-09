@@ -10,6 +10,7 @@ const ifibbs = require('../service/mongodb').ifibbs;
 const elasticsearch = require('../service/elasticsearch').client;
 
 const Article = ifibbs.model('Article');
+const ArticleComment = ifibbs.model('ArticleComment');
 const Subject = ifibbs.model('Subject');
 
 /**
@@ -175,5 +176,28 @@ exports.getArticleDetail = function (articleID, callback) {
  * @desc 获取文章评论列表
  * */
 exports.getArticleCommentsList = function (articleID, pageSkip, pageSize, callback) {
-    //todo
+    let condition = {
+        article_id: articleID,
+        status: ArticleComment.STATUS.ENABLE
+    };
+    
+    async.parallel({
+        count: function(cb) { 
+            ArticleComment.count(condition, cb);
+        },
+        comments: function(cb) { 
+            ArticleComment.find(condition)
+                .populate({
+                    path: 'create_user_id',
+                    match: {
+                        _id: {$exists : true},
+                        status: User.STATUS.NORMAL
+                    }
+                })
+                .sort('-create_time -_id')
+                .skip(pageSkip)
+                .limit(pageSize)
+                .exec(cb);
+        },
+    }, callback);
 };
