@@ -7,6 +7,12 @@
 
 const async = require('async');
 
+const config = global.config.hosts;
+
+if(!(config && config.article)){
+    
+}
+
 const recommendModel = require('../../../public/model/recommend');
 
 exports.getRecommendList = function(req, res, next){

@@ -78,4 +78,15 @@ module.exports =  {
             ssl: true
         }
     },
+    
+    //拼接地址配置
+    hosts: {
+        //文章拼接地址配置
+        article: {
+            protocol: 'http',
+            port: 80,
+            host: '192.168.1.193',
+            path: 'article.html'
+        }
+    }
 };

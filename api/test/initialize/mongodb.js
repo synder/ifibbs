@@ -411,6 +411,7 @@ const initRecommend = function (callback) {
         let user = {
             _id: userID,
             status: User.STATUS.NORMAL, //用户状态
+            getui_cid: '58ad029de4b015ad71990518',
             user_name: Mock.Random.ctitle(4, 6),   //用户名
             user_profile: Mock.Random.ctitle(10, 20),   //用户简介
             user_avatar: avatar,   //用户头像
@@ -680,7 +681,7 @@ const initCollection = function (callback) {
 /**
  * @desc 初始化用户数据
  * */
-const initMongodbUserCollection = function (callback) {
+const initUser = function (callback) {
 
     let avatar = 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518';
 
@@ -690,6 +691,7 @@ const initMongodbUserCollection = function (callback) {
             status: User.STATUS.NORMAL, //用户状态
             user_name: 'synder',   //用户名
             user_profile: Mock.Random.ctitle(10, 20),   //用户简介
+            getui_cid: '36a3c303c90eadf908acae5526163235',
             user_avatar: avatar,   //用户头像
             create_time: new Date(),     //创建时间
             update_time: new Date(),     //更新时间
@@ -709,6 +711,7 @@ const initMongodbUserCollection = function (callback) {
             _id: '58aa50177ddbf5507c51f084',
             status: User.STATUS.NORMAL, //用户状态
             user_name: 'synder',   //用户名
+            getui_cid: '36a3c303c90eadf908acae5526163235',
             user_profile: Mock.Random.ctitle(10, 20),   //用户简介
             user_avatar: avatar,   //用户头像
             create_time: new Date(),     //创建时间
@@ -724,6 +727,7 @@ const initMongodbUserCollection = function (callback) {
             _id: USER_ID_OTHER,
             status: User.STATUS.NORMAL,   //用户状态
             user_name: 'sam',   //用户名
+            getui_cid: '36a3c303c90eadf908acae5526163235',
             user_profile: Mock.Random.ctitle(10, 20),   //用户简介
             user_avatar: avatar,   //用户头像
             create_time: new Date(),     //创建时间
@@ -879,7 +883,7 @@ exports.init = function (callback) {
             },
 
             function (cb) {
-                initMongodbUserCollection(cb);
+                initUser(cb);
             },
 
             function (cb) {

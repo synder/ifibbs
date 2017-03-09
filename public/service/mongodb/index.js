@@ -44,6 +44,7 @@ const tag = require('./schema/tag');
 const user = require('./schema/user');
 const dynamic = require('./schema/dynamic');
 const share = require('./schema/share');
+const complaint = require('./schema/complaint');
 
 
 
@@ -71,6 +72,7 @@ ifibbs.model('Subject', subject.SubjectSchema, 'subject');
 ifibbs.model('User', user.UserSchema, 'user');
 ifibbs.model('UserDynamic', dynamic.UserDynamicSchema, 'user_dynamic');
 ifibbs.model('UserShare', share.UserShareSchema, 'user_share');
+ifibbs.model('UserComplaint', complaint.UserComplaintSchema, 'user_complaint');
 
 
 exports.ifibbs = ifibbs;

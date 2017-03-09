@@ -99,7 +99,6 @@ exports.getBusinessNotificationList = function (userId, pageSkip, pageSize, call
  * @desc 修改通知阅读状态
  * */
 exports.changeNotificationToRead = function (userID, notificationIDS, callback) {
-
     async.eachLimit(notificationIDS, 10, function (id, cb) {
 
         let condition = {
@@ -125,22 +124,21 @@ exports.changeNotificationToRead = function (userID, notificationIDS, callback) 
     });
 };
 
-/*
- * @desc 修改通知阅读状态
+/**
+ * @desc 批量删除
  * */
-exports.changeNotificationToNotified = function (userID, notificationIDS, callback) {
-
+exports.removeNotification = function (userID, notificationIDS, callback) {
     async.eachLimit(notificationIDS, 10, function (id, cb) {
 
         let condition = {
             _id: id,
             user_id: userID,
-            status: UserNotification.STATUS.UN_NOTIFIED
+            status: {$ne: UserNotification.STATUS.DELETED}
         };
 
         let update = {
             $set: {
-                status: UserNotification.STATUS.NOTIFIED
+                status: UserNotification.STATUS.DELETED
             }
         };
 

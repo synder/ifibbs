@@ -82,7 +82,30 @@ describe('用户消息推送', function(){
     it('#推送消息阅读状态修改', function(done) {
         let ids=['58ae4f5c3b5c9e08208541eb','58ae52b8e9ba180864cc283a'];
         request(app)
-            .post('/user/notification/status')
+            .post('/user/notification')
+            .send({
+                notification_ids: ids,
+            })
+            .expect(200)
+            .end(function(err, res) {
+                if (err) {
+                    throw err;
+                }
+
+                chai.expect(res.body).to.have.property('flag', '0000');
+                chai.expect(res.body).to.have.property('msg', '');
+
+                chai.expect(res.body).to.have.ownProperty('result');
+                chai.expect(res.body.result).to.have.ownProperty('ok');
+
+                done();
+            });
+    });
+
+    it('#删除消息通知', function(done) {
+        let ids=['58ae4f5c3b5c9e08208541eb','58ae52b8e9ba180864cc283a'];
+        request(app)
+            .delete('/user/notification')
             .send({
                 notification_ids: ids,
             })

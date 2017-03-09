@@ -18,6 +18,7 @@ const question = require('../../controller/user/question');
 const statistics = require('../../controller/user/statistics');
 const dynamic = require('../../controller/user/dynamic');
 const share = require('../../controller/user/share');
+const complaint = require('../../controller/user/complaint');
 
 
 exports.map = function(app){
@@ -114,7 +115,9 @@ exports.map = function(app){
     app.get('/user/history/browses', authority.check, history.getUserBrowseHistory);  //获取用户浏览历史记录
     
     //用户通知
-    app.post('/user/notification/status',authority.check,notification.changeNotificationToRead);           //修改通知阅读状态
+    app.post('/user/notification',authority.check,notification.changeNotificationToRead);           //修改通知阅读状态
+    app.delete('/user/notification',authority.check,notification.removeNotification);               //删除通知
+    
     app.get('/user/notification/systems', authority.check, notification.getUserSystemNotification);       //获取系统通知
     app.get('/user/notification/businesses', authority.check, notification.getUserBusinessNotification);  //获取业务通知
     app.get('/user/notifications/unread/count', authority.check, notification.checkUserHasNewNotification);     //获取业务通知
@@ -124,4 +127,7 @@ exports.map = function(app){
     
     //分享
     app.put('/user/share', authority.check, share.createUserShare); //记录分享
+    
+    //投诉
+    app.put('/user/complaint', authority.check, complaint.userComplaint); //用户投诉
 };
