@@ -69,6 +69,25 @@ exports.createOrUpdateNewArticle = function (createUserID, subjectID, article, c
     
 };
 
+
+/**
+ * @desc 创建新的文章评论
+ * */
+exports.createNewComment = function (userID, articleID, comment, callback) {
+
+    let commentDoc = {
+        status          : ArticleComment.STATUS.ENABLE,    //文章状态
+        content         : comment,    //评论内容
+        create_time     : new Date(),    //创建时间
+        update_time     : new Date(),    //更新时间
+        article_id      : articleID,  //文章ID
+        create_user_id  : userID      //创建人
+    };
+    
+    Article.create(commentDoc, callback);
+};
+
+
 /**
  * @desc 删除文章
  * */
