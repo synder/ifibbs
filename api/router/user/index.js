@@ -7,6 +7,7 @@
 const authority = require('../../controller/user/authority');
 const account = require('../../controller/user/account');
 const answer = require('../../controller/user/answer');
+const article = require('../../controller/user/article');
 const comment = require('../../controller/user/comment');
 const attention = require('../../controller/user/attention');
 const collection = require('../../controller/user/collection');
@@ -87,6 +88,10 @@ exports.map = function(app){
     app.delete('/user/favour/answer', authority.check, favour.removeAnswerFromFavour);          //取消点赞回答
     app.delete('/user/favour/article', authority.check, favour.removeArticleFromFavour);        //取消点赞文章
     app.delete('/user/favour/comment', authority.check, favour.removeAnswerCommentFromFavour);  //取消点赞回答评论
+    
+    
+    //文章
+    app.put('/user/article/comment', authority.check, article.addCommentToArticle);   //新增文章评论
     
     
     //用户关注
