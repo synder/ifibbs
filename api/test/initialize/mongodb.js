@@ -411,6 +411,7 @@ const initRecommend = function (callback) {
         let user = {
             _id: userID,
             status: User.STATUS.NORMAL, //用户状态
+            getui_cid: '58ad029de4b015ad71990518',
             user_name: Mock.Random.ctitle(4, 6),   //用户名
             user_profile: Mock.Random.ctitle(10, 20),   //用户简介
             user_avatar: avatar,   //用户头像
