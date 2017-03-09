@@ -25,11 +25,11 @@ exports.userComplaint = function (req, res, next) {
         return next(new BadRequestError('type should be in [1,2,3,4]'));
     }
     
-    if(reason){
+    if(!reason){
         return next(new BadRequestError('reason is need'));
     }
 
-    if(complaintID){
+    if(!complaintID){
         return next(new BadRequestError('complaint_id is need'));
     }
 
