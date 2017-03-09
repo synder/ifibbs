@@ -172,7 +172,7 @@ exports.checkThirdParty = function (req, res, next) {
             msg: '',
             result: {
                 is_bound: !!userInfo,
-                user_name: userInfo.user_name,
+                user_name: userInfo ? userInfo.user_name : null,
             }
         });
     })
@@ -183,12 +183,14 @@ exports.checkThirdParty = function (req, res, next) {
  * @desc 用户注册接口
  * */
 exports.userRegisterWithPhone = function (req, res, next) {
-    
+    let string = Math.random().toString().substr(2, 12);
     let mobile = req.body.user_mobile;
     let password = req.body.user_password;
     let codeID = req.body.code_id;
     let code = req.body.code;
     let registerPlatform = req.body.register_platform;
+    let getuiCID = req.body.getui_cid;
+    let userName = req.body.user_name || `游客：${string}`;
 
     let  deviceInfo = null;
 
@@ -218,6 +220,10 @@ exports.userRegisterWithPhone = function (req, res, next) {
         return next(new BadRequestError('code is need'));
     }
 
+    if (!getuiCID) {
+        return next(new BadRequestError('getui_cid is need'));
+    }
+
     //验证验证码信息
     captchaModel.verifySmsSecurityCode(codeID, mobile, code, 6, true, function (err, result) {
         if (err) {
@@ -229,7 +235,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
         }
 
         //写入用户数据
-        userModel.createNewUser(mobile, password, function (err, user) {
+        userModel.createNewUser(mobile, password, getuiCID, userName, function (err, user) {
             if (err) {
                 return next(err);
             }
@@ -283,6 +289,7 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
     let mobile = req.body.user_mobile;
     let password = req.body.user_password;
     let registerPlatform = req.body.register_platform;  //1: ANDROID 2: IOS 3: PC 4: H5 5: OTHER
+    let getuiCID = req.body.getui_cid;
     
     let deviceInfo;
 
@@ -304,7 +311,11 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
         return next(new BadRequestError('password is need'));
     }
 
-    userModel.getUserByMobileAndPassword(mobile, password, function (err, user) {
+    if (!getuiCID) {
+        return next(new BadRequestError('getui_cid is need'));
+    }
+
+    userModel.getUserByMobileAndPassword(mobile, password, getuiCID, function (err, user) {
         if (err) {
             return next(err)
         }
@@ -356,12 +367,15 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
  * @desc 用户使用第三方账户登录
  * */
 exports.userLoginWithThirdPartyAccount = function (req, res, next) {
+    let string = Math.random().toString().substr(2, 12);
     let uid = req.body.open_id;
     let union_id = req.body.union_id;
-    let userName = req.body.user_name;
+    let userName = req.body.user_name || `游客：${string}`;;
     let registerPlatform = req.body.register_platform;  //1: ANDROID 2: IOS 3: PC 4: H5 5: OTHER
     let loginType = req.body.login_type; //1：微信 2: qq 3: 新浪微博 （0:手机账号密码）
     let userAvatar = req.body.user_avatar;
+    let getuiCID = req.body.getui_cid;
+
 
     let deviceInfo;
 
@@ -378,7 +392,19 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
     if (loginType != 1 && loginType != 2 && loginType != 3) {
         return next(new BadRequestError('login_type is not in [1,2,3]'));
     }
-    
+
+    if (!uid) {
+        return next(new BadRequestError('open_id is need'));
+    }
+
+    if (!userAvatar) {
+        return next(new BadRequestError('user_avatar is need'));
+    }
+
+    if (!getuiCID) {
+        return next(new BadRequestError('getui_cid is need'));
+    }
+
     //登录方式
     let loginFunction;
 
@@ -393,7 +419,7 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
     if (loginType == 3) {
         loginFunction = userModel.userLoginWithWeiBoAccount;
     }
-    loginFunction(uid, union_id, userName, userAvatar, function (err, user) {//todo mysql
+    loginFunction(uid, union_id, userName, userAvatar, getuiCID, function (err, user) {//todo mysql
         if (err) {
             return next(err)
         }
@@ -525,4 +551,29 @@ exports.resetUserPassword = function (req, res, next) {
             });
         });
     });
+};
+
+/*
+ * @desc 第三方账户绑定
+ * */
+
+exports.userBoundThirdParty = function (req, res, next) {
+    let uid = req.body.open_id;
+    let union_id = req.body.union_id;
+    let userName = req.body.user_name;
+    let userId = req.session.id;
+
+    userModel.updateUserTencentWechat(uid, union_id, userName, userId, function (err, success) {
+        if (err) {
+            return next(err);
+        }
+
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                ok: !!success
+            }
+        })
+    })
 };

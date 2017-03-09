@@ -35,20 +35,21 @@ const genTokenCacheKey = function (token) {
 /**
  * @desc 创建新的用户
  * */
-exports.createNewUser = function (mobile, password, callback) {
+exports.createNewUser = function (mobile, password, cid, userName, callback) {
 
     let salt = Math.random().toString();
     let now = new Date();
 
     let userDoc = {
         status: User.STATUS.NORMAL,
-        user_name: '',
+        user_name: userName,
         user_profile: '',
         user_avatar: '',
         user_mobile: mobile,
         user_password: hashUserPassword(salt, password),
         create_time: now,
         update_time: now,
+        getui_cid: cid,
         pass_salt_str: salt,
     };
 
@@ -138,7 +139,7 @@ exports.getUserByWeibo = function (openID, callback) {
 /**
  * @desc 根据用户手机和密码登录
  * */
-exports.getUserByMobileAndPassword = function (phone, pass, callback) {
+exports.getUserByMobileAndPassword = function (phone, pass, cid, callback) {
 
     let condition = {
         user_mobile: {$exists: true, $eq: phone}
@@ -160,7 +161,9 @@ exports.getUserByMobileAndPassword = function (phone, pass, callback) {
         if (realPassword !== enPassword) {
             return callback(null, null);
         }
+        user.getui_cid = cid;
 
+        user.save();
         callback(null, user);
     });
 };
@@ -170,7 +173,7 @@ exports.getUserByMobileAndPassword = function (phone, pass, callback) {
  * uid
  * unionID
  * */
-exports.userLoginWithQQAccount = function (uid, unionID, username, avatar, callback) {
+exports.userLoginWithQQAccount = function (uid, unionID, username, avatar, cid, callback) {
     
     let now = new Date();
     
@@ -189,6 +192,7 @@ exports.userLoginWithQQAccount = function (uid, unionID, username, avatar, callb
         create_time: now,
         update_time: now,
         pass_salt_str: null,
+        getui_cid: cid,
         bind_tencent_qq:{
             uid: uid,
             union_id: unionID,
@@ -212,7 +216,7 @@ exports.userLoginWithQQAccount = function (uid, unionID, username, avatar, callb
 /*
  * @desc wechat第三方登录
  * */
-exports.userLoginWithWechatAccount = function (uid, unionID, username, avatar, callback) {
+exports.userLoginWithWechatAccount = function (uid, unionID, username, avatar, cid, callback) {
     let now = new Date();
 
     let condition ={
@@ -230,6 +234,7 @@ exports.userLoginWithWechatAccount = function (uid, unionID, username, avatar, c
         create_time: now,
         update_time: now,
         pass_salt_str: null,
+        getui_cid: cid,
         bind_tencent_wechat:{
             uid: uid,
             union_id: unionID,
@@ -252,7 +257,7 @@ exports.userLoginWithWechatAccount = function (uid, unionID, username, avatar, c
 /*
  * @desc weibo第三方登录
  * */
-exports.userLoginWithWeiBoAccount = function (uid, unionID, username, avatar, callback) {
+exports.userLoginWithWeiBoAccount = function (uid, unionID, username, avatar, cid, callback) {
     let now = new Date();
     let condition ={
         bind_sina_weibo: {$exists: true},
@@ -269,6 +274,7 @@ exports.userLoginWithWeiBoAccount = function (uid, unionID, username, avatar, ca
         create_time: now,
         update_time: now,
         pass_salt_str: null,
+        getui_cid: cid,
         bind_sina_weibo:{
             uid: uid,
             union_id: unionID,
@@ -549,6 +555,36 @@ exports.updateUserPasswordWithMobile = function (phone, newPassword, callback) {
 };
 
 //绑定账号==================================================================
+
+/**
+ * @desc 验证该账号是否满足绑定条件(此处不验证手机号)
+ * */
+exports.checkBoundMeetTheCondition = function (openID, bound_type, callback) {
+    let type = bound_type;  //需要绑定的平台
+
+    let condition;
+
+    if(type == 1){
+        condition ={
+            bind_tencent_wechat: {$exists: true},
+            'bind_tencent_wechat.uid': openID,
+        };
+    }
+
+    if(type == 2){
+        condition ={
+            bind_tencent_qq: {$exists: true},
+            'bind_tencent_qq.uid': openID,
+        };
+    }
+
+    if(type == 3){
+        condition ={
+            bind_sina_weibo: {$exists: true},
+            'bind_sina_weibo.uid': openID,
+        };
+    }
+};
 /**
  * @desc 绑定手机号
  * */
@@ -560,8 +596,96 @@ exports.updateUserPhone = function (userID, phone) {
 /**
  * @desc 绑定微信
  * */
-exports.updateUserTencentWechat = function (userID) {
+exports.updateUserTencentWechat = function (uid, unionID, username, userID, callback) {
+    let condition ={
+        bind_tencent_wechat: {$exists: true},
+        'bind_tencent_wechat.uid': uid,
+    };
 
+    let userCondition = {
+        _id: userID,
+    };
+
+    let update = {
+        $unset:{
+            bind_tencent_wechat: true
+        }
+    };
+
+    let boundInfo = {
+            uid: uid,
+            union_id: unionID,
+            name: username,
+    };
+
+    User.findOne(condition, function (err, result) {
+        if(err){
+            return callback(err)
+        }
+
+        let num = 0;
+
+        if(!result){
+            num = 3;
+        }
+
+        if(result && result.bind_tencent_wechat.uid){
+            num +=1;
+        }
+
+        if(result && result.bind_sina_weibo.uid){
+            num +=1;
+        }
+
+        if(result && result.bind_tencent_qq.uid){
+            num +=1;
+        }
+
+        if(result && result.user_mobile){
+            num +=1;
+        }
+
+        if(num < 2){ //判断是否满足换绑条件
+            return callback(null, false)
+        }
+
+
+
+        User.findOne(userCondition,function (err, userInfo) {//查询当前用户信息
+            if(err){
+                return callback(err)
+            }
+
+            userInfo.bind_tencent_wechat = boundInfo;//添加新的绑定信息
+
+            if(result){
+                User.update(condition,update,function (err, result) {
+                    if(err){
+                        return callback(err)
+                    }
+
+                    userInfo.save(function (err, userInfo) { //保存当前用户信息
+                        if(err){
+                            return callback(err)
+                        }
+
+                        callback(null, true)
+                    })
+                });
+            }else{
+                userInfo.save(function (err, userInfo) { //保存当前用户信息
+                    if(err){
+                        return callback(err)
+                    }
+
+                    callback(null, true)
+                })
+            }
+
+
+
+        })
+    });
 };
 
 
