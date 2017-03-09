@@ -20,7 +20,8 @@ describe('用户未登录相关接口测试', function() {
                 register_platform: 1,
                 register_deviceno: 'zhuce',
                 device_resolution: [1080,1024],
-                device_version: '7.0'
+                device_version: '7.0',
+                getui_cid: '12345678'
             })
             .expect(200)
             .end(function(err, res) {
@@ -56,7 +57,7 @@ describe('用户未登录相关接口测试', function() {
                 register_deviceno: 'zhanghao',
                 device_resolution: [100,1024],
                 device_version: '7.0',
-                login_type: 2,
+                getui_cid: '12345678'
             })
             .expect(200)
             .end(function(err, res) {
@@ -90,8 +91,9 @@ describe('用户未登录相关接口测试', function() {
                 register_deviceno: 'disanfang',
                 device_resolution: [100,1024],
                 device_version: '7.0',
-                login_type: 2,
-                user_avatar: 'user_avatar'
+                login_type: 1,
+                user_avatar: 'user_avatar',
+                getui_cid: '12345678'
             })
             .expect(200)
             .end(function(err, res) {
