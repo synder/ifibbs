@@ -5,15 +5,15 @@
  */
 
 const async = require('async');
-const mongodb = require('../service/mongodb').db;
+const ifibbs = require('../service/mongodb').ifibbs;
 const elasticsearch = require('../service/elasticsearch').client;
 
-const UserAnswerCollection = mongodb.model('UserAnswerCollection');
-const UserArticleCollection = mongodb.model('UserArticleCollection');
-const QuestionAnswer = mongodb.model('QuestionAnswer');
-const Article = mongodb.model('Article');
-const User = mongodb.model('User');
-const UserDynamic = mongodb.model('UserDynamic');
+const UserAnswerCollection = ifibbs.model('UserAnswerCollection');
+const UserArticleCollection = ifibbs.model('UserArticleCollection');
+const QuestionAnswer = ifibbs.model('QuestionAnswer');
+const Article = ifibbs.model('Article');
+const User = ifibbs.model('User');
+const UserDynamic = ifibbs.model('UserDynamic');
 
 /**
  * @desc 获取用户收藏的回答列表

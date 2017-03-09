@@ -5,11 +5,11 @@
  */
 
 const async = require('async');
-const mongodb = require('../service/mongodb').db;
+const ifibbs = require('../service/mongodb').ifibbs;
 const elasticsearch = require('../service/elasticsearch').client;
 
-const UserShare = mongodb.model('UserShare');
-const UserDynamic = mongodb.model('UserDynamic');
+const UserShare = ifibbs.model('UserShare');
+const UserDynamic = ifibbs.model('UserDynamic');
 
 /**
  * @desc 分享问题

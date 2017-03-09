@@ -7,15 +7,15 @@
 const async = require('async');
 const crypto = require('crypto');
 
-const mongo = require('../service/mongodb');
-const mongodb = mongo.db;
-const mysql = require('../service/mysql').db;
+const mongodb = require('../service/mongodb');
+const ifibbs = mongodb.ifibbs;
+const mysql = require('../service/mysql').ifibbs;
 const redis = require('../service/redis').client;
 
-const User = mongodb.model('User');
-const AttentionUser = mongodb.model('AttentionUser');
-const QuestionAnswer = mongodb.model('QuestionAnswer');
-const AnswerComment = mongodb.model('AnswerComment');
+const User = ifibbs.model('User');
+const AttentionUser = ifibbs.model('AttentionUser');
+const QuestionAnswer = ifibbs.model('QuestionAnswer');
+const AnswerComment = ifibbs.model('AnswerComment');
 
 const self = this;
 
@@ -615,7 +615,7 @@ exports.getUserBeenFavouredCount = function (userID, callback) {
         answerBeenFavouredCount: function(cb) {
             
             QuestionAnswer.aggregate()
-                .match({ create_user_id: mongo.ObjectId(userID)})
+                .match({ create_user_id: mongodb.ObjectId(userID)})
                 .project({favour: '$favour_count'})
                 .group({
                     _id: null,
@@ -627,7 +627,7 @@ exports.getUserBeenFavouredCount = function (userID, callback) {
         commentBeenFavouredCount: function(cb) {
 
             AnswerComment.aggregate()
-                .match({ create_user_id: mongo.ObjectId(userID)})
+                .match({ create_user_id: mongodb.ObjectId(userID)})
                 .project({favour: '$favour_count'})
                 .group({
                     _id: null,

@@ -1,14 +1,7 @@
 
-const businessNotificationPush = require('./push/business');
-const systemNotificationPush = require('./push/system');
+const push = require('./push');
 
-businessNotificationPush.start(function (err) {
-    if(err){
-        console.error(err.stack);
-    }
-});
-
-systemNotificationPush.start(function (err) {
+push.start(function (err) {
     if(err){
         console.error(err.stack);
     }

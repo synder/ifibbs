@@ -20,9 +20,9 @@ const option =  {
     pass: config.mongodb.password
 };
 
-const db = mongoose.createConnection(config.mongodb.url, option);
+const ifibbs = mongoose.createConnection(config.mongodb.url, option);
 
-db.on('error', function(err){
+ifibbs.on('error', function(err){
     console.error(err.stack);
 });
 
@@ -48,31 +48,32 @@ const share = require('./schema/share');
 
 
 
-db.model('Activity', activity.ActivitySchema, 'activity');
-db.model('QuestionAnswer', answer.QuestionAnswerSchema, 'question_answer');
-db.model('Article', article.ArticleSchema, 'article');
-db.model('AttentionQuestion', attention.AttentionQuestionSchema, 'attention_question');
-db.model('AttentionSubject', attention.AttentionSubjectSchema, 'attention_subject');
-db.model('AttentionUser', attention.AttentionUserSchema, 'attention_user');
-db.model('SecurityCode', captcha.SecurityCodeSchema, 'security_code');
-db.model('UserAnswerCollection', collection.UserAnswerCollectionSchema, 'user_answer_collection');
-db.model('UserArticleCollection', collection.UserArticleCollectionSchema, 'user_article_collection');
-db.model('AnswerComment', comment.AnswerCommentSchema, 'answer_comment');
-db.model('UserDevice', device.UserDeviceSchema, 'user_device');
-db.model('UserFavourAnswer', favour.UserFavourAnswerSchema, 'user_favour_answer');
-db.model('UserFavourArticle', favour.UserFavourArticleSchema, 'user_favour_article');
-db.model('UserFavourAnswerComment', favour.UserFavourAnswerCommentSchema, 'user_favour_answer_comment');
-db.model('UserHistory', history.UserHistorySchema, 'user_history');
-db.model('UserNotification', notification.UserNotificationSchema, 'user_notification');
-db.model('Question', question.QuestionSchema, 'question');
-db.model('Recommend', recommend.RecommendSchema, 'recommend');
-db.model('QuestionTag', tag.QuestionTagSchema, 'question_tag');
-db.model('Subject', subject.SubjectSchema, 'subject');
-db.model('User', user.UserSchema, 'user');
-db.model('UserDynamic', dynamic.UserDynamicSchema, 'user_dynamic');
-db.model('UserShare', share.UserShareSchema, 'user_share');
+ifibbs.model('Activity', activity.ActivitySchema, 'activity');
+ifibbs.model('QuestionAnswer', answer.QuestionAnswerSchema, 'question_answer');
+ifibbs.model('Article', article.ArticleSchema, 'article');
+ifibbs.model('ArticleComment', article.ArticleCommentSchema, 'article_comment');
+ifibbs.model('AttentionQuestion', attention.AttentionQuestionSchema, 'attention_question');
+ifibbs.model('AttentionSubject', attention.AttentionSubjectSchema, 'attention_subject');
+ifibbs.model('AttentionUser', attention.AttentionUserSchema, 'attention_user');
+ifibbs.model('SecurityCode', captcha.SecurityCodeSchema, 'security_code');
+ifibbs.model('UserAnswerCollection', collection.UserAnswerCollectionSchema, 'user_answer_collection');
+ifibbs.model('UserArticleCollection', collection.UserArticleCollectionSchema, 'user_article_collection');
+ifibbs.model('AnswerComment', comment.AnswerCommentSchema, 'answer_comment');
+ifibbs.model('UserDevice', device.UserDeviceSchema, 'user_device');
+ifibbs.model('UserFavourAnswer', favour.UserFavourAnswerSchema, 'user_favour_answer');
+ifibbs.model('UserFavourArticle', favour.UserFavourArticleSchema, 'user_favour_article');
+ifibbs.model('UserFavourAnswerComment', favour.UserFavourAnswerCommentSchema, 'user_favour_answer_comment');
+ifibbs.model('UserHistory', history.UserHistorySchema, 'user_history');
+ifibbs.model('UserNotification', notification.UserNotificationSchema, 'user_notification');
+ifibbs.model('Question', question.QuestionSchema, 'question');
+ifibbs.model('Recommend', recommend.RecommendSchema, 'recommend');
+ifibbs.model('QuestionTag', tag.QuestionTagSchema, 'question_tag');
+ifibbs.model('Subject', subject.SubjectSchema, 'subject');
+ifibbs.model('User', user.UserSchema, 'user');
+ifibbs.model('UserDynamic', dynamic.UserDynamicSchema, 'user_dynamic');
+ifibbs.model('UserShare', share.UserShareSchema, 'user_share');
 
 
-exports.db = db;
+exports.ifibbs = ifibbs;
 exports.mongoose = mongoose;
 exports.ObjectId = mongoose.Types.ObjectId;

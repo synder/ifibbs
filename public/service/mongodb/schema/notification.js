@@ -51,6 +51,7 @@ UserNotificationSchema.statics.TYPE = {
     SYSTEM_ACTIVITY                  : 102,    //系统活动通知
     
     USER_PUBLISH_QUESTION            : 200,    //用户发布了问题
+    
     USER_QUESTION_BEEN_STICKIED      : 201,    //用户发布的问题被管理员加精
     USER_QUESTION_BEEN_DELETED       : 202,    //用户发布的问题被管理员删除
     USER_QUESTION_BEEN_ATTENTION     : 203,    //用户发布的问题被关注
@@ -64,6 +65,8 @@ UserNotificationSchema.statics.TYPE = {
     ATTENTION_USER_PUBLISH_NEW_QUESTION: 400,  //关注的用户发布了新的问题
     ATTENTION_QUESTION_BEEN_ANSWER: 401,       //关注的问题有了新的回答
     ATTENTION_SUBJECT_HAS_NEW_ARTICLE: 402,    //关注的专题有了新的文章
+    
+    USER_BEEN_ATTENTION: 500                   //用户被关注
 };
 
 exports.UserNotificationSchema = UserNotificationSchema;

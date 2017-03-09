@@ -5,6 +5,7 @@
  */
 
 const commentModel = require('../../../public/model/comment');
+const notificationModel = require('../../../public/model/notification');
 
 /**
  * @desc 对回答新增评论
@@ -44,6 +45,14 @@ exports.addNewCommentToAnswer = function (req, res, next) {
         if(err){
             return next(err);
         }
+        
+        let commentID = doc._id;
+
+        notificationModel.produceForAnswerBeenCommendedMQS(answerId, commentID, function (err) {
+            if(err){
+                logger.error(err);
+            }
+        });
 
         res.json({
             flag: '0000',
@@ -51,7 +60,7 @@ exports.addNewCommentToAnswer = function (req, res, next) {
             result: {
                 question_id: questionId,
                 answer_id: answerId,
-                comment_id: doc._id
+                comment_id: commentID
             }
         });
     });

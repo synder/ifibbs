@@ -29,6 +29,7 @@ exports.getRecommendArticleList = function (req, res, next) {
                 summary : article.summary,
                 icon : article.icon,
                 cover : article.cover,
+                url: 'http://www.baidu.com',  //todo change url
             };
         });
 
@@ -70,6 +71,7 @@ exports.getSubjectArticleList = function (req, res, next) {
                 summary : article.summary,
                 icon : article.icon,
                 cover : article.cover,
+                url: 'http://www.baidu.com', //todo change url
             };
         });
         
@@ -164,5 +166,42 @@ exports.getSubjectArticleDetail = function (req, res, next) {
  * @desc 获取文章的评论列表
  * */
 exports.getArticleCommentList = function (req, res, next) {
+
+    let pageSkip = req.query.page_skip;
+    let pageSize = req.query.page_size;
     
+    let articleID = req.query.article_id;
+    
+    
+    articleModel.getArticleCommentsList(articleID, pageSkip, pageSize, function (err, results) {
+        if(err){
+            return next(err);
+        }
+        
+        let count = results.count;
+        let comments = [];
+        
+        results.comments.forEach(function (comment) {
+            if(comment.create_user_id){
+                comments.push({
+                    article_id: articleID,
+                    comment_id: comment._id,
+                    comment_content: comment.content,
+                    comment_time: comment.create_time,
+                    create_user_id: comment.create_user_id._id,
+                    create_user_name: comment.create_user_id.user_name,
+                    create_user_avatar: comment.create_user_id.user_avatar,
+                });
+            }
+        });
+        
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                count: count,
+                list: comments
+            }
+        });
+    });
 };

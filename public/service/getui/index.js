@@ -307,7 +307,11 @@ exports.notifyClientToDownload = function (isIOS, clientID, title, content, icon
 /**
  * @desc 推送穿透消息
  * */
-exports.notifyTransmissionMsg = function (isIOS, clientIDS, content, callback) {
+exports.notifyTransmissionMsg = function (clientIDS, title, content, callback) {
+    
+    if(typeof content !== 'string'){
+        content = JSON.stringify(content);
+    }
 
     let template = new TransmissionTemplate({
         appId: APP_ID,
@@ -324,33 +328,32 @@ exports.notifyTransmissionMsg = function (isIOS, clientIDS, content, callback) {
         appIdList: [APP_ID],
         speed: 10000
     });
-    
-    if(isIOS === true){
 
-        let payload = new APNPayload();
-        let alertMsg = new DictionaryAlertMsg();
+    //for ios
+    let payload = new APNPayload();
+    let alertMsg = new DictionaryAlertMsg();
 
-        alertMsg.body = 'body';
-        alertMsg.actionLocKey = 'actionLocKey';
-        alertMsg.locKey = 'locKey';
-        alertMsg.locArgs = ['locArgs'];
-        alertMsg.launchImage = 'launchImage';
+    alertMsg.body = title;
+    alertMsg.actionLocKey = '';
+    alertMsg.locKey = '';
+    alertMsg.locArgs = [''];
+    alertMsg.launchImage = '';
 
-        //ios8.2以上版本支持
-        alertMsg.title = 'title';
-        alertMsg.titleLocKey = 'titleLocKey';
-        alertMsg.titleLocArgs = ['titleLocArgs'];
+    //ios8.2以上版本支持
+    alertMsg.title = title;
+    alertMsg.titleLocKey = '';
+    alertMsg.titleLocArgs = [''];
 
-        payload.alertMsg = alertMsg;
-        payload.badge = 5;
-        payload.contentAvailable = 1;
-        payload.category = "";
-        payload.sound = "";
-        payload.customMsg.payload1 = 'payload';
+    payload.alertMsg = alertMsg;
+    payload.badge = 5;
+    payload.contentAvailable = 1;
+    payload.category = "";
+    payload.sound = "";
+    payload.customMsg.payload1 = 'payload';
 
-        template.setApnInfo(payload);
-    }
+    template.setApnInfo(payload);
 
+    //get batch
     const batch = client.getBatch();
     
     if(Array.isArray(clientIDS)){

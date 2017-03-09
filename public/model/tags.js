@@ -5,10 +5,10 @@
  */
 
 
-const mongodb = require('../service/mongodb').db;
+const ifibbs = require('../service/mongodb').ifibbs;
 const elasticsearch = require('../service/elasticsearch').client;
 
-const QuestionTag = mongodb.model('QuestionTag');
+const QuestionTag = ifibbs.model('QuestionTag');
 
 
 /**

@@ -5,6 +5,7 @@
  */
 
 const attentionModel = require('../../../public/model/attention');
+const notificationModel = require('../../../public/model/notification');
 
 /**
  * @desc 获取用户关注的问题列表
@@ -158,6 +159,12 @@ exports.addQuestionToAttention = function (req, res, next) {
             return next(err);
         }
         
+        notificationModel.produceForQuestionBeenAttentionMQS(questionID, function (err) {
+            if(err){
+                logger.error(err);
+            } 
+        });
+        
         
         res.json({
             flag: '0000',
@@ -269,6 +276,12 @@ exports.addUserToAttention = function (req, res, next) {
         if(err){
             return next(err);
         }
+        
+        notificationModel.produceForUserBeenAttentionMQS(userID, toUserID, function (err) {
+            if(err){
+                logger.error(err);
+            }
+        }); 
 
         res.json({
             flag: '0000',
