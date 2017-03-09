@@ -9,7 +9,6 @@ const crypto = require('crypto');
 
 const mongodb = require('../service/mongodb');
 const ifibbs = mongodb.ifibbs;
-const mysql = require('../service/mysql').ifibbs;
 const redis = require('../service/redis').client;
 
 const User = ifibbs.model('User');
@@ -61,8 +60,6 @@ exports.createNewUser = function (mobile, password, cid, userName, callback) {
         if (user) {
             return callback(null, false)
         }
-        
-        //todo insert into mysql
         
         User.create(userDoc, callback);
     });
