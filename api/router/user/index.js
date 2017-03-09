@@ -18,6 +18,7 @@ const question = require('../../controller/user/question');
 const statistics = require('../../controller/user/statistics');
 const dynamic = require('../../controller/user/dynamic');
 const share = require('../../controller/user/share');
+const complaint = require('../../controller/user/complaint');
 
 
 exports.map = function(app){
@@ -123,4 +124,7 @@ exports.map = function(app){
     
     //分享
     app.put('/user/share', authority.check, share.createUserShare); //记录分享
+    
+    //投诉
+    app.put('/user/complaint', authority.check, complaint.userComplaint); //用户投诉
 };
