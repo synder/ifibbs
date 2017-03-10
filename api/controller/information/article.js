@@ -44,7 +44,6 @@ exports.getRecommendArticleList = function (req, res, next) {
                 }
             });
 
-            console.log(articleUrl)
             return {
                 id : article._id,
                 title : article.title,
