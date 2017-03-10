@@ -153,7 +153,14 @@ exports.removeNotification = function (req, res, next) {
     let userID = req.session.id;
 
     if(!Array.isArray(notificationIDS)){
-        return next(new BadRequestError(notificationIDS));
+        return res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                ok: notificationIDS
+            }
+        });
+        // return next(new BadRequestError('notification_ids should be array'));
     }
 
     notificationModel.removeNotification(userID, notificationIDS, function(err, success) {
