@@ -12,6 +12,7 @@ const elasticsearch = require('../service/elasticsearch').client;
 const Article = ifibbs.model('Article');
 const ArticleComment = ifibbs.model('ArticleComment');
 const Subject = ifibbs.model('Subject');
+const User = ifibbs.model('User');
 
 /**
  * @desc 创建新的文章
