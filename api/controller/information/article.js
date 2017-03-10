@@ -43,7 +43,7 @@ exports.getRecommendArticleList = function (req, res, next) {
                     article_id: article._id
                 }
             });
-            
+
             return {
                 id : article._id,
                 title : article.title,
@@ -54,7 +54,7 @@ exports.getRecommendArticleList = function (req, res, next) {
                 favour_count: article.favour_count,
                 collect_count: article.collect_count,
                 create_time: article.create_time,
-                url: articleUrl,
+                url: 'http://192.168.1.193:80/article.html?article_id=58ae5da34171fd177d387638',
             };
         });
 
