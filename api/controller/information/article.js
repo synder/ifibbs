@@ -156,7 +156,7 @@ exports.getSubjectArticleDetail = function (req, res, next) {
             icon : article.icon,
             cover : article.cover,
             summary : article.summary,
-            content : article.content,
+            content : decodeURIComponent(article.content),
             is_favour: false,
             is_collect: false,
             create_time: article.create_time
