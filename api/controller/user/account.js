@@ -663,7 +663,7 @@ exports.modifyUserPassword = function (req, res, next) {
  * */
 exports.resetUserPassword = function (req, res, next) {
 
-    let mobileNumber = req.body.mobile_number;
+    let mobileNumber = req.body.user_mobile;
     let newPassword = req.body.new_password;
     let securityCode = req.body.code;
     let codeID = req.body.code_id;
