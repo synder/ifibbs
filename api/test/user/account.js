@@ -61,7 +61,8 @@ describe('用户未登录相关接口测试', function() {
                 device_version: '7.0',
                 login_type: 1,
                 user_avatar: 'user_avatar',
-                getui_cid: '12345678'
+                getui_cid: '12345678',
+                user_gender: 0,
             })
             .expect(200)
             .end(function(err, res) {

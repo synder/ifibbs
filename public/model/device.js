@@ -20,7 +20,7 @@ exports.createNewDevice = function (userID, device, callback) {
     };
 
     let update = {
-        device_token: device.deviceToken,
+        device_token: device.deviceToken || 'unknown',
         device_platform: device.devicePlatform || "unknown",
         device_resolution: device.deviceResolution || [0, 0],
         device_brand: device.deviceBrand || "unknown",

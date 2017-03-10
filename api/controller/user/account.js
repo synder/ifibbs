@@ -72,6 +72,7 @@ exports.getUserInfo = function (req, res, next) {
  * @desc 修改用户信息
  * */
 exports.updateUserInfo = function (req, res, next) {
+    let gender = req.body.user_gender == undefined || req.body.user_gender == null ? 0 : req.body.user_gender.toString();
 
     let userId = req.session.id;
 
@@ -79,7 +80,7 @@ exports.updateUserInfo = function (req, res, next) {
         userName: req.body.user_name,
         userProfile: req.body.user_profile,
         userAvatar: req.body.user_avatar,
-        userGender: req.body.user_gender ? req.body.user_gender == 1 : null,
+        userGender: gender ? gender == 1 : null,
         userMobile: req.body.user_mobile,
         workInfo: req.body.work_info,
         eduInfo: req.body.edu_info,
@@ -365,15 +366,17 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
  * @desc 用户使用第三方账户登录
  * */
 exports.userLoginWithThirdPartyAccount = function (req, res, next) {
+    let gender = req.body.user_gender == undefined || req.body.user_gender == null ? 0 : req.body.user_gender.toString();
+
     let string = Math.random().toString().substr(2, 12);
     let uid = req.body.open_id;
     let union_id = req.body.union_id;
-    let userName = req.body.user_name || `游客：${string}`;;
+    let userName = req.body.user_name || `游客：${string}`;
+    let userGender = gender ? gender == 1 : null;
     let registerPlatform = req.body.register_platform;  //1: ANDROID 2: IOS 3: PC 4: H5 5: OTHER
     let loginType = req.body.login_type; //1：微信 2: qq 3: 新浪微博 （0:手机账号密码）
     let userAvatar = req.body.user_avatar;
     let getuiCID = req.body.getui_cid;
-
 
     let deviceInfo;
 
@@ -417,7 +420,7 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
     if (loginType == 3) {
         loginFunction = userModel.userLoginWithWeiBoAccount;
     }
-    loginFunction(uid, union_id, userName, userAvatar, getuiCID, function (err, user) {
+    loginFunction(uid, union_id, userName, userAvatar, getuiCID, userGender, function (err, user) {
         if (err) {
             return next(err)
         }
