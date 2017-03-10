@@ -98,7 +98,7 @@ exports.getRecommendList = function(req, res, next){
                         port : hosts.h5.port,
                         pathname : ARTICLE_H5_PAGE_NAME,
                         query : {
-                            article_id: recommend.article._id
+                            article_id: recommend.article._id.toString()
                         }
                     });
 
