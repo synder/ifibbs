@@ -606,8 +606,10 @@ exports.userRemoveThirdParty = function (req, res, next) {
  * @desc 修改密码接口，根据老密码修改或者找回密码
  * */
 exports.modifyUserPassword = function (req, res, next) {
-    let oldPassword = req.body.old_password;
+    let mobile = req.body.user_mobile;
     let newPassword = req.body.new_password;
+    let codeID = req.body.code_id;
+    let code = req.body.code;
 
     let userID = req.session.id;
 
@@ -615,27 +617,43 @@ exports.modifyUserPassword = function (req, res, next) {
         return next(new BadRequestError('new_password is need'));
     }
 
-    if (!oldPassword) {
-        return next(new BadRequestError('old_password is need'));
+    if (!mobile) {
+        return next(new BadRequestError('user_mobile is need'));
     }
 
-    if (oldPassword === newPassword){
-        return next(new BadRequestError('old_password  and new_password cannot be the same'));
+    if (!codeID) {
+        return next(new BadRequestError('code_id is need'));
     }
 
-    userModel.updateUserPasswordWithOldPassword(userID, oldPassword, newPassword, function (err, success) {
+    if (!code) {
+        return next(new BadRequestError('code is need'));
+    }
+
+    captchaModel.verifySmsSecurityCode(codeID, mobile, code, 6, true, function (err, result) {
         if (err) {
             return next(err);
         }
 
-        res.json({
-            flag: '0000',
-            msg: '',
-            result: {
-                ok: !!success
+        if (!result) {
+            return next(new BadRequestError('this security code has been tampered with'));
+        }
+
+        userModel.updateUserPasswordWithOldPassword(userID, mobile, newPassword, function (err, success) {
+            if (err) {
+                return next(err);
             }
+
+            res.json({
+                flag: '0000',
+                msg: '',
+                result: {
+                    ok: !!success
+                }
+            });
         });
     });
+
+
 
 };
 
