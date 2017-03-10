@@ -98,7 +98,7 @@ exports.getSubjectArticleList = function (req, res, next) {
                 port : hosts.h5.port,
                 pathname : ARTICLE_H5_PAGE_NAME,
                 query : {
-                    article_id: article._id
+                    article_id: article._id.toString()
                 }
             });
             
