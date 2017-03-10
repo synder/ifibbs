@@ -116,7 +116,7 @@ exports.map = function(app){
     
     //用户通知
     app.post('/user/notification',authority.check,notification.changeNotificationToRead);           //修改通知阅读状态
-    app.delete('/user/notification',authority.check,notification.removeNotification);               //删除通知
+    app.post('/user/remove/notification',authority.check,notification.removeNotification);               //删除通知
     
     app.get('/user/notifications/system', authority.check, notification.getUserSystemNotification);       //获取系统通知
     app.get('/user/notifications/business', authority.check, notification.getUserBusinessNotification);  //获取业务通知
