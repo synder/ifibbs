@@ -152,29 +152,27 @@ exports.removeNotification = function (req, res, next) {
     let notificationIDS = req.body.notification_ids;
     let userID = req.session.id;
 
-    if(!Array.isArray(notificationIDS)){
-        return res.json({
-            flag: '0000',
-            msg: '',
-            result: {
-                ok: notificationIDS
-            }
-        });
-        // return next(new BadRequestError('notification_ids should be array'));
-    }
-
-    notificationModel.removeNotification(userID, notificationIDS, function(err, success) {
-        if (err) {
-            return next(err);
-        }
-
-        res.json({
-            flag: '0000',
-            msg: '',
-            result: {
-                ok: !!success
-            }
-        });
-    })
+    res.json({
+        flag: '0000',
+        msg: '',
+        result: notificationIDS
+    });
+    // if(!Array.isArray(notificationIDS)){
+    //     return next(new BadRequestError('notification_ids should be array'));
+    // }
+    //
+    // notificationModel.removeNotification(userID, notificationIDS, function(err, success) {
+    //     if (err) {
+    //         return next(err);
+    //     }
+    //
+    //     res.json({
+    //         flag: '0000',
+    //         msg: '',
+    //         result: {
+    //             ok: !!success
+    //         }
+    //     });
+    // })
 
 };
