@@ -105,7 +105,7 @@ describe('用户消息推送', function(){
     it('#删除消息通知', function(done) {
         let ids=['58ae4f5c3b5c9e08208541eb','58ae52b8e9ba180864cc283a'];
         request(app)
-            .delete('/user/notification')
+            .post('/user/remove/notification')
             .send({
                 notification_ids: ids,
             })
