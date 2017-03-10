@@ -199,8 +199,8 @@ exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callb
             },
             highlight: {
                 fields: {
-                    title: {},
-                    describe: {}
+                    title: {"pre_tags" : [ "<font color='red' size='20'>" ], "post_tags" : [ "</font>" ]},
+                    describe: {"pre_tags" : [ "<font color='red' size='20'>" ], "post_tags" : [ "</font>" ]}
                 }
             }
         }
@@ -250,7 +250,7 @@ exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback
             },
             highlight: {
                 fields: {
-                    content: {},
+                    content: {"pre_tags" : [ "<font color='red' size='20'>" ], "post_tags" : [ "</font>" ]},
                 }
             }
         }
