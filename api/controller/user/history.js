@@ -28,14 +28,17 @@ exports.getUserBrowseHistory = function (req, res, next) {
                 histories.push({
                     id: history._id,
                     tags: history.question_id ? history.question_id.tags : [],
+                    content_id: history.question_id ? history.question_id._id : null,
                     title: history.question_id ? history.question_id.title : null,
                     describe: history.question_id ? history.question_id.describe : null,
                     user_id: history.user_id ? history.user_id._id : null,
                     user_name: history.user_id ? history.user_id.user_name : null,
                     user_avatar: history.user_id ? history.user_id.user_avatar : null,
+                    collect_count: history.question_id ? history.question_id.collect_count : 0,
                     type: history.type
                 });
-            }else if(history.type === 2){
+            }
+            else if(history.type === 2){
                 histories.push({
                     id: history._id,
                     tags: history.article_id ? history.article_id.tags : [],

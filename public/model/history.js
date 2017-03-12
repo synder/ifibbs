@@ -18,7 +18,8 @@ const UserHistory = ifibbs.model('UserHistory');
  * */
 exports.getUserBrowseHistoryList = function (userID, pageSkip, pageSize, callback) {
     let condition = {
-        user_id: userID
+        user_id: userID,
+        type: UserHistory.TYPE.QUESTION
     };
 
     async.parallel({
