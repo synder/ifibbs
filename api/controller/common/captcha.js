@@ -33,6 +33,7 @@ exports.getSmsSecurityCode = function (req, res, next) {
             msg: '',
             result: {
                 uid: captcha ? captcha.uid : null,
+                msg: captcha ? null : '验证码发送失败'
             }
         });
     });
