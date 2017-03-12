@@ -70,7 +70,7 @@ exports.sendSmsSecurityCode = function (phone, callback) {
                     return callback(new Error('sms security code send failed'));
                 }
 
-                redis.setex(key, code, frequency, function (err, ok) {
+                redis.setex(key, frequency, code, function (err, ok) {
                     if(err){
                         return callback(err);
                     }
