@@ -1,4 +1,5 @@
 
+const async = require('async');
 const gulp = require('gulp');
 
 const git = require('gulp-git');
@@ -21,13 +22,16 @@ gulp.task('test_init_env', function (done) {
  * */
 gulp.task('test_init_data', ['test_init_env'], function (done) {
     const initializeMongodb = require('./test/initialize/mongodb');
-    initializeMongodb.init(function (err) {
-        if(err){
-            return console.error(err.stack);
+    const initializeRedis = require('./test/initialize/redis');
+
+    async.parallel([
+        function(cb) {
+            initializeMongodb.init(cb);
+        },
+        function(cb) {
+            initializeRedis.init(cb);
         }
-        
-        done();
-    });
+    ], done);
 });
 
 /**
