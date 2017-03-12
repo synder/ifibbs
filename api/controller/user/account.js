@@ -114,19 +114,19 @@ exports.updateUserInfo = function (req, res, next) {
  * */
 exports.checkPhoneRegistered = function (req, res, next) {
 
-    let phone = req.query.phone;
+    let user_mobile = req.query.user_mobile;
 
-    if (!phone) {
-        return next(new BadRequestError('phone is need'));
+    if (!user_mobile) {
+        return next(new BadRequestError('user_mobile is need'));
     }
 
     let regex = /^1[0-9]\d{9}$/;
 
-    if (!regex.test(phone.toString())) {
-        return next(new BadRequestError('phone is illegal'));
+    if (!regex.test(user_mobile.toString())) {
+        return next(new BadRequestError('user_mobile is illegal'));
     }
 
-    userModel.getUserByMobile(phone, function (err, user) {
+    userModel.getUserByMobile(user_mobile, function (err, user) {
         if (err) {
             return next(err)
         }
