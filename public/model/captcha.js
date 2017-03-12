@@ -32,7 +32,7 @@ exports.sendSmsSecurityCode = function (phone, callback) {
         uid          : uuid(),
         status       : SecurityCode.STATUS.ENABLE,
         mobile       : phone,
-        code         : '123456',//todo 测试用
+        code         : code,
         use_count    : 0,
         expire_time  : expireTime,
         create_time  : now,
@@ -41,63 +41,45 @@ exports.sendSmsSecurityCode = function (phone, callback) {
     
     //发送频率验证
     let key = genSmsCodeFrequencyKey(phone);
+    
+    redis.get(key, function (err, val) {
 
-    SecurityCode.create(securityCodeDoc, function (err, doc) { // todo 测试代码
         if(err){
             return callback(err);
         }
 
-        if(!doc){
-            return callback(new Error('sms security code save failed'));
+        if(val){
+            return callback(null, null);
         }
 
-        redis.setex(key, code, frequency, function (err, ok) {
+        SecurityCode.create(securityCodeDoc, function (err, doc) {
             if(err){
                 return callback(err);
             }
 
-            callback(null, doc);
+            if(!doc){
+                return callback(new Error('sms security code save failed'));
+            }
+
+            sms.send(phone, message, function (err, result) {
+                if(err){
+                    return callback(err);
+                }
+
+                if(!result){
+                    return callback(new Error('sms security code send failed'));
+                }
+
+                redis.setex(key, code, frequency, function (err, ok) {
+                    if(err){
+                        return callback(err);
+                    }
+
+                    callback(null, doc);
+                });
+            });
         });
     });
-    
-    // redis.get(key, function (err, val) {
-    //
-    //     if(err){
-    //         return callback(err);
-    //     }
-    //
-    //     if(val){
-    //         return callback(null, null);
-    //     }
-    //
-    //     SecurityCode.create(securityCodeDoc, function (err, doc) {
-    //         if(err){
-    //             return callback(err);
-    //         }
-    //
-    //         if(!doc){
-    //             return callback(new Error('sms security code save failed'));
-    //         }
-    //
-    //         sms.send(phone, message, function (err, result) {
-    //             if(err){
-    //                 return callback(err);
-    //             }
-    //
-    //             if(!result){
-    //                 return callback(new Error('sms security code send failed'));
-    //             }
-    //
-    //             redis.setex(key, code, frequency, function (err, ok) {
-    //                 if(err){
-    //                     return callback(err);
-    //                 }
-    //
-    //                 callback(null, doc);
-    //             });
-    //         });
-    //     });
-    // });
 };
 
 /**

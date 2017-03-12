@@ -32,7 +32,7 @@ exports.getSmsSecurityCode = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                uid: captcha.uid,
+                uid: captcha ? captcha.uid : null,
             }
         });
     });
