@@ -28,7 +28,7 @@ exports.getUserBrowseHistory = function (req, res, next) {
                 histories.push({
                     id: history._id,
                     tags: history.question_id ? history.question_id.tags : [],
-                    content_id: history.question_id ? history.question_id._id : null,
+                    question_id: history.question_id ? history.question_id._id : null,
                     title: history.question_id ? history.question_id.title : null,
                     describe: history.question_id ? history.question_id.describe : null,
                     user_id: history.user_id ? history.user_id._id : null,
