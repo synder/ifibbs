@@ -215,7 +215,7 @@ describe('用户已登陆接口测试', function() {
     it('#第三方账号解绑', function (done) {
         request(app)
             .delete('/user/account/third')
-            .send({
+            .query({
                 login_type: 1,
             })
             .expect(200)
