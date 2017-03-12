@@ -149,7 +149,7 @@ exports.changeNotificationToRead = function (req, res, next) {
  * @desc 删除通知
  * */
 exports.removeNotification = function (req, res, next) {
-    let notificationIDS = req.body.notification_ids;
+    let notificationIDS = req.query.notification_ids;
     let userID = req.session.id;
 
     if(!Array.isArray(notificationIDS)){
