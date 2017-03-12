@@ -170,7 +170,7 @@ exports.getUserByMobileAndPassword = function (phone, pass, cid, callback) {
  * uid
  * unionID
  * */
-exports.userLoginWithQQAccount = function (uid, unionID, username, avatar, cid, callback) {
+exports.userLoginWithQQAccount = function (uid, unionID, username, avatar, cid, userGender, callback) {
     
     let now = new Date();
     
@@ -186,6 +186,7 @@ exports.userLoginWithQQAccount = function (uid, unionID, username, avatar, cid, 
         user_avatar: avatar,
         user_mobile: null,
         user_password: null,
+        user_gender: userGender,
         create_time: now,
         update_time: now,
         pass_salt_str: null,
@@ -213,7 +214,7 @@ exports.userLoginWithQQAccount = function (uid, unionID, username, avatar, cid, 
 /*
  * @desc wechat第三方登录
  * */
-exports.userLoginWithWechatAccount = function (uid, unionID, username, avatar, cid, callback) {
+exports.userLoginWithWechatAccount = function (uid, unionID, username, avatar, cid, userGender, callback) {
     let now = new Date();
 
     let condition ={
@@ -226,6 +227,7 @@ exports.userLoginWithWechatAccount = function (uid, unionID, username, avatar, c
         user_name: username,
         user_profile: null,
         user_avatar: avatar,
+        user_gender: userGender,
         user_mobile: null,
         user_password: null,
         create_time: now,
@@ -254,7 +256,7 @@ exports.userLoginWithWechatAccount = function (uid, unionID, username, avatar, c
 /*
  * @desc weibo第三方登录
  * */
-exports.userLoginWithWeiBoAccount = function (uid, unionID, username, avatar, cid, callback) {
+exports.userLoginWithWeiBoAccount = function (uid, unionID, username, avatar, cid, userGender, callback) {
     let now = new Date();
     let condition ={
         bind_sina_weibo: {$exists: true},
@@ -266,6 +268,7 @@ exports.userLoginWithWeiBoAccount = function (uid, unionID, username, avatar, ci
         user_name: username,
         user_profile: null,
         user_avatar: avatar,
+        user_gender: userGender,
         user_mobile: null,
         user_password: null,
         create_time: now,
@@ -484,9 +487,10 @@ exports.getUserLoginToken = function (token, callback) {
 /**
  * @desc 更新用户密码(修改)
  * */
-exports.updateUserPasswordWithOldPassword = function (userID, oldPassword, newPassword, callback) {
+exports.updateUserPasswordWithOldPassword = function (userID, phone, newPassword, callback) {
     let condition = {
-        _id: userID
+        _id: userID,
+        user_mobile: phone,
     };
 
     User.findOne(condition, function (err, user) {
@@ -499,13 +503,6 @@ exports.updateUserPasswordWithOldPassword = function (userID, oldPassword, newPa
         }
 
         let salt = user.pass_salt_str;
-
-        let dbMd5Pass = hashUserPassword(salt, user.user_password);
-        let oldMd5Pass = hashUserPassword(salt, oldPassword);
-
-        if (dbMd5Pass !== oldMd5Pass) {
-            return callback(null, false);
-        }
 
         user.user_password = hashUserPassword(salt, newPassword);
 

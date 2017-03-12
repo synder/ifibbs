@@ -40,10 +40,10 @@ exports.getRecommendArticleList = function (req, res, next) {
                 port : hosts.h5.port,
                 pathname : ARTICLE_H5_PAGE_NAME,
                 query : {
-                    article_id: article._id
+                    article_id: article._id.toString()
                 }
             });
-            
+
             return {
                 id : article._id,
                 title : article.title,
@@ -97,7 +97,7 @@ exports.getSubjectArticleList = function (req, res, next) {
                 port : hosts.h5.port,
                 pathname : ARTICLE_H5_PAGE_NAME,
                 query : {
-                    article_id: article._id
+                    article_id: article._id.toString()
                 }
             });
             
@@ -156,7 +156,7 @@ exports.getSubjectArticleDetail = function (req, res, next) {
             icon : article.icon,
             cover : article.cover,
             summary : article.summary,
-            content : article.content,
+            content : decodeURIComponent(article.content),
             is_favour: false,
             is_collect: false,
             create_time: article.create_time
