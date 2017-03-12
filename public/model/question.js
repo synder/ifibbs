@@ -228,8 +228,8 @@ exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callb
             },
             highlight: {
                 fields: {
-                    title: {"pre_tags": ["<font color='red' size='20'>"], "post_tags": ["</font>"]},
-                    describe: {"pre_tags": ["<font color='red' size='20'>"], "post_tags": ["</font>"]}
+                    title: {"pre_tags": ["<font color='red'>"], "post_tags": ["</font>"]},
+                    describe: {"pre_tags": ["<font color='red'>"], "post_tags": ["</font>"]}
                 }
             }
         }
@@ -286,9 +286,9 @@ exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback
             },
             highlight: {
                 fields: {
-                    question_title: {"pre_tags": ["<font color='red' size='20'>"], "post_tags": ["</font>"]},
-                    question_describe: {"pre_tags": ["<font color='red' size='20'>"], "post_tags": ["</font>"]},
-                    answer_content: {"pre_tags": ["<font color='red' size='20'>"], "post_tags": ["</font>"]},
+                    question_title: {"pre_tags": ["<font color='red'>"], "post_tags": ["</font>"]},
+                    question_describe: {"pre_tags": ["<font color='red'>"], "post_tags": ["</font>"]},
+                    answer_content: {"pre_tags": ["<font color='red'>"], "post_tags": ["</font>"]},
                 }
             }
         }
