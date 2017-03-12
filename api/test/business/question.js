@@ -131,7 +131,6 @@ describe('根据问题标题、描述和问题回答搜索问题', function () {
                 if (list.length > 0) {
                     chai.expect(list[0]).to.have.ownProperty('question_id');
                     chai.expect(list[0]).to.have.ownProperty('question_title');
-                    chai.expect(list[0]).to.have.ownProperty('question_describe');
                     chai.expect(list[0]).to.have.ownProperty('question_tags');
                     chai.expect(list[0]).to.have.ownProperty('answer_id');
                     chai.expect(list[0]).to.have.ownProperty('answer_content');

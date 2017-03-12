@@ -113,10 +113,9 @@ exports.searchQuestionsByAnswer = function (req, res, next) {
 
         results.questions.forEach(function (question) {
             questions.push({
-                question_id: question._id,
-                question_title: question.title,
-                question_tags: question.tags || [],
-                question_describe: question.describe,
+                question_id: question.question_id,
+                question_title: question.question_title,
+                question_tags: question.question_tags || [],
                 answer_id: question.answer_id,
                 answer_content: question.answer_content,
                 answer_comment_count: question.comment_count || 0,
