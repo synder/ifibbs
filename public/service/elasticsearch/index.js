@@ -55,7 +55,6 @@ if(process.env.INIT_ELASTIC === 'yes'){
                 }
             }
             
-            
             indices.create(mapping, callback);
         });
     };
