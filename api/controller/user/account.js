@@ -600,7 +600,6 @@ exports.userRemoveThirdParty = function (req, res, next) {
             msg: '',
             result: {
                 ok: true,
-                re: `${userId}----------${loginType}`
             }
         })
     })
