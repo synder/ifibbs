@@ -570,10 +570,10 @@ exports.userBindThirdParty = function (req, res, next) {
  * */
 exports.userRemoveThirdParty = function (req, res, next) {
     let userId = req.session.id;
-    let loginType = req.body.login_type; //1：微信 2: qq 3: 新浪微博 （0:手机账号密码）
+    let loginType = req.query.login_type; //1：微信 2: qq 3: 新浪微博 （0:手机账号密码）
 
     if (loginType != 1 && loginType != 2 && loginType != 3) {
-        return next(new BadRequestError(`login_type is not in [1,2,3] ${loginType}`));
+        return next(new BadRequestError(`login_type is not in [1,2,3]`));
     }
 
     let removeFunction;
