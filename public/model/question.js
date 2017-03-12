@@ -292,6 +292,8 @@ exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback
         let hits = response.hits.hits;
 
         let ids = [];
+        
+        console.log(response.hits.hits);
 
         hits.forEach(function (hit) {
             ids.push(hit._source.question_id);

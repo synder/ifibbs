@@ -321,6 +321,7 @@ exports.getQuestionAnswerDetail = function (answerID, callback) {
  * @desc 创建新的回答
  * */
 exports.createNewQuestionAnswer = function (userID, questionID, content, callback) {
+    
     let answerDoc = {
         status: QuestionAnswer.STATUS.NORMAL,
         content: content,
@@ -333,43 +334,63 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
         update_time: new Date(),
     };
     
-    QuestionAnswer.create(answerDoc, function (err, result) {
+    async.parallel({
+        question: function(cb) { 
+            Question.findOne({_id: questionID}, cb);
+        },
+        answer: function(cb) {
+            QuestionAnswer.create(answerDoc, cb);
+        },
+    }, function (err, results) {
+    
         if(err){
-            return callback(err);
+             return callback(err);
         }
         
-        let answerID = result._id;
+        let question = results.question;
+        let answer = results.answer;
         
+        if(!question){
+            return callback(null, null);
+        }
+        
+        if(!answer){
+            return callback(null, null);
+        }
+
+        let answerID = answer._id;
+
         async.parallel({
-            
+            //创建es索引
             createElasticSearchIndex: function(cb) {
-                //创建es索引
                 elasticsearch.create({
                     index: elasticsearch.indices.answer,
                     type: elasticsearch.indices.answer,
                     id: answerID.toString(),
                     body: {
-                        create_user_id: result.create_user_id,
-                        question_id: result.question_id,
-                        content: result.content,
-                        create_time: result.create_time,
-                        update_time: result.update_time
+                        create_user_id: userID,
+                        question_id: question._id,
+                        question_title: question.title,
+                        question_describe: question.describe,
+                        answer_content: answer.content,
+                        create_time: answer.create_time,
+                        update_time: answer.update_time
                     }
                 }, cb);
             },
-            
+
             //更新回答数量
             updateQuestionAnswerCount: function (cb) {
-                
+
                 let condition = {
                     _id: questionID,
                 };
-                
+
                 let update = {$inc: {answer_count: 1}};
-                
+
                 Question.update(condition, update, cb);
             },
-            
+
             insertUserDynamic: function(cb) {
                 //插入用户动态
                 UserDynamic.create({
@@ -382,7 +403,7 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
                     update_time: new Date(),
                 }, cb);
             },
-            
+
         }, function (err, results) {
             callback(null, answerID);
         });
