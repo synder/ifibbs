@@ -295,7 +295,6 @@ exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback
         let total = response.hits.total;
         let hits = response.hits.hits;
 
-
         let questions = hits.map(function (hit) {
 
             let title = hit.highlight.question_title ? hit.highlight.question_title.join() : hit._source.question_title;
