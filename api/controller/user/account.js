@@ -131,7 +131,7 @@ exports.checkPhoneRegistered = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: !!user
+                ok: !user
             }
         })
     });
