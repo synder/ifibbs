@@ -459,7 +459,7 @@ const initQuestionAnswer = function (callback) {
         "comment_count": 0,
         "favour_count": 0,
         "collect_count": 0,
-        "question_id": QUESTION_ID,
+        "question_id": questionID,
         "create_user_id": USER_ID,
         "create_time": new Date(),
         "update_time": new Date(),
