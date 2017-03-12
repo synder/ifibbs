@@ -24,6 +24,10 @@ module.exports = {
                         type: 'string',
                         index: 'not_analyzed'
                     },
+                    question_tags: {
+                        type: 'string',
+                        index: 'not_analyzed'
+                    },
                     question_title: {
                         type: 'text',
                         index: 'analyzed',
