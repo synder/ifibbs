@@ -451,6 +451,19 @@ const initQuestionAnswer = function (callback) {
         "update_time": new Date(),
         "tags": ['基金'],
     };
+    
+    answers.push({
+        "_id": mongodb.ObjectId(),
+        "status": 1,
+        "content": '最早的对冲基金是哪一只，这还不确定。在上世纪20年代美国的大牛市时期，这种专门面向富人的投资工具数不胜数。其中最有名的是Benjamin Graham和Jerry Newman创立的Graham-Newman Partnership基金。',
+        "comment_count": 0,
+        "favour_count": 0,
+        "collect_count": 0,
+        "question_id": QUESTION_ID,
+        "create_user_id": USER_ID,
+        "create_time": new Date(),
+        "update_time": new Date(),
+    });
 
     for (let i = 0; i < 100; i++) {
         answers.push({
