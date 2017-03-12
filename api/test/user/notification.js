@@ -10,7 +10,7 @@ describe('用户消息推送', function(){
         let pageSize = Mock.Random.natural(10, 20);
         let pageIndex = Mock.Random.natural(1, 2);
         request(app)
-            .get('/user/notification/systems')
+            .get('/user/notifications/system')
             .query({
                 page_size: pageSize,
                 page_index: pageIndex
@@ -47,7 +47,7 @@ describe('用户消息推送', function(){
         let pageSize = Mock.Random.natural(10, 20);
         let pageIndex = Mock.Random.natural(1, 2);
         request(app)
-            .get('/user/notification/businesses')
+            .get('/user/notifications/business')
             .query({
                 page_size: pageSize,
                 page_index: pageIndex

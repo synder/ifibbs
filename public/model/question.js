@@ -9,6 +9,7 @@ const ifibbs = require('../service/mongodb').ifibbs;
 const elasticsearch = require('../service/elasticsearch').client;
 const rabbit = require('../service/rabbit');
 
+const User = ifibbs.model('User');
 const Question = ifibbs.model('Question');
 const UserDynamic = ifibbs.model('UserDynamic');
 
@@ -33,15 +34,37 @@ exports.createNewQuestion = function (userID, question, callback) {
         update_time: now,
     };
 
-    Question.create(questionDoc, function (err, result) {
+    async.parallel({
+        //创建问题
+        question: function (cb) {
+            Question.create(questionDoc, cb);
+        },
+        //查找用户信息
+        user: function (cb) {
+            User.findOne({_id: userID}, cb);
+        },
+    }, function (err, results) {
+
         if (err) {
             return callback(err);
         }
-       
-        let questionID = result._id;
-        
+
+        let question = results.question;
+        let user = results.user;
+
+        if (!question) {
+            return callback(null);
+        }
+
+        if (!user) {
+            return callback(null);
+        }
+
+        let questionID = question._id.toString();
+
+
         async.parallel({
-            createElasticSearchDoc: function(cb) {
+            createElasticSearchDoc: function (cb) {
                 //在搜索引擎中创建索引
                 let elasticDoc = {
                     title: questionDoc.title,
@@ -49,6 +72,9 @@ exports.createNewQuestion = function (userID, question, callback) {
                     tags: questionDoc.tags,
                     create_time: questionDoc.create_time,
                     update_time: questionDoc.update_time,
+                    create_user_id: userID,
+                    create_user_name: user.user_name,
+                    create_user_avatar: user.user_avatar,
                 };
 
                 elasticsearch.create({
@@ -58,7 +84,7 @@ exports.createNewQuestion = function (userID, question, callback) {
                     body: elasticDoc
                 }, cb);
             },
-            insertUserDynamic: function(cb) {
+            insertUserDynamic: function (cb) {
                 //插入用户动态
                 UserDynamic.create({
                     status: UserDynamic.STATUS.ENABLE,
@@ -70,10 +96,10 @@ exports.createNewQuestion = function (userID, question, callback) {
                 }, cb);
             },
         }, function (err, results) {
-            if(err){
+            if (err) {
                 return callback(err);
             }
-            
+
             callback(null, questionID);
         });
     });
@@ -90,7 +116,7 @@ exports.removeUserQuestion = function (questionID, callback) {
     };
 
     let update = {
-        $set:{
+        $set: {
             status: Question.STATUS.REMOVED,
             update_time: new Date(),
         }
@@ -110,11 +136,11 @@ exports.removeUserQuestion = function (questionID, callback) {
             type: elasticsearch.indices.question,
             id: questionID.toString()
         }, function (err, results) {
-            
-            if(err && err.status != 404){
+
+            if (err && err.status != 404) {
                 return callback(err);
             }
-            
+
             callback(null, true);
         });
     });
@@ -199,8 +225,8 @@ exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callb
             },
             highlight: {
                 fields: {
-                    title: {"pre_tags" : [ "<font color='red' size='20'>" ], "post_tags" : [ "</font>" ]},
-                    describe: {"pre_tags" : [ "<font color='red' size='20'>" ], "post_tags" : [ "</font>" ]}
+                    title: {"pre_tags": ["<font color='red' size='20'>"], "post_tags": ["</font>"]},
+                    describe: {"pre_tags": ["<font color='red' size='20'>"], "post_tags": ["</font>"]}
                 }
             }
         }
@@ -209,25 +235,28 @@ exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callb
         if (err) {
             return callback(err);
         }
-        
+
         let total = response.hits.total;
         let hits = response.hits.hits;
 
         let questions = hits.map(function (hit) {
-            
+
             let title = hit.highlight.title ? hit.highlight.title.join() : hit._source.title;
             let describe = hit.highlight.describe ? hit.highlight.describe.join() : hit._source.describe;
-            
+
             return {
-                _id : hit._id,
-                tags: hit.tags,
+                question_id: hit._id,
+                question_tags: hit.tags,
+                question_title: title,
+                question_describe: describe,
+                create_user_id: hit.create_user_id,
+                create_user_name: hit.create_user_name,
+                create_user_avatar: hit.create_user_avatar,
                 create_time: hit.create_time,
                 update_time: hit.update_time,
-                title: title,
-                describe: describe,
             };
         });
-        
+
 
         callback(null, {
             count: total,
@@ -250,7 +279,7 @@ exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback
             },
             highlight: {
                 fields: {
-                    content: {"pre_tags" : [ "<font color='red' size='20'>" ], "post_tags" : [ "</font>" ]},
+                    content: {"pre_tags": ["<font color='red' size='20'>"], "post_tags": ["</font>"]},
                 }
             }
         }
@@ -261,23 +290,25 @@ exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback
 
         let total = response.hits.total;
         let hits = response.hits.hits;
-        
+
         let ids = [];
 
         hits.forEach(function (hit) {
             ids.push(hit._source.question_id);
         });
-        
-        Question.find({_id: {$in: ids}}, function (err, questions) {
-            if(err){
-                return callback(err);
-            }
-            
-            callback(null, {
-                count: total,
-                questions: questions
+
+        Question.find({_id: {$in: ids}})
+            .populate('create_user_id')
+            .exec(function (err, questions) {
+                if (err) {
+                    return callback(err);
+                }
+
+                callback(null, {
+                    count: total,
+                    questions: questions
+                });
             });
-        });
     });
 
 };

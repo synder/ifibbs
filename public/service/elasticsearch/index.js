@@ -28,6 +28,9 @@ const elasticSearchClient = new elasticsearch.Client({
     log: log
 });
 
+//保存原来的indices对象，然后覆盖原来的indices对象，防止index被误删除
+const indices = elasticSearchClient.indices;
+
 elasticSearchClient.indices = {
     question: question.index,
     tags: tags.index,
@@ -41,14 +44,19 @@ exports.client = elasticSearchClient;
 if(process.env.INIT_ELASTIC === 'yes'){
 
     let initIndexMapping = function (mapping, callback) {
-        elasticSearchClient.indices.delete({
+        indices.delete({
             index: mapping.index,
             body: {}
         }, function (err, result) {
-            if(err){
-                return cb(err);
+            
+            if(err && err.status != 404){
+                if(err){
+                    return callback(err);
+                }
             }
-            elasticSearchClient.indices.create(mapping, callback);
+            
+            
+            indices.create(mapping, callback);
         });
     };
 

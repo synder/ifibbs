@@ -106,7 +106,7 @@ describe('根据问题标题、描述和问题回答搜索问题', function () {
     it('#根据标题搜索问题', function (done) {
         
         request(app)
-            .get('/questions/find')
+            .get('/questions/find/attr_with_answer')
             .query({
                 content: searchTitle,
                 page_size: 20,
@@ -129,13 +129,15 @@ describe('根据问题标题、描述和问题回答搜索问题', function () {
                 let list = res.body.result.list;
 
                 if (list.length > 0) {
-                    chai.expect(list[0]).to.have.ownProperty('id');
-                    chai.expect(list[0]).to.have.ownProperty('title');
-                    chai.expect(list[0]).to.have.ownProperty('describe');
-                    chai.expect(list[0]).to.have.ownProperty('tags');
-                    chai.expect(list[0]).to.have.ownProperty('answer_count');
-                    chai.expect(list[0]).to.have.ownProperty('favour_count');
-                    chai.expect(list[0]).to.have.ownProperty('type');
+                    chai.expect(list[0]).to.have.ownProperty('question_id');
+                    chai.expect(list[0]).to.have.ownProperty('question_title');
+                    chai.expect(list[0]).to.have.ownProperty('question_describe');
+                    chai.expect(list[0]).to.have.ownProperty('question_tags');
+                    chai.expect(list[0]).to.have.ownProperty('question_answer_count');
+                    chai.expect(list[0]).to.have.ownProperty('question_favour_count');
+                    chai.expect(list[0]).to.have.ownProperty('create_user_id');
+                    chai.expect(list[0]).to.have.ownProperty('create_user_name');
+                    chai.expect(list[0]).to.have.ownProperty('create_user_avatar');
                 }
 
                 done();
@@ -145,7 +147,7 @@ describe('根据问题标题、描述和问题回答搜索问题', function () {
 });
 
 
-describe('根据问题回答搜索问题', function () {
+describe('根据问题标题、描述搜索问题', function () {
 
     let searchTitle = Mock.Random.ctitle(5, 10);
     let searchDescribe = Mock.Random.ctitle(5, 10);
@@ -154,54 +156,33 @@ describe('根据问题回答搜索问题', function () {
     let describe = Mock.Random.cparagraph(2, 5) + searchDescribe;
 
     before(function (done) {
-        
-        return done();
-        
-        async.waterfall([
-            function(cb) {
-                request(app)
-                    .put('/user/question')
-                    .send({
-                        title: title,
-                        describe: describe,
-                        tags: []
-                    })
-                    .expect(200)
-                    .end(function (err, res) {
-                        if (err) {
-                            return cb(err);
-                        }
-                        
-                        cb(null, res.body.result.question_id);
-                    });
-            },
-            
-            function(questionID, cb) {
-                request(app)
-                    .put('/user/question')
-                    .send({})
-                    .expect(200)
-                    .end(function (err, res) {
-                        if (err) {
-                            return cb(err);
-                        }
+        request(app)
+            .put('/user/question')
+            .send({
+                title: title,
+                describe: describe,
+                tags: []
+            })
+            .expect(200)
+            .end(function (err, res) {
+                if (err) {
+                    throw err;
+                }
 
-                        cb(null, res.body.result.question_id);
-                    });
-            },
-        ], function (err, result) {
-            if(err){
-                throw err;
-            }
-            
-            done();
-        });
+                chai.expect(res.body).to.have.property('flag', '0000');
+                chai.expect(res.body).to.have.property('msg', '');
+                chai.expect(res.body).to.have.ownProperty('result');
+
+                chai.expect(res.body.result).to.have.ownProperty('question_id');
+
+                done();
+            });
     });
 
     it('#根据标题搜索问题', function (done) {
 
         request(app)
-            .get('/questions/find')
+            .get('/questions/find/attr')
             .query({
                 content: searchTitle,
                 page_size: 20,
@@ -224,13 +205,15 @@ describe('根据问题回答搜索问题', function () {
                 let list = res.body.result.list;
 
                 if (list.length > 0) {
-                    chai.expect(list[0]).to.have.ownProperty('id');
-                    chai.expect(list[0]).to.have.ownProperty('title');
-                    chai.expect(list[0]).to.have.ownProperty('describe');
-                    chai.expect(list[0]).to.have.ownProperty('tags');
-                    chai.expect(list[0]).to.have.ownProperty('answer_count');
-                    chai.expect(list[0]).to.have.ownProperty('favour_count');
-                    chai.expect(list[0]).to.have.ownProperty('type');
+                    chai.expect(list[0]).to.have.ownProperty('question_id');
+                    chai.expect(list[0]).to.have.ownProperty('question_title');
+                    chai.expect(list[0]).to.have.ownProperty('question_describe');
+                    chai.expect(list[0]).to.have.ownProperty('question_tags');
+                    chai.expect(list[0]).to.have.ownProperty('question_answer_count');
+                    chai.expect(list[0]).to.have.ownProperty('question_favour_count');
+                    chai.expect(list[0]).to.have.ownProperty('create_user_id');
+                    chai.expect(list[0]).to.have.ownProperty('create_user_name');
+                    chai.expect(list[0]).to.have.ownProperty('create_user_avatar');
                 }
 
                 done();

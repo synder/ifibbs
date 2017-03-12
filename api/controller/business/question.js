@@ -86,7 +86,7 @@ exports.getQuestionDetail = function(req, res, next){
 /**
  * @desc 主页搜索
  * */
-exports.searchQuestions = function (req, res, next) {
+exports.searchQuestionsByAttrAndAnswer = function (req, res, next) {
     let pageSize = req.query.page_size;
     let pageSkip = req.query.page_skip;
     
@@ -124,26 +124,33 @@ exports.searchQuestions = function (req, res, next) {
         
         searchByQuestions.questions.forEach(function (question) {
             questions.push({
-                id: question._id,
-                title: question.title,
-                tags: question.tags || [],
-                describe: question.describe,
-                answer_count: question.answer_count || 0,
-                favour_count: question.favour_count || 0,
-                type: 1,
+                question_id: question.question_id,
+                question_title: question.question_title,
+                question_tags: question.question_tags || [],
+                question_describe: question.question_describe,
+                question_answer_count: question.answer_count || 0,
+                question_favour_count: question.favour_count || 0,
+                create_user_id: question.create_user_id,
+                create_user_name: question.create_user_name,
+                create_user_avatar: question.create_user_avatar,
             });
         });
 
         searchByAnswers.questions.forEach(function (question) {
-            questions.push({
-                id: question._id,
-                title: question.title,
-                tags: question.tags || [],
-                describe: question.describe,
-                answer_count: question.answer_count || 0,
-                favour_count: question.favour_count || 0,
-                type: 2,
-            });
+            if(question.create_user_id){
+                questions.push({
+                    question_id: question._id,
+                    question_title: question.title,
+                    question_tags: question.tags || [],
+                    question_describe: question.describe,
+                    question_answer_count: question.answer_count || 0,
+                    question_favour_count: question.favour_count || 0,
+                    create_user_id: question.create_user_id._id,
+                    create_user_name: question.create_user_id.user_name,
+                    create_user_avatar: question.create_user_id.user_avatar,
+                    type: 2,
+                });
+            }
         });
         
         res.json({
@@ -160,9 +167,9 @@ exports.searchQuestions = function (req, res, next) {
 
 
 /**
- * @desc 搜索回答
+ * @desc 回答问题搜索
  * */
-exports.searchQuestionsByAnswer = function(req, res, next){
+exports.searchQuestionsByQuestionTitleAndDesc = function(req, res, next){
     let pageSize = req.query.page_size;
     let pageSkip = req.query.page_skip;
     let content = req.query.content;
@@ -171,7 +178,7 @@ exports.searchQuestionsByAnswer = function(req, res, next){
         return next(BadRequestError('content is need'));
     }
 
-    questionModel.searchQuestionByAnswer(content, pageSkip, pageSize, function (err, results) {
+    questionModel.searchQuestionByAttribute(content, pageSkip, pageSize, function (err, results) {
         
         if(err){
             return next();
@@ -182,13 +189,15 @@ exports.searchQuestionsByAnswer = function(req, res, next){
 
         results.questions.forEach(function (question) {
             questions.push({
-                id: question._id,
-                title: question.title,
-                tags: question.tags || [],
-                describe: question.describe,
-                answer_count: question.answer_count || 0,
-                favour_count: question.favour_count || 0,
-                type: 2,
+                question_id: question.question_id,
+                question_title: question.question_title,
+                question_tags: question.question_tags || [],
+                question_describe: question.question_describe,
+                question_answer_count: question.answer_count || 0,
+                question_favour_count: question.favour_count || 0,
+                create_user_id: question.create_user_id,
+                create_user_name: question.create_user_name,
+                create_user_avatar: question.create_user_avatar,
             });
         });
 

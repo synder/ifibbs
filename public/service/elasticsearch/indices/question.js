@@ -21,6 +21,14 @@ module.exports = {
                         type: 'string',
                         index: 'not_analyzed'
                     },
+                    create_user_name: {
+                        type: 'string',
+                        index: 'not_analyzed'
+                    },
+                    create_user_avatar: {
+                        type: 'string',
+                        index: 'not_analyzed'
+                    },
                     title: {
                         type: 'text',
                         index: 'analyzed',
