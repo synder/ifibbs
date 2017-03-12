@@ -195,7 +195,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
     let code = req.body.code;
     let registerPlatform = req.body.register_platform;
     let getuiCID = req.body.getui_cid;
-    let userName = req.body.user_name || `游客：${string}`;
+    let userName = req.body.user_mobile;
 
     let  deviceInfo = null;
 
