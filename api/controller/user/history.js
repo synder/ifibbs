@@ -21,18 +21,31 @@ exports.getUserBrowseHistory = function (req, res, next) {
         }
 
         let count = result.count;
-        let histories = result.histories;
+        let histories = [];
 
-        histories = histories.map(function (history) {
-            return {
-                id: history._id,
-                tags: history.question_id ? history.question_id.tags : [],
-                title: history.question_id ? history.question_id.title : null,
-                describe: history.question_id ? history.question_id.describe : null,
-                user_id: history.user_id ? history.user_id._id : null,
-                user_name: history.user_id ? history.user_id.user_name : null,
-                user_avatar: history.user_id ? history.user_id.user_avatar : null,
-                type: history.type
+        result.histories.forEach(function (history) {
+            if(history.type === 1){
+                histories.push({
+                    id: history._id,
+                    tags: history.question_id ? history.question_id.tags : [],
+                    title: history.question_id ? history.question_id.title : null,
+                    describe: history.question_id ? history.question_id.describe : null,
+                    user_id: history.user_id ? history.user_id._id : null,
+                    user_name: history.user_id ? history.user_id.user_name : null,
+                    user_avatar: history.user_id ? history.user_id.user_avatar : null,
+                    type: history.type
+                });
+            }else if(history.type === 2){
+                histories.push({
+                    id: history._id,
+                    tags: history.article_id ? history.article_id.tags : [],
+                    title: history.article_id ? history.article_id.title : null,
+                    describe: history.article_id ? history.article_id.summary : null,
+                    user_id: history.user_id ? history.user_id._id : null,
+                    user_name: history.user_id ? history.user_id.user_name : null,
+                    user_avatar: history.user_id ? history.user_id.user_avatar : null,
+                    type: history.type
+                });
             }
         });
         
