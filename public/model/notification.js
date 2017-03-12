@@ -10,6 +10,8 @@ const rabbit = require('../service/rabbit');
 const getui = require('../service/getui');
 
 const User = ifibbs.model('User');
+const Article = ifibbs.model('Article');
+const Subject = ifibbs.model('Subject');
 const Question = ifibbs.model('Question');
 const QuestionAnswer = ifibbs.model('QuestionAnswer');
 const AnswerComment = ifibbs.model('AnswerComment');
@@ -176,7 +178,7 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
 
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err, channel);
+            return callback(err, channel, message);
         }
 
         let questionID = message.content.toString();
@@ -190,11 +192,11 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
             .populate('create_user_id')
             .exec(function (err, question) {
                 if (err) {
-                    return callback(err, channel);
+                    return callback(err, channel, message);
                 }
 
                 if (!question) {
-                    return callback(null, channel);
+                    return callback(null, channel, message);
                 }
 
                 let createUserID = question.create_user_id ? question.create_user_id._id : null;
@@ -203,11 +205,11 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
                 let questionTitle = question.title;
 
                 if (!createUserID) {
-                    return callback(null, channel);
+                    return callback(null, channel, message);
                 }
 
                 if (!createUserGetuiCID) {
-                    return callback(null, channel);
+                    return callback(null, channel, message);
                 }
 
                 async.parallel({
@@ -362,7 +364,7 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
                             });
                     },
                 }, function (err, results) {
-                    callback(err, channel);
+                    callback(err, channel, message);
                 });
             });
     });
@@ -388,7 +390,7 @@ exports.consumeForQuestionBeenDeletedMQS = function (callback) {
 
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err, channel);
+            return callback(err, channel, message);
         }
 
         let questionID = message.content.toString();
@@ -404,22 +406,22 @@ exports.consumeForQuestionBeenDeletedMQS = function (callback) {
             })
             .exec(function (err, question) {
                 if (err) {
-                    return callback(err, channel);
+                    return callback(err, channel, message);
                 }
 
                 if (!question) {
-                    return callback(null, channel);
+                    return callback(null, channel, message);
                 }
 
                 let userID = question.create_user_id ? question.create_user_id._id : null;
                 let getuiCID = question.create_user_id ? question.create_user_id.getui_cid : null;
 
                 if (!getuiCID) {
-                    return callback(null, channel);
+                    return callback(null, channel, message);
                 }
 
                 if (!userID) {
-                    return callback(null, channel);
+                    return callback(null, channel, message);
                 }
 
                 const message = "您的问题被管理员加精";
@@ -450,7 +452,7 @@ exports.consumeForQuestionBeenDeletedMQS = function (callback) {
                         }, cb);
                     },
                 }, function (err) {
-                    callback(err, channel);
+                    callback(err, channel, message);
                 });
             });
     });
@@ -477,13 +479,13 @@ exports.consumeForQuestionBeenAttentionMQS = function (callback) {
 
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err, channel);
+            return callback(err, channel, message);
         }
 
         let content = message.content.toString();
 
         if (!content) {
-            return callback(null, channel);
+            return callback(null, channel, message);
         }
 
         content = content.split(':');
@@ -499,11 +501,11 @@ exports.consumeForQuestionBeenAttentionMQS = function (callback) {
             .populate('question_user_id')
             .exec(function (err, question) {
                 if (err) {
-                    return callback(err, channel);
+                    return callback(err, channel, message);
                 }
 
                 if (!question) {
-                    return callback(null, channel);
+                    return callback(null, channel, message);
                 }
 
                 let attentionUserID = question.user_id ? question.user_id._id : null;
@@ -512,15 +514,15 @@ exports.consumeForQuestionBeenAttentionMQS = function (callback) {
                 let questionCreateUserGetuiCID = question.question_user_id ? question.question_user_id.getui_cid : null;
 
                 if (!attentionUserID) {
-                    return callback(null, channel);
+                    return callback(null, channel, message);
                 }
 
                 if (!questionCreateUserID) {
-                    return callback(null, channel);
+                    return callback(null, channel, message);
                 }
 
                 if (!questionCreateUserGetuiCID) {
-                    return callback(null, channel);
+                    return callback(null, channel, message);
                 }
 
                 const message = attentionUserName + ' 关注了你的问题';
@@ -552,7 +554,7 @@ exports.consumeForQuestionBeenAttentionMQS = function (callback) {
                         }, cb);
                     },
                 }, function (err) {
-                    callback(err, channel);
+                    callback(err, channel, message);
                 });
             });
     });
@@ -581,7 +583,7 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
 
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err, channel);
+            return callback(err, channel, message);
         }
 
         let content = message.content.toString();
@@ -589,7 +591,7 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
         content = content.split(':');
 
         if (!content) {
-            return callback(null, channel);
+            return callback(null, channel, message);
         }
 
         let questionID = content[0];
@@ -620,18 +622,18 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
         }, function (err, results) {
 
             if (err) {
-                return callback(err, channel);
+                return callback(err, channel, message);
             }
 
             let question = results.question;
             let answer = results.answer;
 
             if (!question) {
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
 
             if (!answer) {
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
 
             let questionTitle = question.title;
@@ -645,11 +647,11 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
             let answerCreateUserGetuiCID = answer.create_user_id ? answer.create_user_id.getui_cid : null;
 
             if (!(questionCreateUserID && answerCreateUserID)) {
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
 
             if (!(questionCreateUserGetuiCID && answerCreateUserGetuiCID)) {
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
 
             async.parallel({
@@ -804,7 +806,7 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
                         });
                 },
             }, function (err, results) {
-                callback(err, channel);
+                callback(err, channel, message);
             });
         });
     });
@@ -831,13 +833,13 @@ exports.consumeForQuestionBeenSharedMQS = function (callback) {
 
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err, channel);
+            return callback(err, channel, message);
         }
 
         let content = message.content.toString();
 
         if (!content) {
-            return callback(null, channel);
+            return callback(null, channel, message);
         }
 
         content = content.split(':');
@@ -857,18 +859,18 @@ exports.consumeForQuestionBeenSharedMQS = function (callback) {
         }, function (err, results) {
 
             if (err) {
-                return callback(err, channel);
+                return callback(err, channel, message);
             }
 
             let shareUser = results.shareUser;
             let question = results.question;
 
             if (!shareUser) {
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
 
             if (!question) {
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
 
             //推送通知给问题所有者
@@ -879,7 +881,7 @@ exports.consumeForQuestionBeenSharedMQS = function (callback) {
             let questionTitle = question.title;
 
             if (!(shareUserID && questionOwnerID && questionOwnerGetuiCID)) {
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
 
             let message = shareUserName + ' 分享了您发布的问题';
@@ -910,7 +912,7 @@ exports.consumeForQuestionBeenSharedMQS = function (callback) {
                     }, cb);
                 },
             }, function (err) {
-                callback(err, channel);
+                callback(err, channel, message);
             });
         });
     });
@@ -935,13 +937,13 @@ exports.consumeForAnswerBeenFavouredMQS = function (callback) {
 
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err, channel);
+            return callback(err, channel, message);
         }
 
         let content = message.content.toString();
 
         if (!content) {
-            return callback(null, channel);
+            return callback(null, channel, message);
         }
 
         content = content.split(':');
@@ -960,18 +962,18 @@ exports.consumeForAnswerBeenFavouredMQS = function (callback) {
             },
         }, function (err, results) {
             if (err) {
-                return callback(err, channel);
+                return callback(err, channel, message);
             }
 
             let favourUser = results.favourUser;
             let answer = results.answer;
 
             if (!favourUser) {
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
 
             if (!answer) {
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
 
             //推送通知给回答所有者
@@ -983,7 +985,7 @@ exports.consumeForAnswerBeenFavouredMQS = function (callback) {
             let answerContent = answer.content;
 
             if (!(favourUserID && answerUserID && answerUserGetuiCID)) {
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
 
             let message = favourUserName + ' 赞了您的回答';
@@ -1015,7 +1017,7 @@ exports.consumeForAnswerBeenFavouredMQS = function (callback) {
                     }, cb);
                 },
             }, function (err) {
-                callback(err, channel);
+                callback(err, channel, message);
             });
         });
     });
@@ -1041,13 +1043,13 @@ exports.consumeForAnswerBeenCommendedMQS = function (callback) {
 
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err, channel);
+            return callback(err, channel, message);
         }
 
         let content = message.content.toString();
 
         if (!content) {
-            return callback(null, channel);
+            return callback(null, channel, message);
         }
 
         content = content.split(':');
@@ -1076,11 +1078,11 @@ exports.consumeForAnswerBeenCommendedMQS = function (callback) {
             let answer = results.answer;
 
             if (!comment) {
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
 
             if (!answer) {
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
 
             let commentUserID = comment.create_user_id ? comment.create_user_id._id : null;
@@ -1092,7 +1094,7 @@ exports.consumeForAnswerBeenCommendedMQS = function (callback) {
             let answerContent = answer.content;
 
             if (!(commentUserID && answerUserID && answerUserGetuiCID)) {
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
 
             let message = commentUserName + ' 评论了您的回答';
@@ -1124,7 +1126,7 @@ exports.consumeForAnswerBeenCommendedMQS = function (callback) {
                     }, cb);
                 },
             }, function (err) {
-                callback(err, channel);
+                callback(err, channel, message);
             });
 
         });
@@ -1150,13 +1152,13 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
 
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err, channel);
+            return callback(err, channel, message);
         }
 
         let questionID = message.content.toString();
 
         if (!questionID) {
-            return callback(null, channel);
+            return callback(null, channel, message);
         }
 
         //查找问题
@@ -1165,7 +1167,7 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
             .populate('create_user_id')
             .exec(function (err, question) {
                 if (err) {
-                    return callback(err, channel);
+                    return callback(err, channel, message);
                 }
 
                 let questionCreateUserID = question.create_user_id ? question.create_user_id._id : null;
@@ -1174,7 +1176,7 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
                 let questionTitle = question.title;
 
                 if (!questionCreateUserID){
-                    return callback(null, channel);
+                    return callback(null, channel, message);
                 }
 
                 let attentionQuestionCondition = {
@@ -1275,7 +1277,7 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
                             });
                         }
 
-                        callback(err);
+                        callback(err, channel, message);
 
                     })
                     .on('close', function () {
@@ -1288,7 +1290,7 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
                             });
                         }
 
-                        callback();
+                        callback(null, channel , message);
                     });
             });
     });
@@ -1313,21 +1315,157 @@ exports.consumeForSubjectHasNewArticleMQS = function (callback) {
 
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err, channel);
+            return callback(err, channel, message);
         }
 
         let content = message.content.toString();
 
         if (!content) {
-            return callback(null, channel);
+            return callback(null, channel, message);
         }
 
         content = content.split(':');
 
         let subjectID = content[0];
         let articleID = content[1];
+        
+        async.parallel({
+            subject: function(cb) { 
+                Subject.findOne({_id: subjectID}, cb);
+            },
+            
+            article: function (cb) {
+                Article.findOne({_id: articleID}, cb);
+            }
+        }, function (err, results) {
+        
+            if(err){
+                 return callback(err, channel, message);
+            }
+            
+            let subject = results.subject;
+            let article = results.article;
+            
+            if(!subject){
+                return callback(null, channel, message);
+            }
+            
+            if(!article){
+                return callback(null, channel, message);
+            }
 
-        callback(null, channel);
+            let message =  '您订阅的专题' + subject.title + ' 有了新的文章';
+
+            //推送函数
+            let pushAndSaveFunction = function (clientIDS, notifications, callback) {
+                async.parallel({
+                    save: function (cb) {
+                        UserNotification.create(notifications, cb);
+                    },
+                    push: function (cb) {
+                        getui.notifyTransmissionMsg(true, clientIDS, message, content, cb);
+                    },
+                }, function (err) {
+
+                    clientIDS = [];
+                    notifications = [];
+
+                    callback(err);
+                });
+            };
+
+            const content = {
+                func: 'notification',
+                type: UserNotification.CATEGORY.BUSINESS
+            };
+
+            let stream = AttentionSubject
+                .find({
+                    subject_id: subjectID
+                })
+                .populate({
+                    path: 'user_id',
+                    select: '_id getui_cid',
+                    match: {
+                        getui_cid: {$exists: true}
+                    }
+                })
+                .stream();
+            
+            let clientIDS = [];
+            let notifications = [];
+
+            //流的方式处理
+            stream
+                .on('data', function (doc) {
+
+                    let getuiCID = doc.user_id ? doc.user_id.getui_cid : null;
+                    let userID = doc.user_id ? doc.user_id._id : null;
+
+                    if (!getuiCID) {
+                        return;
+                    }
+
+                    if (!userID) {
+                        return;
+                    }
+
+                    clientIDS.push(getuiCID);
+                    notifications.push({
+                        status: UserNotification.STATUS.UNREAD,      //通知状态
+                        category: UserNotification.CATEGORY.SYSTEM,      //通知类别
+                        type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
+                        push_title: message,      //通知标题
+                        push_content: article.title,      //通知内容
+                        push_content_id: article._id,     //通知内容ID
+                        push_client_id: getuiCID,     //客户端ID，详见个推文档
+                        push_task_id: null,     //任务ID，详见个推文档
+                        push_time: new Date(),   //推送时间
+                        create_time: new Date(),    //创建时间
+                        update_time: new Date(),    //更新时间
+                        user_id: userID,    //用户ID
+                    });
+
+                    if (clientIDS.length > 19) {
+
+                        stream.pause();
+
+                        pushAndSaveFunction(clientIDS, notifications, function (err) {
+                            if (err) {
+                                console.error(err.stack);
+                            }
+
+                            stream.resume();
+                        });
+                    }
+                })
+                .on('error', function (err) {
+
+                    if (clientIDS.length > 0) {
+                        pushAndSaveFunction(clientIDS, notifications, function (err) {
+                            if (err) {
+                                console.error(err.stack);
+                            }
+                        });
+                    }
+
+                    callback(err, channel, message);
+
+                })
+                .on('close', function () {
+
+                    if (clientIDS.length > 0) {
+                        pushAndSaveFunction(clientIDS, notifications, function (err) {
+                            if (err) {
+                                console.error(err.stack);
+                            }
+                        });
+                    }
+
+                    callback(null, channel , message);
+                });
+            
+        });
     });
 };
 
@@ -1350,13 +1488,13 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
 
     rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
-            return callback(err, channel);
+            return callback(err, channel, message);
         }
 
         let content = message.content.toString();
 
         if (!content) {
-            return callback(null, channel);
+            return callback(null, channel, message);
         }
 
         content = content.split(':');
@@ -1381,7 +1519,7 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
             let toUser = results.toUser;
             
             if(!(user && toUser)){
-                return callback(null, channel);
+                return callback(null, channel, message);
             }
             
             let userName = user.user_name;
@@ -1416,7 +1554,7 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
                     }, cb);
                 },
             }, function (err) {
-                callback(err, channel);
+                callback(err, channel, message);
             });
         });
 

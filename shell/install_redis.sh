@@ -1,11 +1,34 @@
 #!/usr/bin/env bash
 
-wget http://download.redis.io/releases/redis-3.2.8.tar.gz
-tar zxvf redis-3.2.8.tar.gz
+function add_user(){
+    groupadd redis
+    useradd redis -g redis
+}
 
-cd redis
+function install_dep(){
+    yum -y install wget
+}
 
-make && make install
+function install_redis(){
+   
+    wget http://download.redis.io/releases/redis-3.2.8.tar.gz
+    tar zxvf redis-3.2.8.tar.gz
+    rm -f redis-3.2.8.tar.gz
+    
+    cd redis
+    
+    make & make install
+    
+    rm -rf redis-3.2.8
+}
 
-rm redis-3.2.8.tar.gz
-rm -rf ./redis
+function start_redis(){
+    add_user
+    install_dep
+    install_redis
+    
+    su redis
+    redis-server &
+}
+
+start_redis
