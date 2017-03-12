@@ -11,6 +11,7 @@ const rabbit = require('../service/rabbit');
 
 const User = ifibbs.model('User');
 const Question = ifibbs.model('Question');
+const QuestionAnswer = ifibbs.model('QuestionAnswer');
 const UserDynamic = ifibbs.model('UserDynamic');
 
 /**
@@ -273,13 +274,16 @@ exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback
         index: elasticsearch.indices.answer,
         body: {
             query: {
-                match: {
-                    content: content
+                multi_match: {
+                    query: content,
+                    fields: ['question_title', 'question_describe' , 'answer_content']
                 }
             },
             highlight: {
                 fields: {
-                    content: {"pre_tags": ["<font color='red' size='20'>"], "post_tags": ["</font>"]},
+                    question_title: {"pre_tags": ["<font color='red' size='20'>"], "post_tags": ["</font>"]},
+                    question_describe: {"pre_tags": ["<font color='red' size='20'>"], "post_tags": ["</font>"]},
+                    answer_content: {"pre_tags": ["<font color='red' size='20'>"], "post_tags": ["</font>"]},
                 }
             }
         }
@@ -291,26 +295,32 @@ exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback
         let total = response.hits.total;
         let hits = response.hits.hits;
 
-        let ids = [];
-        
-        console.log(response.hits.hits);
 
-        hits.forEach(function (hit) {
-            ids.push(hit._source.question_id);
+        let questions = hits.map(function (hit) {
+
+            let title = hit.highlight.question_title ? hit.highlight.question_title.join() : hit._source.question_title;
+            let answerContent = hit.highlight.answer_content ? hit.highlight.answer_content.join() : hit._source.answer_content;
+
+            return {
+                question_id: hit._source.question_id,
+                question_tags: hit._source.tags,
+                question_title: title,
+                answer_id: hit._id,
+                answer_content: answerContent,
+                answer_comment_count: hit._source.answer_comment_count || 0,
+                answer_favour_count: hit._source.answer_favour_count || 0,
+                answer_collect_count: hit._source.answer_collect_count || 0,
+                create_time: hit._source.create_time,
+                update_time: hit._source.update_time,
+            };
         });
 
-        Question.find({_id: {$in: ids}})
-            .populate('create_user_id')
-            .exec(function (err, questions) {
-                if (err) {
-                    return callback(err);
-                }
 
-                callback(null, {
-                    count: total,
-                    questions: questions
-                });
-            });
+        callback(null, {
+            count: total,
+            questions: questions
+        });
+        
     });
 
 };

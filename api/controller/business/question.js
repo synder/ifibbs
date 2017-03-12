@@ -118,9 +118,11 @@ exports.searchQuestionsByAnswer = function (req, res, next) {
                     question_title: question.title,
                     question_tags: question.tags || [],
                     question_describe: question.describe,
-                    question_answer_count: question.answer_count || 0,
-                    question_favour_count: question.favour_count || 0,
-                    answer_content: ''
+                    answer_id: question.answer_id,
+                    answer_content: question.answer_content,
+                    answer_comment_count: question.comment_count || 0,
+                    answer_favour_count: question.favour_count || 0,
+                    answer_collect_count: question.collect_count || 0,
                 });
             }
         });

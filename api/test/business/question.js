@@ -103,12 +103,12 @@ describe('根据问题标题、描述和问题回答搜索问题', function () {
             });
     });
 
-    it('#根据标题搜索问题', function (done) {
+    it('#根据回答、标题和描述搜索问题', function (done) {
         
         request(app)
-            .get('/questions/find/attr_with_answer')
+            .get('/questions/find/answer')
             .query({
-                content: searchTitle,
+                content: '基金',
                 page_size: 20,
                 page_index: 1
             })
@@ -133,11 +133,11 @@ describe('根据问题标题、描述和问题回答搜索问题', function () {
                     chai.expect(list[0]).to.have.ownProperty('question_title');
                     chai.expect(list[0]).to.have.ownProperty('question_describe');
                     chai.expect(list[0]).to.have.ownProperty('question_tags');
-                    chai.expect(list[0]).to.have.ownProperty('question_answer_count');
-                    chai.expect(list[0]).to.have.ownProperty('question_favour_count');
-                    chai.expect(list[0]).to.have.ownProperty('create_user_id');
-                    chai.expect(list[0]).to.have.ownProperty('create_user_name');
-                    chai.expect(list[0]).to.have.ownProperty('create_user_avatar');
+                    chai.expect(list[0]).to.have.ownProperty('answer_id');
+                    chai.expect(list[0]).to.have.ownProperty('answer_content');
+                    chai.expect(list[0]).to.have.ownProperty('answer_comment_count');
+                    chai.expect(list[0]).to.have.ownProperty('answer_favour_count');
+                    chai.expect(list[0]).to.have.ownProperty('answer_collect_count');
                 }
 
                 done();

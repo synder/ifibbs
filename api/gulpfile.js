@@ -35,16 +35,16 @@ gulp.task('test_init_data', ['test_init_env'], function (done) {
         return done(new Error('can not run test on this ' + process.env.NODE_ENV));
     }
 
-    async.parallel([
-        function(cb) {
-            initializeMongodb.init(cb);
+    async.series([
+        function (cb) {
+            initializeElasticsearch.init(cb);
         },
         function(cb) {
             initializeRedis.init(cb);
         },
-        function (cb) {
-            initializeElasticsearch.init(cb);
-        }
+        function(cb) {
+            initializeMongodb.init(cb);
+        },
     ], done);
 });
 

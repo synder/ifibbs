@@ -363,9 +363,7 @@ const initArticle = function (callback) {
  * @desc 初始化问题数据
  * */
 const initQuestion = function (callback) {
-    let questions = [];
-
-    questions.push({
+    let questions = [{
         "_id": QUESTION_ID,
         "status": 1,
         "title": Mock.Random.ctitle(5, 20),
@@ -378,10 +376,11 @@ const initQuestion = function (callback) {
         "create_time": new Date(),
         "update_time": new Date(),
         "tags": [],
-    });
+    }];
 
     for (let i = 0; i < 100; i++) {
         questions.push({
+            "_id": mongodb.ObjectId(),
             "status": 1,
             "title": Mock.Random.ctitle(5, 20),
             "describe": Mock.Random.ctitle(50, 100),
@@ -395,8 +394,37 @@ const initQuestion = function (callback) {
             "tags": [],
         });
     }
+    
+    async.parallel({
+        mongodb: function(cb) {
+            Question.create(questions, cb);
+        },
+        elastic: function(cb) {
+            let elasticQuestionDocuments = [];
 
-    Question.create(questions, callback);
+            questions.forEach(function (question) {
+                elasticQuestionDocuments.push({
+                    "index": {
+                        "_index": elasticsearch.indices.question,
+                        "_type": elasticsearch.indices.question,
+                        "_id": question._id.toString()
+                    }
+                });
+                elasticQuestionDocuments.push({
+                    create_user_id: question.create_user_id,
+                    question_title: question.title,
+                    question_describe: question.describe,
+                    question_tags: question.tags,
+                    create_time: question.create_time,
+                    update_time: question.update_time,
+                });
+            });
+
+            elasticsearch.bulk({
+                body: elasticQuestionDocuments
+            }, cb);
+        },
+    }, callback);
 };
 
 
@@ -406,9 +434,27 @@ const initQuestion = function (callback) {
 const initQuestionAnswer = function (callback) {
 
     let answers = [];
+    
+    let questionID = mongodb.ObjectId();
+    
+    let question = {
+        "_id": questionID,
+        "status": 1,
+        "title": '基金公司在中国的生存状态',
+        "describe": '最早的对冲基金是哪一只，这还不确定。在上世纪20年代美国的大牛市时期，这种专门面向富人的投资工具数不胜数。其中最有名的是Benjamin Graham和Jerry Newman创立的Graham-Newman Partnership基金。',
+        "answer_count": 0,
+        "favour_count": 0,
+        "attention_count": 1,
+        "collect_count": 0,
+        "create_user_id": USER_ID,
+        "create_time": new Date(),
+        "update_time": new Date(),
+        "tags": ['基金'],
+    };
 
     for (let i = 0; i < 100; i++) {
         answers.push({
+            "_id": mongodb.ObjectId(),
             "status": 1,
             "content": Mock.Random.ctitle(20, 50),
             "comment_count": 0,
@@ -420,8 +466,46 @@ const initQuestionAnswer = function (callback) {
             "update_time": new Date(),
         });
     }
+    
+    Question.create(question, function (err, question) {
+        if(err){
+            return callback(err);
+        }
 
-    QuestionAnswer.create(answers, callback);
+        async.parallel({
+            mongodb: function(cb) {
+                QuestionAnswer.create(answers, cb);
+            },
+            elastic: function(cb) {
+                let elasticQuestionAnswerDocuments = [];
+
+                answers.forEach(function (answer) {
+                    elasticQuestionAnswerDocuments.push({
+                        "index": {
+                            "_index": elasticsearch.indices.answer,
+                            "_type": elasticsearch.indices.answer,
+                            "_id": answer._id.toString()
+                        }
+                    });
+
+                    elasticQuestionAnswerDocuments.push({
+                        create_user_id: answer.create_user_id,
+                        question_id:  question._id.toString(),
+                        question_tags: question.tags,
+                        question_title: question.title,
+                        question_describe: question.describe,
+                        answer_content: answer.content,
+                        create_time: answer.create_time,
+                        update_time: answer.update_time,
+                    });
+                });
+
+                elasticsearch.bulk({
+                    body: elasticQuestionAnswerDocuments
+                }, cb);
+            },
+        }, callback);
+    });
 };
 
 
@@ -779,7 +863,7 @@ const initUser = function (callback) {
 /**
  * @desc 初始化标签数据库
  * */
-const initMongodbQuestionTagsCollection = function (callback) {
+const initQuestionTags = function (callback) {
 
     let icon = 'http://www.jkinst.com/zy-api/a/db/mongod/picture/58ad029de4b015ad71990518';
 
@@ -928,7 +1012,7 @@ exports.init = function (callback) {
             },
 
             function (cb) {
-                initMongodbQuestionTagsCollection(cb);
+                initQuestionTags(cb);
             },
 
             function (cb) {
