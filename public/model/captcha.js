@@ -25,7 +25,7 @@ exports.sendSmsSecurityCode = function (phone, callback) {
     let message = `您的验证码：${code}，打死都不告诉别人`;
     
     let now = Date.now();
-    let frequency = 60000; //发送频率
+    let frequency = 60; //发送频率S
     let expireTime = Date.now() + 1800000;
 
     let securityCodeDoc = {
