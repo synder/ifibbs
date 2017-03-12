@@ -22,7 +22,7 @@ module.exports = function () {
         let token = null;
         let now = Date.now();
 
-        if(req.method === 'GET'){
+        if(req.method === 'GET' || req.method === 'DELETE'){
             token = req.query.token;
         }else{
             token = req.body.token;
