@@ -114,19 +114,19 @@ exports.updateUserInfo = function (req, res, next) {
  * */
 exports.checkPhoneRegistered = function (req, res, next) {
 
-    let user_mobile = req.query.user_mobile;
+    let userMobile = req.query.user_mobile;
 
-    if (!user_mobile) {
+    if (!userMobile) {
         return next(new BadRequestError('user_mobile is need'));
     }
 
     let regex = /^1[0-9]\d{9}$/;
 
-    if (!regex.test(user_mobile.toString())) {
+    if (!regex.test(userMobile.toString())) {
         return next(new BadRequestError('user_mobile is illegal'));
     }
 
-    userModel.getUserByMobile(user_mobile, function (err, user) {
+    userModel.getUserByMobile(userMobile, function (err, user) {
         if (err) {
             return next(err)
         }
@@ -191,7 +191,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
     let string = Math.random().toString().substr(2, 12);
     let mobile = req.body.user_mobile;
     let password = req.body.user_password;
-    let codeID = req.body.code_id;
+    let codeID = req.body.security_code_id;
     let code = req.body.code;
     let registerPlatform = req.body.register_platform;
     let getuiCID = req.body.getui_cid;
@@ -473,7 +473,7 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
 exports.userBindPhone = function (req, res, next) {
     let mobile = req.body.user_mobile;
     let password = req.body.user_password;
-    let codeID = req.body.code_id;
+    let codeID = req.body.security_code_id;
     let code = req.body.code;
     let userID = req.session.id;
 
@@ -615,7 +615,7 @@ exports.userRemoveThirdParty = function (req, res, next) {
 exports.modifyUserPassword = function (req, res, next) {
     let mobile = req.body.user_mobile;
     let newPassword = req.body.new_password;
-    let codeID = req.body.code_id;
+    let codeID = req.body.security_code_id;
     let code = req.body.code;
 
     let userID = req.session.id;
@@ -673,7 +673,7 @@ exports.resetUserPassword = function (req, res, next) {
     let mobileNumber = req.body.user_mobile;
     let newPassword = req.body.new_password;
     let securityCode = req.body.code;
-    let codeID = req.body.code_id;
+    let codeID = req.body.security_code_id;
 
     if (!mobileNumber) {
         return next(new BadRequestError('mobile_number is need'));
