@@ -165,6 +165,7 @@ exports.searchQuestionsByAttr = function(req, res, next){
                 question_describe: question.question_describe,
                 question_answer_count: question.answer_count || 0,
                 question_favour_count: question.favour_count || 0,
+                question_collect_count: question.collect_count || 0,
                 create_user_id: question.create_user_id,
                 create_user_name: question.create_user_name,
                 create_user_avatar: question.create_user_avatar,

@@ -217,6 +217,8 @@ exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callb
 
     elasticsearch.search({
         index: elasticsearch.indices.question,
+        from: pageSkip,
+        size: pageSize,
         body: {
             query: {
                 multi_match: {
@@ -250,6 +252,7 @@ exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callb
                 question_tags: hit._source.tags,
                 question_title: title,
                 question_describe: describe,
+                question_collect_count: hit._source.collect_count || 0,
                 create_user_id: hit._source.create_user_id,
                 create_user_name: hit._source.create_user_name,
                 create_user_avatar: hit._source.create_user_avatar,
@@ -272,6 +275,8 @@ exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callb
 exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback) {
     elasticsearch.search({
         index: elasticsearch.indices.answer,
+        from: pageSkip,
+        size: pageSize,
         body: {
             query: {
                 multi_match: {

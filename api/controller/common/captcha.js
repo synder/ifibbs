@@ -11,7 +11,7 @@ const captchaModel = require('../../../public/model/captcha');
  * @desc 发送短信验证码
  * */
 exports.getSmsSecurityCode = function (req, res, next) {
-    let phoneNumber = req.query.phone;
+    let phoneNumber = req.query.user_mobile;
     
     if(!phoneNumber){
         return next(new BadRequestError('mobile is need'));
@@ -32,7 +32,7 @@ exports.getSmsSecurityCode = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                uid: captcha ? captcha.uid : null,
+                security_code_id: captcha ? captcha.uid : null,
                 msg: captcha ? null : '验证码发送失败'
             }
         });
@@ -44,10 +44,10 @@ exports.getSmsSecurityCode = function (req, res, next) {
  * */
 exports.verifySmsSecurityCode = function (req, res, next) {
     let smsCode = req.body.code;
-    let phoneNumber = req.body.phone;
-    let smsCodeUid = req.body.uid;
+    let phoneNumber = req.body.user_mobile;
+    let smsSecurityCodeUid = req.body.security_code_id;
     
-    captchaModel.verifySmsSecurityCode(smsCodeUid, phoneNumber, smsCode, 1000000, false, function (err, success) {
+    captchaModel.verifySmsSecurityCode(smsSecurityCodeUid, phoneNumber, smsCode, 1000000, false, function (err, success) {
        if(err){
            return next(err);
        } 
