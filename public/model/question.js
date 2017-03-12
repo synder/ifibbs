@@ -246,14 +246,14 @@ exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callb
 
             return {
                 question_id: hit._id,
-                question_tags: hit.tags,
+                question_tags: hit._source.tags,
                 question_title: title,
                 question_describe: describe,
-                create_user_id: hit.create_user_id,
-                create_user_name: hit.create_user_name,
-                create_user_avatar: hit.create_user_avatar,
-                create_time: hit.create_time,
-                update_time: hit.update_time,
+                create_user_id: hit._source.create_user_id,
+                create_user_name: hit._source.create_user_name,
+                create_user_avatar: hit._source.create_user_avatar,
+                create_time: hit._source.create_time,
+                update_time: hit._source.update_time,
             };
         });
 
