@@ -24,7 +24,21 @@ module.exports = {
                         type: 'string',
                         index: 'not_analyzed'
                     },
-                    content: {
+                    question_title: {
+                        type: 'text',
+                        index: 'analyzed',
+                        analyzer: 'ik_max_word',
+                        search_analyzer: 'ik_max_word',
+                        boost: 6
+                    },
+                    question_describe: {
+                        type: 'text',
+                        index: 'analyzed',
+                        analyzer: 'ik_max_word',
+                        search_analyzer: 'ik_max_word',
+                        boost: 7
+                    },
+                    answer_content: {
                         type: 'text',
                         index: 'analyzed',
                         analyzer: 'ik_max_word',

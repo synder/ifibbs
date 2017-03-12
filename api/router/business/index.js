@@ -17,8 +17,8 @@ exports.map = function (app) {
     
     //问题
     app.get('/question', question.getQuestionDetail);                     //获取问题详情
-    app.get('/questions/find/attr_with_answer', question.searchQuestionsByAttrAndAnswer);      //搜索问题
-    app.get('/questions/find/attr', question.searchQuestionsByQuestionTitleAndDesc);           //根据问题
+    app.get('/questions/find/answer', question.searchQuestionsByAnswer);      //搜索问题
+    app.get('/questions/find/attr', question.searchQuestionsByAttr);           //根据问题
     
     
     //问题标签

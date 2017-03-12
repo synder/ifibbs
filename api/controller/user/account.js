@@ -18,18 +18,22 @@ const deviceModel = require('../../../public/model/device');
  * */
 exports.getUserInfo = function (req, res, next) {
     let userID = req.query.user_id;
-    let myID = req.session.id;
+    let loginUserID = req.session.id;
+    
+    if(!userID){
+        return next(new BadRequestError('user_id is need'));
+    }
 
     async.parallel({
         attention: function(cb){
-            if(userID == myID){
+            if(userID === loginUserID){
                 return cb(null,null);
             }
 
-            attentionModel.findUserAttentionByUserID(myID, userID, cb)
+            attentionModel.findUserAttentionByUserID(loginUserID, userID, cb);
         },
         userInfo: function(cb){
-            userModel.getUserInfoByID(userID, cb)
+            userModel.getUserInfoByID(userID, cb);
         }
     },function (err, result) {
         if (err) {
@@ -37,7 +41,7 @@ exports.getUserInfo = function (req, res, next) {
         }
 
         if(!result.userInfo){
-            return next(new BadRequestError('without the user data'))
+            return next(new BadRequestError('without the user data'));
         }
 
         let userInfo = {
@@ -54,7 +58,7 @@ exports.getUserInfo = function (req, res, next) {
             user_area: result.userInfo.user_area ? result.userInfo.user_area : null,
         };
 
-        if(myID != userID){
+        if(loginUserID != userID){
             userInfo.whether_attention = !!result.attention
         }
 
@@ -371,7 +375,7 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
     let string = Math.random().toString().substr(2, 12);
     let uid = req.body.open_id;
     let union_id = req.body.union_id;
-    let userName = req.body.user_name || `游客：${string}`;
+    let userName = req.body.user_name || `游客${string}`;
     let userGender = gender ? gender == 1 : null;
     let registerPlatform = req.body.register_platform;  //1: ANDROID 2: IOS 3: PC 4: H5 5: OTHER
     let loginType = req.body.login_type; //1：微信 2: qq 3: 新浪微博 （0:手机账号密码）

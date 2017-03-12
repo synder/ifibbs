@@ -41,20 +41,19 @@ elasticSearchClient.indices = {
 
 exports.client = elasticSearchClient;
 
-if(process.env.INIT_ELASTIC === 'yes'){
-
+exports.init = init = function (callback) {
     let initIndexMapping = function (mapping, callback) {
         indices.delete({
             index: mapping.index,
             body: {}
         }, function (err, result) {
-            
+
             if(err && err.status != 404){
                 if(err){
                     return callback(err);
                 }
             }
-            
+
             indices.create(mapping, callback);
         });
     };
@@ -75,11 +74,15 @@ if(process.env.INIT_ELASTIC === 'yes'){
         function (cb) {
             initIndexMapping(article, cb);
         },
-    ], function (err, results) {
-        if(err){
-            return console.log(err);
-        }
+    ], callback);
+};
 
-        console.log(results);
+if(process.env.INIT_ELASTIC === 'yes'){
+    init(function (err, res) {
+        if(err){
+            console.error(err.stack);
+        }
+        
+        console.log(res);
     });
 }

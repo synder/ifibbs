@@ -86,7 +86,7 @@ exports.getQuestionDetail = function(req, res, next){
 /**
  * @desc 主页搜索
  * */
-exports.searchQuestionsByAttrAndAnswer = function (req, res, next) {
+exports.searchQuestionsByAnswer = function (req, res, next) {
     let pageSize = req.query.page_size;
     let pageSkip = req.query.page_skip;
     
@@ -102,41 +102,16 @@ exports.searchQuestionsByAttrAndAnswer = function (req, res, next) {
             }
         });
     }
-    
-    async.parallel({
-        searchByQuestions: function (cb) {
-            questionModel.searchQuestionByAttribute(content, pageSkip, pageSize, cb);
-        },
-        
-        searchByAnswers: function (cb) {
-            questionModel.searchQuestionByAnswer(content, pageSkip, pageSize, cb);
-        }
-    }, function (err, results) {
-        
+
+    questionModel.searchQuestionByAnswer(content, pageSkip, pageSize, function (err, results) {
         if(err){
             return next(err);
         }
         
-        let searchByQuestions = results.searchByQuestions;
-        let searchByAnswers = results.searchByAnswers;
-        
         let questions = [];
-        
-        searchByQuestions.questions.forEach(function (question) {
-            questions.push({
-                question_id: question.question_id,
-                question_title: question.question_title,
-                question_tags: question.question_tags || [],
-                question_describe: question.question_describe,
-                question_answer_count: question.answer_count || 0,
-                question_favour_count: question.favour_count || 0,
-                create_user_id: question.create_user_id,
-                create_user_name: question.create_user_name,
-                create_user_avatar: question.create_user_avatar,
-            });
-        });
+        let count = results.count;
 
-        searchByAnswers.questions.forEach(function (question) {
+        results.questions.forEach(function (question) {
             if(question.create_user_id){
                 questions.push({
                     question_id: question._id,
@@ -145,23 +120,19 @@ exports.searchQuestionsByAttrAndAnswer = function (req, res, next) {
                     question_describe: question.describe,
                     question_answer_count: question.answer_count || 0,
                     question_favour_count: question.favour_count || 0,
-                    create_user_id: question.create_user_id._id,
-                    create_user_name: question.create_user_id.user_name,
-                    create_user_avatar: question.create_user_id.user_avatar,
-                    type: 2,
+                    answer_content: ''
                 });
             }
         });
-        
+
         res.json({
             flag: '0000',
             msg: '',
             result: {
-                count: searchByQuestions.count + searchByAnswers.count,
+                count: count,
                 list: questions
             }
         });
-        
     });
 };
 
@@ -169,7 +140,7 @@ exports.searchQuestionsByAttrAndAnswer = function (req, res, next) {
 /**
  * @desc 回答问题搜索
  * */
-exports.searchQuestionsByQuestionTitleAndDesc = function(req, res, next){
+exports.searchQuestionsByAttr = function(req, res, next){
     let pageSize = req.query.page_size;
     let pageSkip = req.query.page_skip;
     let content = req.query.content;

@@ -12,6 +12,10 @@ const plumber = require("gulp-plumber");
  * 
  * */
 gulp.task('test_init_env', function (done) {
+    if(process.env.NODE_ENV && process.env.NODE_ENV !== 'dev'){
+        return done(new Error('can not run test on this ' + process.env.NODE_ENV));
+    }
+    
     process.env.NODE_ENV = 'dev';
     global.config = require('./config');
     done();
@@ -23,6 +27,13 @@ gulp.task('test_init_env', function (done) {
 gulp.task('test_init_data', ['test_init_env'], function (done) {
     const initializeMongodb = require('./test/initialize/mongodb');
     const initializeRedis = require('./test/initialize/redis');
+    const initializeElasticsearch = require('./test/initialize/elasticsearch');
+    
+    const NODE_ENV = process.env.NODE_ENV;
+    
+    if(NODE_ENV !== 'dev'){
+        return done(new Error('can not run test on this ' + process.env.NODE_ENV));
+    }
 
     async.parallel([
         function(cb) {
@@ -30,6 +41,9 @@ gulp.task('test_init_data', ['test_init_env'], function (done) {
         },
         function(cb) {
             initializeRedis.init(cb);
+        },
+        function (cb) {
+            initializeElasticsearch.init(cb);
         }
     ], done);
 });
