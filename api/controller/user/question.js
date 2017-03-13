@@ -135,7 +135,7 @@ exports.addNewUserQuestion = function(req, res, next){
         },
         
         function (tags, cb) {
-            questionDoc.tags = tags;
+            questionDoc.tags = tags || [];
             questionModel.createNewQuestion(createUserId, questionDoc, cb);
         },
     ], function (err, questionID) {
