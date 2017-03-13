@@ -7,6 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const mkdirp = require('mkdirp');
 
 class DefaultFileService {
     
@@ -29,7 +30,11 @@ class LocalFileService extends DefaultFileService {
         }
 
         if(!fs.existsSync(this.dir)){
-            fs.mkdirSync(this.dir);
+            mkdirp(this.dir, function (err) {
+                if(err){
+                    console.error(err.stack);
+                }
+            });
         }
     }
 
