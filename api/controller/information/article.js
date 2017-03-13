@@ -54,6 +54,7 @@ exports.getRecommendArticleList = function (req, res, next) {
                 favour_count: article.favour_count,
                 collect_count: article.collect_count,
                 create_time: article.create_time,
+                subject_id: article.subject_id,
                 url: articleUrl,
             };
         });
@@ -111,6 +112,7 @@ exports.getSubjectArticleList = function (req, res, next) {
                 favour_count: article.favour_count,
                 collect_count: article.collect_count,
                 create_time: article.create_time,
+                subject_id: article.subject_id,
                 url: articleUrl,
             };
         });
@@ -157,6 +159,7 @@ exports.getSubjectArticleDetail = function (req, res, next) {
             cover : article.cover,
             summary : article.summary,
             content : article.content,
+            subject_id: article.subject_id,
             create_time: article.create_time
         };
 

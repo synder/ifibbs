@@ -44,10 +44,9 @@ server.middleware(function(app){
 });
 
 //=======================================
-const session = require('./middleware/session/index');
 
 server.middleware(function (app) {
-    app.use(session());
+   
 });
 
 

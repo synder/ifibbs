@@ -24,7 +24,7 @@ module.exports =  {
      * */
     server: {
         port: {
-            http: 8000,
+            http: 8001,
             https: null
         },
         host: null,
@@ -76,6 +76,14 @@ module.exports =  {
             username: '*@1caifu.com',
             password: '*',
             ssl: true
+        }
+    },
+    
+    upload: {
+        image: {
+            dir: '',
+            max:  4 * 1024 * 1024,
+            ext: true
         }
     }
 };

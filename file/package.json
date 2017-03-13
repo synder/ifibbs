@@ -4,12 +4,7 @@
   "description": "",
   "dependencies": {
     "async": "*",
-    "bluebird": "^3.4.7",
-    "body-parser": "*",
-    "compression": "*",
-    "connect-timeout": "*",
-    "cookie-parser": "*",
-    "crypto": "0.0.3",
+    "formidable": "*",
     "express": "*",
     "lodash": "*",
     "mockjs": "*",
@@ -19,8 +14,7 @@
     "supertest": "*",
     "winston": "*",
     "winston-mail": "*",
-    "winston-mongodb": "*",
-    "uuid": "*"
+    "winston-mongodb": "*"
   },
   "devDependencies": {
     "supertest": "*",
