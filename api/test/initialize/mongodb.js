@@ -10,10 +10,10 @@ const request = require('supertest');
 const Mock = require('mockjs');
 
 
-const mongodb = require('../../../public/service/mongodb');
+const mongodb = require('../../../public/service/mongodb/ifibbs');
 
-const ifibbsElasticsearch = require('../../../public/service/elasticsearch').ifibbs;
-const ifibbsMongodb = mongodb.ifibbs;
+const ifibbsElasticsearch = require('../../../public/service/elasticsearch/ifibbs').client;
+const ifibbsMongodb = mongodb.client;
 
 const Activity = ifibbsMongodb.model('Activity');
 const QuestionAnswer = ifibbsMongodb.model('QuestionAnswer');

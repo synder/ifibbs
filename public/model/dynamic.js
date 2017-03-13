@@ -5,7 +5,7 @@
  */
 
 const async = require('async');
-const ifibbsMongodb = require('../service/mongodb').ifibbs;
+const ifibbsMongodb = require('../service/mongodb/ifibbs').client;
 
 const UserDynamic = ifibbsMongodb.model('UserDynamic');
 const User = ifibbsMongodb.model('User');

@@ -5,8 +5,8 @@
  */
 
 
-const ifibbsElasticsearch = require('../../../public/service/elasticsearch').ifibbs;
+const ifibbsElasticsearch = require('../../../public/service/elasticsearch/ifibbs');
 
 exports.init = function (callback) {
-    ifibbsElasticsearch.init_index(callback);
+    ifibbsElasticsearch.init(callback);
 };

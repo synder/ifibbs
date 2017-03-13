@@ -5,8 +5,6 @@ const Mock = require('mockjs');
 
 const app = require('../../app').app;
 
-const mongodb = require('../../../public/service/mongodb');
-
 
 
 describe('专题相关接口', function () {

@@ -5,7 +5,7 @@
  */
 
 
-const getui = require('../index');
+const getui = require('../ifibbs');
 
 const DEMO_CLIENT_ID = '6a26da2ef9fd51a84d548be0336b1f5d';
 

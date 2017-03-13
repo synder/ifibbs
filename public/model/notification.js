@@ -5,9 +5,9 @@
  */
 
 const async = require('async');
-const ifibbsMongodb = require('../service/mongodb').ifibbs;
-const ifibbsRabbit = require('../service/rabbit').ifibbs;
-const ifibbsGetui = require('../service/getui');
+const ifibbsMongodb = require('../service/mongodb/ifibbs').client;
+const ifibbsRabbit = require('../service/rabbit/ifibbs');
+const ifibbsGetui = require('../service/getui/ifibbs');
 
 const User = ifibbsMongodb.model('User');
 const Article = ifibbsMongodb.model('Article');
@@ -171,7 +171,7 @@ exports.produceForQuestionBeenStickiedMQS = function (questionID, callback) {
 
     let message = questionID + '';
 
-    ifibbsRabbit.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.client.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForQuestionBeenStickiedMQS = function (callback) {
@@ -180,7 +180,7 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
 
-    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -388,7 +388,7 @@ exports.produceForQuestionBeenDeletedMQS = function (questionID, callback) {
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_DELETED;
 
-    ifibbsRabbit.produceMessage(QUEUE, questionID, callback);
+    ifibbsRabbit.client.produceMessage(QUEUE, questionID, callback);
 };
 
 exports.consumeForQuestionBeenDeletedMQS = function (callback) {
@@ -396,7 +396,7 @@ exports.consumeForQuestionBeenDeletedMQS = function (callback) {
     //推送通知给问题的所有者
     const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_DELETED;
 
-    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -484,7 +484,7 @@ exports.produceForQuestionBeenAttentionMQS = function (userID, questionID, callb
 
     let message = userID + ':' + questionID;
 
-    ifibbsRabbit.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.client.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForQuestionBeenAttentionMQS = function (callback) {
@@ -492,7 +492,7 @@ exports.consumeForQuestionBeenAttentionMQS = function (callback) {
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_ATTENTION;
 
-    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -593,7 +593,7 @@ exports.produceForQuestionBeenAnsweredMQS = function (questionID, answerID, call
 
     let message = questionID + ':' + answerID;
 
-    ifibbsRabbit.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.client.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
@@ -602,7 +602,7 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
 
     //推送通知给问题所有者和问题关注者
 
-    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -851,14 +851,14 @@ exports.produceForQuestionBeenSharedMQS = function (userID, questionID, callback
 
     let message = userID + ':' + questionID;
 
-    ifibbsRabbit.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.client.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForQuestionBeenSharedMQS = function (callback) {
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_SHARED;
 
-    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -964,14 +964,14 @@ exports.produceForAnswerBeenFavouredMQS = function (userID, answerID, callback) 
 
     let message = userID + ':' + answerID;
 
-    ifibbsRabbit.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.client.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForAnswerBeenFavouredMQS = function (callback) {
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_ANSWER_BEEN_FAVOURED;
 
-    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -1077,7 +1077,7 @@ exports.produceForAnswerBeenCommendedMQS = function (answerID, commentID, callba
 
     let message = answerID + ':' + commentID;
 
-    ifibbsRabbit.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.client.produceMessage(QUEUE, message, callback);
 
 };
 
@@ -1085,7 +1085,7 @@ exports.consumeForAnswerBeenCommendedMQS = function (callback) {
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_ANSWER_BEEN_COMMEND;
 
-    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -1191,13 +1191,13 @@ exports.produceForUserPublishNewQuestionMQS = function (questionID, callback) {
 
     let message = questionID.toString();
 
-    ifibbsRabbit.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.client.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForUserPublishNewQuestionMQS = function (callback) {
     const QUEUE = ifibbsRabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
 
-    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -1361,14 +1361,14 @@ exports.produceForSubjectHasNewArticleMQS = function (subjectID, articleID, call
 
     let message = subjectID + ':' + articleID;
 
-    ifibbsRabbit.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.client.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForSubjectHasNewArticleMQS = function (callback) {
 
     const QUEUE = ifibbsRabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
 
-    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -1542,14 +1542,14 @@ exports.produceForUserBeenAttentionMQS = function (userID, toUserID, callback) {
 
     let message = userID + ':' + toUserID;
 
-    ifibbsRabbit.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.client.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForUserBeenAttentionMQS = function (callback) {
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_BEEN_ATTENTION;
 
-    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }

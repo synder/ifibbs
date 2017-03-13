@@ -4,7 +4,7 @@
  * @desc @desc
  */
 
-const ifibbsRedis = require('../../../public/service/redis').ifibbs;
+const ifibbsRedis = require('../../../public/service/redis/ifibbs').client;
 
 exports.init = function (callback) {
     ifibbsRedis.flushall(callback);
