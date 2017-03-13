@@ -156,50 +156,23 @@ exports.getSubjectArticleDetail = function (req, res, next) {
             icon : article.icon,
             cover : article.cover,
             summary : article.summary,
-            content : decodeURIComponent(article.content),
-            is_favour: false,
-            is_collect: false,
+            content : article.content,
             create_time: article.create_time
         };
-        
-        if(!userID){
-            return res.json({
-                flag: '0000',
-                msg: '',
-                result: result,
-            });
-        }
 
-        async.parallel({
-            createHistory: function(cb){
-                historyModel.createBrowseArticleHistory(userID, articleID, cb);
-            },
-            
-            hasFavour: function (cb) {
-                favourModel.findUserFavourArticleByFavourID(userID, articleID, cb);
-            },
-            
-            hasCollect: function (cb) {
-                collectionModel.findUserCollectionArticleByCollectionID(userID, articleID, cb);
-            }
-            
-        }, function (err, results) {
-            if(err){
-                return next(err);
-            }
-            
-            result.is_favour = !!results.hasFavour;
-            result.is_collect = !!results.hasCollect;
-
-            res.json({
-                flag: '0000',
-                msg: '',
-                result: result,
-            });
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: result,
         });
         
+        //创建浏览历史
+        historyModel.createBrowseArticleHistory(userID, articleID, function (err) {
+            if(err){
+                logger.error(err);
+            }
+        });
     });
-    
 };
 
 
@@ -245,4 +218,98 @@ exports.getArticleCommentList = function (req, res, next) {
             }
         });
     });
+};
+
+
+/**
+ * @desc 获取文章最新和最热评论, 评论数，点赞数，是否收藏
+ * */
+exports.getArticleSocialInfo = function (req, res, next) {
+    let articleID = req.query.article_id;
+    let userID = req.session.id;
+    
+    
+    async.parallel({
+        //最热评论
+        hottestComments: function(cb) { 
+            articleModel.getArticleHottestCommentsList(articleID, 5, cb);
+        },
+        
+        //最新评论
+        latestComments: function(cb) { 
+            articleModel.getArticleLatestCommentsList(articleID, 5, cb);
+        },
+        
+        //获取文章信息
+        articleInfo: function(cb) {
+            articleModel.getArticleDetail(articleID, cb);
+        },
+        
+        //是否收藏
+        isCollected: function(cb) {
+            collectionModel.findUserCollectionArticleByCollectionID(userID, articleID, cb)
+        },
+
+        //是否收藏
+        isFavoured: function(cb) {
+            favourModel.findUserFavourArticleByFavourID(userID, articleID, cb)
+        },
+    }, function (err, results) {
+    
+        if(err){
+             return next(err);
+        }
+        
+        let hottestComments = results.hottestComments;
+        let latestComments = results.latestComments;
+        let articleInfo = results.articleInfo;
+        let isCollected = results.isCollected;
+        let isFavoured = results.isFavoured;
+        
+        let result = {
+            favour_count: articleInfo.favour_count,
+            comment_count: articleInfo.comment_count,
+            collect_count: articleInfo.collect_count,
+            browse_count: articleInfo.browse_count,
+            is_collected: !!isCollected,
+            is_favoured: !!isFavoured,
+            hottest_comment_list: [],
+            latest_comment_list: []
+        };
+
+        hottestComments.forEach(function (comment) {
+            if(comment.create_user_id){
+                result.hottest_comment_list.push({
+                    id: comment._id,
+                    content: comment.comment,
+                    favour_count: comment.favour_count,
+                    user_name: comment.create_user_id.user_name,
+                    user_avatar: comment.create_user_id.user_avatar,
+                    create_time: comment.create_time,
+                    article_id: articleID,
+                });
+            }
+        });
+
+        latestComments.forEach(function (comment) {
+            if(comment.create_user_id){
+                result.hottest_comment_list.push({
+                    id: comment._id,
+                    content: comment.comment,
+                    favour_count: comment.favour_count,
+                    user_name: comment.create_user_id.user_name,
+                    user_avatar: comment.create_user_id.user_avatar,
+                    create_time: comment.create_time,
+                    article_id: articleID,
+                });
+            }
+        });
+        
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: result
+        });
+    });
+    
 };

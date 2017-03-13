@@ -48,6 +48,7 @@ ArticleSchema.statics.STATUS = {
 const ArticleCommentSchema = new Schema({
     status          : {type: Number,  required: true},    //文章状态
     content         : {type: String,  required: true},    //评论内容
+    favour_count    : {type: Number,  required: true},    //评论点赞数
     create_time     : {type: Date,    required: true},    //创建时间
     update_time     : {type: Date,    required: true},    //更新时间
     article_id      : {type: ObjectId, required: false, ref: 'Article'},  //文章ID

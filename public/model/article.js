@@ -78,7 +78,8 @@ exports.createNewComment = function (userID, articleID, comment, callback) {
 
     let commentDoc = {
         status          : ArticleComment.STATUS.ENABLE,    //文章状态
-        content         : comment,    //评论内容
+        content         : comment,       //评论内容
+        favour_count    : 0,             //评论点赞数
         create_time     : new Date(),    //创建时间
         update_time     : new Date(),    //更新时间
         article_id      : articleID,  //文章ID
@@ -238,4 +239,48 @@ exports.getArticleCommentsList = function (articleID, pageSkip, pageSize, callba
                 .exec(cb);
         },
     }, callback);
+};
+
+/**
+ * @desc 获取文章最热评论列表
+ * */
+exports.getArticleHottestCommentsList = function (articleID, count, callback) {
+    let condition = {
+        article_id: articleID,
+        status: ArticleComment.STATUS.ENABLE
+    };
+
+    ArticleComment.find(condition)
+        .populate({
+            path: 'create_user_id',
+            match: {
+                _id: {$exists : true},
+                status: User.STATUS.NORMAL
+            }
+        })
+        .sort('-favour_count -create_time')
+        .limit(count)
+        .exec(callback);
+};
+
+/**
+ * @desc 获取文章最新评论列表
+ * */
+exports.getArticleLatestCommentsList = function (articleID, count, callback) {
+    let condition = {
+        article_id: articleID,
+        status: ArticleComment.STATUS.ENABLE
+    };
+
+    ArticleComment.find(condition)
+        .populate({
+            path: 'create_user_id',
+            match: {
+                _id: {$exists : true},
+                status: User.STATUS.NORMAL
+            }
+        })
+        .sort('-create_time -_id')
+        .limit(count)
+        .exec(callback);
 };

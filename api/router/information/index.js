@@ -19,4 +19,7 @@ exports.map = function(app){
     
     //文章评论
     app.get('/subject/article/comments', article.getArticleCommentList);     //获取文章评论列表
+    
+    //获取文章其他信息，最新与最热评论，是否关注
+    app.get('/subject/article/social/info', article.getArticleSocialInfo);   //获取文章的其他社交信息
 };
