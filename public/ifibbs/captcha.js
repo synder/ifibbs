@@ -61,12 +61,23 @@ exports.sendSmsSecurityCode = function (phone, callback) {
                 return callback(new Error('sms security code save failed'));
             }
 
+            let condition = {
+                uid: doc.uid,
+            };
+
+            let update = {
+                $set: {
+                    status: SecurityCode.STATUS.DISABLED,
+                }
+            };
             ifibbsSms.send(phone, message, function (err, result) {
                 if(err){
+                    SecurityCode.update(condition, update);
                     return callback(err);
                 }
 
                 if(!result){
+                    SecurityCode.update(condition, update);
                     return callback(new Error('sms security code send failed'));
                 }
 
