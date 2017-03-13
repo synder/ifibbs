@@ -5,14 +5,14 @@
  */
 
 const async = require('async');
-const ifibbs = require('../service/mongodb').ifibbs;
-const elasticsearch = require('../service/elasticsearch').client;
-const rabbit = require('../service/rabbit');
+const ifibbsMongodb = require('../service/mongodb').ifibbs;
+const ifibbsElasticsearch = require('../service/elasticsearch').ifibbs;
+const ifibbsRabbit = require('../service/rabbit').ifibbs;
 
-const User = ifibbs.model('User');
-const Question = ifibbs.model('Question');
-const QuestionAnswer = ifibbs.model('QuestionAnswer');
-const UserDynamic = ifibbs.model('UserDynamic');
+const User = ifibbsMongodb.model('User');
+const Question = ifibbsMongodb.model('Question');
+const QuestionAnswer = ifibbsMongodb.model('QuestionAnswer');
+const UserDynamic = ifibbsMongodb.model('UserDynamic');
 
 /**
  * @desc 新建问题
@@ -78,9 +78,9 @@ exports.createNewQuestion = function (userID, question, callback) {
                     create_user_avatar: user.user_avatar,
                 };
 
-                elasticsearch.create({
-                    index: elasticsearch.indices.question,
-                    type: elasticsearch.indices.question,
+                ifibbsElasticsearch.create({
+                    index: ifibbsElasticsearch.indices.question,
+                    type: ifibbsElasticsearch.indices.question,
                     id: questionID.toString(),
                     body: elasticDoc
                 }, cb);
@@ -132,9 +132,9 @@ exports.removeUserQuestion = function (questionID, callback) {
             return callback(null, false);
         }
 
-        elasticsearch.delete({
-            index: elasticsearch.indices.question,
-            type: elasticsearch.indices.question,
+        ifibbsElasticsearch.delete({
+            index: ifibbsElasticsearch.indices.question,
+            type: ifibbsElasticsearch.indices.question,
             id: questionID.toString()
         }, function (err, results) {
 
@@ -215,8 +215,8 @@ exports.getQuestionDetail = function (questionID, callback) {
  * */
 exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callback) {
 
-    elasticsearch.search({
-        index: elasticsearch.indices.question,
+    ifibbsElasticsearch.search({
+        index: ifibbsElasticsearch.indices.question,
         from: pageSkip,
         size: pageSize,
         body: {
@@ -273,8 +273,8 @@ exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callb
  * @desc 根据问题回答搜索问题
  * */
 exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback) {
-    elasticsearch.search({
-        index: elasticsearch.indices.answer,
+    ifibbsElasticsearch.search({
+        index: ifibbsElasticsearch.indices.answer,
         from: pageSkip,
         size: pageSize,
         body: {

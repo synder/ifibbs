@@ -6,15 +6,17 @@
 
 const url = require('url');
 
-const queues = require('./queues/index');
+const queues = require('./ifibbs/index');
 const Connection = require('./lib/index').Connection;
 const config = require('../config');
 
-if(!config && !config.amqp && config.amqp.host){
+if(!config && !config.amqp && config.amqp.ifibbs){
     throw new Error('please provide amqp config');
 }
 
-const client = new Connection(config.amqp.host, config.amqp.port);
+const IFIBBS_CONFIG = config.amqp.ifibbs;
 
-exports.client = client;
-exports.queues = queues;
+const IFIBBS_CLIENT = new Connection(IFIBBS_CONFIG.host, IFIBBS_CONFIG.port);
+
+exports.ifibbs = IFIBBS_CLIENT;
+exports.ifibbs.queues = queues;

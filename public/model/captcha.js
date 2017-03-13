@@ -5,11 +5,11 @@
  */
 
 const uuid = require('uuid/v4');
-const ifibbs = require('../service/mongodb').ifibbs;
-const redis = require('../service/redis').client;
-const sms = require('../service/sms').client;
+const ifibbsMongodb = require('../service/mongodb').ifibbs;
+const ifibbsRedis = require('../service/redis').ifibbs;
+const ifibbsSms = require('../service/sms').ifibbs;
 
-const SecurityCode = ifibbs.model('SecurityCode');
+const SecurityCode = ifibbsMongodb.model('SecurityCode');
 
 const genSmsCodeFrequencyKey = function (phone) {
     return 'SSC:' + phone;
@@ -42,7 +42,7 @@ exports.sendSmsSecurityCode = function (phone, callback) {
     //发送频率验证
     let key = genSmsCodeFrequencyKey(phone);
     
-    redis.get(key, function (err, val) {
+    ifibbsRedis.get(key, function (err, val) {
 
         if(err){
             return callback(err);
@@ -61,7 +61,7 @@ exports.sendSmsSecurityCode = function (phone, callback) {
                 return callback(new Error('sms security code save failed'));
             }
 
-            sms.send(phone, message, function (err, result) {
+            ifibbsSms.send(phone, message, function (err, result) {
                 if(err){
                     return callback(err);
                 }
@@ -70,7 +70,7 @@ exports.sendSmsSecurityCode = function (phone, callback) {
                     return callback(new Error('sms security code send failed'));
                 }
 
-                redis.setex(key, frequency, code, function (err, ok) {
+                ifibbsRedis.setex(key, frequency, code, function (err, ok) {
                     if(err){
                         return callback(err);
                     }

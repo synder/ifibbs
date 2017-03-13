@@ -4,18 +4,18 @@
  * @desc
  */
 
-const config = require('../config');
-
 const Sequelize = require('sequelize');
 
-const user = require('./schema/user');
+const config = require('../config');
 
-if(!config && !config.mysql && config.mysql.user && config.mysql.host){
+if(!config && !config.mysql && config.mysql.user && config.mysql.ifibbs){
     throw new Error('please provide mongodb config');
 }
 
-const mysql = new Sequelize(config.mysql.database, config.mysql.username, config.mysql.password, {
-    host: config.mysql.host,
+const IFIBBS_CONFIG = config.mysql.ifibbs;
+
+const IFIBBS_CLIENT = new Sequelize(IFIBBS_CONFIG.database, IFIBBS_CONFIG.username, IFIBBS_CONFIG.password, {
+    host: IFIBBS_CONFIG.host,
     dialect: 'mysql',
     pool: {
         max: 5,
@@ -24,15 +24,18 @@ const mysql = new Sequelize(config.mysql.database, config.mysql.username, config
     },
 });
 
-exports.db = user.define(mysql);
+const user = require('./ifibbs/user');
 
+exports.ifibbs = user.define(IFIBBS_CLIENT);
 
-if(process.env.INIT_MYSQL === 'yes'){
-    mysql.sync({force: true}).then(function (err) {
-        if(err){
-            return console.error(err);
-        }
-        
-        console.log('init mysql success');
-    });
-}
+exports.init = function () {
+    if(process.env.INIT_MYSQL === 'yes'){
+        IFIBBS_CLIENT.sync({force: true}).then(function (err) {
+            if(err){
+                return console.error(err);
+            }
+
+            console.log('init mysql success');
+        });
+    }
+};

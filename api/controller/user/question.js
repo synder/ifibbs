@@ -139,6 +139,10 @@ exports.addNewUserQuestion = function(req, res, next){
             questionModel.createNewQuestion(createUserId, questionDoc, cb);
         },
     ], function (err, questionID) {
+        
+        if(err){
+            return next(err);
+        }
 
         notificationModel.produceForUserPublishNewQuestionMQS(questionID, function (err) {
             if(err){

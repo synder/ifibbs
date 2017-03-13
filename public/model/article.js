@@ -6,13 +6,13 @@
 
 
 const async = require('async');
-const ifibbs = require('../service/mongodb').ifibbs;
-const elasticsearch = require('../service/elasticsearch').client;
+const ifibbsMongodb = require('../service/mongodb').ifibbs;
+const ifibbsElastic = require('../service/elasticsearch').ifibbs;
 
-const Article = ifibbs.model('Article');
-const ArticleComment = ifibbs.model('ArticleComment');
-const Subject = ifibbs.model('Subject');
-const User = ifibbs.model('User');
+const Article = ifibbsMongodb.model('Article');
+const ArticleComment = ifibbsMongodb.model('ArticleComment');
+const Subject = ifibbsMongodb.model('Subject');
+const User = ifibbsMongodb.model('User');
 
 /**
  * @desc 创建新的文章
@@ -61,6 +61,8 @@ exports.createOrUpdateNewArticle = function (createUserID, subjectID, article, c
         if(!subjectID){
             return callback(null, article);
         }
+        
+        //todo 创建搜索索引
 
         //更新专题文章数
         Subject.update({_id: subjectID}, {$inc: {article_count: 1}}, function (err) {
@@ -135,6 +137,8 @@ exports.removeArticle = function (articleID, callback) {
         if(!article.subject_id){
             return callback(null, false);
         }
+        
+        //删除搜索索引
 
         //更新专题文章数
         let subjectCondition = {_id: article.subject_id, article_count:{$gte: 1}};

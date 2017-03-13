@@ -8,13 +8,13 @@ const async = require('async');
 const crypto = require('crypto');
 
 const mongodb = require('../service/mongodb');
-const ifibbs = mongodb.ifibbs;
-const redis = require('../service/redis').client;
+const ifibbsMongodb = mongodb.ifibbs;
+const ifibbsRedis = require('../service/redis').ifibbs;
 
-const User = ifibbs.model('User');
-const AttentionUser = ifibbs.model('AttentionUser');
-const QuestionAnswer = ifibbs.model('QuestionAnswer');
-const AnswerComment = ifibbs.model('AnswerComment');
+const User = ifibbsMongodb.model('User');
+const AttentionUser = ifibbsMongodb.model('AttentionUser');
+const QuestionAnswer = ifibbsMongodb.model('QuestionAnswer');
+const AnswerComment = ifibbsMongodb.model('AnswerComment');
 
 const self = this;
 
@@ -383,7 +383,7 @@ exports.updateUserLoginToken = function (userID, token, expire, callback) {
     
     let cacheTokenKey = genTokenCacheKey(token);
 
-    redis.setex(cacheTokenKey, sessionExpire, sessionString, function (err, result) {
+    ifibbsRedis.setex(cacheTokenKey, sessionExpire, sessionString, function (err, result) {
         if (err) {
             return callback(err)
         }
@@ -418,7 +418,7 @@ exports.getUserLoginToken = function (token, callback) {
 
     let cacheTokenKey = genTokenCacheKey(token);
 
-    redis.get(cacheTokenKey, function (err, session) {
+    ifibbsRedis.get(cacheTokenKey, function (err, session) {
         if (err) {
             return callback(err)
         }

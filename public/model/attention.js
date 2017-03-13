@@ -4,15 +4,15 @@
  * @desc
  */
 const async = require('async');
-const ifibbs = require('../service/mongodb').ifibbs;
+const ifibbsMongodb = require('../service/mongodb').ifibbs;
 
-const User = ifibbs.model('User');
-const UserDynamic = ifibbs.model('UserDynamic');
-const Subject = ifibbs.model('Subject');
-const Question = ifibbs.model('Question');
-const AttentionQuestion = ifibbs.model('AttentionQuestion');
-const AttentionSubject = ifibbs.model('AttentionSubject');
-const AttentionUser = ifibbs.model('AttentionUser');
+const User = ifibbsMongodb.model('User');
+const UserDynamic = ifibbsMongodb.model('UserDynamic');
+const Subject = ifibbsMongodb.model('Subject');
+const Question = ifibbsMongodb.model('Question');
+const AttentionQuestion = ifibbsMongodb.model('AttentionQuestion');
+const AttentionSubject = ifibbsMongodb.model('AttentionSubject');
+const AttentionUser = ifibbsMongodb.model('AttentionUser');
 
 /**
  * @desc 获取用户关注的问题列表

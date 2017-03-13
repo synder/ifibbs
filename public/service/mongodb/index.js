@@ -10,41 +10,41 @@ const config = require('../config');
 
 mongoose.Promise = global.Promise;
 
-if(!config && !config.mongodb && config.mongodb.url){
+if(!config && !config.mongodb && config.mongodb.ifibbs){
     throw new Error('please provide mongodb config');
 }
 
+const IFIBBS_CONFIG = config.mongodb.ifibbs;
 
-const option =  {
-    user: config.mongodb.user,
-    pass: config.mongodb.password
-};
 
-const ifibbs = mongoose.createConnection(config.mongodb.url, option);
+const ifibbs = mongoose.createConnection(IFIBBS_CONFIG.url, {
+    user: IFIBBS_CONFIG.user,
+    pass: IFIBBS_CONFIG.password
+});
 
 ifibbs.on('error', function(err){
     console.error(err.stack);
 });
 
 //define model===========================================
-const activity = require('./schema/activity');
-const answer = require('./schema/answer');
-const article = require('./schema/article');
-const attention = require('./schema/attention');
-const captcha = require('./schema/captcha');
-const collection = require('./schema/collection');
-const device = require('./schema/device');
-const favour = require('./schema/favour');
-const history = require('./schema/history');
-const notification = require('./schema/notification');
-const question = require('./schema/question');
-const recommend = require('./schema/recommend');
-const subject = require('./schema/subject');
-const tag = require('./schema/tag');
-const user = require('./schema/user');
-const dynamic = require('./schema/dynamic');
-const share = require('./schema/share');
-const complaint = require('./schema/complaint');
+const activity = require('./ifibbs/activity');
+const answer = require('./ifibbs/answer');
+const article = require('./ifibbs/article');
+const attention = require('./ifibbs/attention');
+const captcha = require('./ifibbs/captcha');
+const collection = require('./ifibbs/collection');
+const device = require('./ifibbs/device');
+const favour = require('./ifibbs/favour');
+const history = require('./ifibbs/history');
+const notification = require('./ifibbs/notification');
+const question = require('./ifibbs/question');
+const recommend = require('./ifibbs/recommend');
+const subject = require('./ifibbs/subject');
+const tag = require('./ifibbs/tag');
+const user = require('./ifibbs/user');
+const dynamic = require('./ifibbs/dynamic');
+const share = require('./ifibbs/share');
+const complaint = require('./ifibbs/complaint');
 
 
 

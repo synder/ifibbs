@@ -5,20 +5,20 @@
  */
 
 const async = require('async');
-const ifibbs = require('../service/mongodb').ifibbs;
-const rabbit = require('../service/rabbit');
-const getui = require('../service/getui');
+const ifibbsMongodb = require('../service/mongodb').ifibbs;
+const ifibbsRabbit = require('../service/rabbit').ifibbs;
+const ifibbsGetui = require('../service/getui');
 
-const User = ifibbs.model('User');
-const Article = ifibbs.model('Article');
-const Subject = ifibbs.model('Subject');
-const Question = ifibbs.model('Question');
-const QuestionAnswer = ifibbs.model('QuestionAnswer');
-const AnswerComment = ifibbs.model('AnswerComment');
-const UserNotification = ifibbs.model('UserNotification');
-const AttentionUser = ifibbs.model('AttentionUser');
-const AttentionSubject = ifibbs.model('AttentionSubject');
-const AttentionQuestion = ifibbs.model('AttentionQuestion');
+const User = ifibbsMongodb.model('User');
+const Article = ifibbsMongodb.model('Article');
+const Subject = ifibbsMongodb.model('Subject');
+const Question = ifibbsMongodb.model('Question');
+const QuestionAnswer = ifibbsMongodb.model('QuestionAnswer');
+const AnswerComment = ifibbsMongodb.model('AnswerComment');
+const UserNotification = ifibbsMongodb.model('UserNotification');
+const AttentionUser = ifibbsMongodb.model('AttentionUser');
+const AttentionSubject = ifibbsMongodb.model('AttentionSubject');
+const AttentionQuestion = ifibbsMongodb.model('AttentionQuestion');
 
 
 /**
@@ -163,20 +163,20 @@ exports.removeNotification = function (userID, notificationIDS, callback) {
  * */
 exports.produceForQuestionBeenStickiedMQS = function (questionID, callback) {
 
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
 
     let message = questionID + '';
 
-    rabbit.client.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForQuestionBeenStickiedMQS = function (callback) {
 
     //推送通知给创建问题的用户和关注该问题的用户
 
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
 
-    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -225,7 +225,7 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
                         async.parallel({
                             push: function (cb) {
                                 //推送通知给问题的所有者
-                                getui.notifyTransmissionMsg([createUserGetuiCID], message, content, cb);
+                                ifibbsGetui.notifyTransmissionMsg([createUserGetuiCID], message, content, cb);
                             },
                             save: function (cb) {
                                 UserNotification.create({
@@ -282,7 +282,7 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
                                     UserNotification.create(notifications, cb);
                                 },
                                 push: function (cb) {
-                                    getui.notifyTransmissionMsg(true, clientIDS, message, content, cb);
+                                    ifibbsGetui.notifyTransmissionMsg(true, clientIDS, message, content, cb);
                                 },
                             }, function (err) {
 
@@ -378,17 +378,17 @@ exports.produceForQuestionBeenDeletedMQS = function (questionID, callback) {
 
     questionID = questionID.toString();
 
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_DELETED;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_DELETED;
 
-    rabbit.client.produceMessage(QUEUE, questionID, callback);
+    ifibbsRabbit.produceMessage(QUEUE, questionID, callback);
 };
 
 exports.consumeForQuestionBeenDeletedMQS = function (callback) {
 
     //推送通知给问题的所有者
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_DELETED;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_DELETED;
 
-    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -433,7 +433,7 @@ exports.consumeForQuestionBeenDeletedMQS = function (callback) {
                 async.parallel({
                     push: function (cb) {
                         //推送通知给问题的所有者
-                        getui.notifyTransmissionMsg([getuiCID], message, content, cb);
+                        ifibbsGetui.notifyTransmissionMsg([getuiCID], message, content, cb);
                     },
                     save: function (cb) {
                         UserNotification.create({
@@ -465,19 +465,19 @@ exports.consumeForQuestionBeenDeletedMQS = function (callback) {
 exports.produceForQuestionBeenAttentionMQS = function (userID, questionID, callback) {
     questionID = questionID.toString();
 
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_ATTENTION;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_ATTENTION;
 
     let message = userID + ':' + questionID;
 
-    rabbit.client.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForQuestionBeenAttentionMQS = function (callback) {
     //推送通知给问题的所有者
 
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_ATTENTION;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_ATTENTION;
 
-    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -535,7 +535,7 @@ exports.consumeForQuestionBeenAttentionMQS = function (callback) {
                 async.parallel({
                     push: function (cb) {
                         //推送通知给问题的所有者
-                        getui.notifyTransmissionMsg([questionCreateUserGetuiCID], message, content, cb);
+                        ifibbsGetui.notifyTransmissionMsg([questionCreateUserGetuiCID], message, content, cb);
                     },
                     save: function (cb) {
                         UserNotification.create({
@@ -568,20 +568,20 @@ exports.produceForQuestionBeenAnsweredMQS = function (questionID, answerID, call
 
     answerID = answerID.toString();
 
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_ANSWERED;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_ANSWERED;
 
     let message = questionID + ':' + answerID;
 
-    rabbit.client.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
 
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_ANSWERED;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_ANSWERED;
 
     //推送通知给问题所有者和问题关注者
 
-    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -668,7 +668,7 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
                     async.parallel({
                         push: function (cb) {
                             //推送通知给问题的所有者
-                            getui.notifyTransmissionMsg([questionCreateUserGetuiCID], message, content, cb);
+                            ifibbsGetui.notifyTransmissionMsg([questionCreateUserGetuiCID], message, content, cb);
                         },
                         save: function (cb) {
                             UserNotification.create({
@@ -724,7 +724,7 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
                                 UserNotification.create(notifications, cb);
                             },
                             push: function (cb) {
-                                getui.notifyTransmissionMsg(true, clientIDS, message, content, cb);
+                                ifibbsGetui.notifyTransmissionMsg(true, clientIDS, message, content, cb);
                             },
                         }, function (err) {
 
@@ -820,18 +820,18 @@ exports.produceForQuestionBeenSharedMQS = function (userID, questionID, callback
 
     questionID = questionID.toString();
 
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_SHARED;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_SHARED;
 
     let message = userID + ':' + questionID;
 
-    rabbit.client.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForQuestionBeenSharedMQS = function (callback) {
 
-    const QUEUE = rabbit.queues.notifications.USER_QUESTION_BEEN_SHARED;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_SHARED;
 
-    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -893,7 +893,7 @@ exports.consumeForQuestionBeenSharedMQS = function (callback) {
             async.parallel({
                 push: function (cb) {
                     //推送通知给问题的所有者
-                    getui.notifyTransmissionMsg([questionOwnerGetuiCID], message, content, cb);
+                    ifibbsGetui.notifyTransmissionMsg([questionOwnerGetuiCID], message, content, cb);
                 },
                 save: function (cb) {
                     UserNotification.create({
@@ -924,18 +924,18 @@ exports.consumeForQuestionBeenSharedMQS = function (callback) {
  * */
 exports.produceForAnswerBeenFavouredMQS = function (userID, answerID, callback) {
 
-    const QUEUE = rabbit.queues.notifications.USER_ANSWER_BEEN_FAVOURED;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_ANSWER_BEEN_FAVOURED;
 
     let message = userID + ':' + answerID;
 
-    rabbit.client.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForAnswerBeenFavouredMQS = function (callback) {
 
-    const QUEUE = rabbit.queues.notifications.USER_ANSWER_BEEN_FAVOURED;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_ANSWER_BEEN_FAVOURED;
 
-    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -998,7 +998,7 @@ exports.consumeForAnswerBeenFavouredMQS = function (callback) {
             async.parallel({
                 push: function (cb) {
                     //推送通知给问题的所有者
-                    getui.notifyTransmissionMsg([answerUserGetuiCID], message, content, cb);
+                    ifibbsGetui.notifyTransmissionMsg([answerUserGetuiCID], message, content, cb);
                 },
                 save: function (cb) {
                     UserNotification.create({
@@ -1029,19 +1029,19 @@ exports.consumeForAnswerBeenFavouredMQS = function (callback) {
  * */
 exports.produceForAnswerBeenCommendedMQS = function (answerID, commentID, callback) {
 
-    const QUEUE = rabbit.queues.notifications.USER_ANSWER_BEEN_COMMEND;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_ANSWER_BEEN_COMMEND;
 
     let message = answerID + ':' + commentID;
 
-    rabbit.client.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.produceMessage(QUEUE, message, callback);
 
 };
 
 exports.consumeForAnswerBeenCommendedMQS = function (callback) {
 
-    const QUEUE = rabbit.queues.notifications.USER_ANSWER_BEEN_COMMEND;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_ANSWER_BEEN_COMMEND;
 
-    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -1107,7 +1107,7 @@ exports.consumeForAnswerBeenCommendedMQS = function (callback) {
             async.parallel({
                 push: function (cb) {
                     //推送通知给问题的所有者
-                    getui.notifyTransmissionMsg([answerUserGetuiCID], message, content, cb);
+                    ifibbsGetui.notifyTransmissionMsg([answerUserGetuiCID], message, content, cb);
                 },
                 save: function (cb) {
                     UserNotification.create({
@@ -1140,17 +1140,17 @@ exports.consumeForAnswerBeenCommendedMQS = function (callback) {
  * */
 exports.produceForUserPublishNewQuestionMQS = function (questionID, callback) {
 
-    const QUEUE = rabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
+    const QUEUE = ifibbsRabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
 
     let message = questionID.toString();
 
-    rabbit.client.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForUserPublishNewQuestionMQS = function (callback) {
-    const QUEUE = rabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
+    const QUEUE = ifibbsRabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
 
-    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -1212,7 +1212,7 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
                             UserNotification.create(notifications, cb);
                         },
                         push: function (cb) {
-                            getui.notifyTransmissionMsg(true, clientIDS, message, content, cb);
+                            ifibbsGetui.notifyTransmissionMsg(true, clientIDS, message, content, cb);
                         },
                     }, function (err) {
 
@@ -1302,18 +1302,18 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
  * */
 exports.produceForSubjectHasNewArticleMQS = function (subjectID, articleID, callback) {
 
-    const QUEUE = rabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
+    const QUEUE = ifibbsRabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
 
     let message = subjectID + ':' + articleID;
 
-    rabbit.client.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForSubjectHasNewArticleMQS = function (callback) {
 
-    const QUEUE = rabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
+    const QUEUE = ifibbsRabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
 
-    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -1363,7 +1363,7 @@ exports.consumeForSubjectHasNewArticleMQS = function (callback) {
                         UserNotification.create(notifications, cb);
                     },
                     push: function (cb) {
-                        getui.notifyTransmissionMsg(true, clientIDS, message, content, cb);
+                        ifibbsGetui.notifyTransmissionMsg(true, clientIDS, message, content, cb);
                     },
                 }, function (err) {
 
@@ -1475,18 +1475,18 @@ exports.consumeForSubjectHasNewArticleMQS = function (callback) {
  * */
 exports.produceForUserBeenAttentionMQS = function (userID, toUserID, callback) {
 
-    const QUEUE = rabbit.queues.notifications.USER_BEEN_ATTENTION;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_BEEN_ATTENTION;
 
     let message = userID + ':' + toUserID;
 
-    rabbit.client.produceMessage(QUEUE, message, callback);
+    ifibbsRabbit.produceMessage(QUEUE, message, callback);
 };
 
 exports.consumeForUserBeenAttentionMQS = function (callback) {
 
-    const QUEUE = rabbit.queues.notifications.USER_BEEN_ATTENTION;
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_BEEN_ATTENTION;
 
-    rabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+    ifibbsRabbit.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
@@ -1535,7 +1535,7 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
             async.parallel({
                 push: function (cb) {
                     //推送通知给问题的所有者
-                    getui.notifyTransmissionMsg([toUserGetuiCID], message, content, cb);
+                    ifibbsGetui.notifyTransmissionMsg([toUserGetuiCID], message, content, cb);
                 },
                 save: function (cb) {
                     UserNotification.create({

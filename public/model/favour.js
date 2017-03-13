@@ -6,18 +6,17 @@
 
 
 const async = require('async');
-const ifibbs = require('../service/mongodb').ifibbs;
-const elasticsearch = require('../service/elasticsearch').client;
+const ifibbsMongodb = require('../service/mongodb').ifibbs;
 
-const User = ifibbs.model('User');
-const UserDynamic = ifibbs.model('UserDynamic');
-const Article = ifibbs.model('Article');
-const Question = ifibbs.model('Question');
-const QuestionAnswer = ifibbs.model('QuestionAnswer');
-const AnswerComment = ifibbs.model('AnswerComment');
-const UserFavourAnswer = ifibbs.model('UserFavourAnswer');
-const UserFavourArticle = ifibbs.model('UserFavourArticle');
-const UserFavourAnswerComment = ifibbs.model('UserFavourAnswerComment');
+const User = ifibbsMongodb.model('User');
+const UserDynamic = ifibbsMongodb.model('UserDynamic');
+const Article = ifibbsMongodb.model('Article');
+const Question = ifibbsMongodb.model('Question');
+const QuestionAnswer = ifibbsMongodb.model('QuestionAnswer');
+const AnswerComment = ifibbsMongodb.model('AnswerComment');
+const UserFavourAnswer = ifibbsMongodb.model('UserFavourAnswer');
+const UserFavourArticle = ifibbsMongodb.model('UserFavourArticle');
+const UserFavourAnswerComment = ifibbsMongodb.model('UserFavourAnswerComment');
 
 /**
  * @desc 查询获取用户赞的回答(根据用户ID和关注ID)

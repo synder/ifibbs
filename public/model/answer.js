@@ -5,14 +5,13 @@
  */
 
 const async = require('async');
-const ifibbs = require('../service/mongodb').ifibbs;
-const elasticsearch = require('../service/elasticsearch').client;
-const rabbit = require('../service/rabbit');
+const ifibbsMongodb = require('../service/mongodb').ifibbs;
+const ifibbsElastic = require('../service/elasticsearch').ifibbs;
 
-const QuestionAnswer = ifibbs.model('QuestionAnswer');
-const User = ifibbs.model('User');
-const Question = ifibbs.model('Question');
-const UserDynamic = ifibbs.model('UserDynamic');
+const QuestionAnswer = ifibbsMongodb.model('QuestionAnswer');
+const User = ifibbsMongodb.model('User');
+const Question = ifibbsMongodb.model('Question');
+const UserDynamic = ifibbsMongodb.model('UserDynamic');
 
 /**
  * @desc 获取最热回答列表
@@ -363,9 +362,9 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
         async.parallel({
             //创建es索引
             createElasticSearchIndex: function(cb) {
-                elasticsearch.create({
-                    index: elasticsearch.indices.answer,
-                    type: elasticsearch.indices.answer,
+                ifibbsElastic.create({
+                    index: ifibbsElastic.indices.answer,
+                    type: ifibbsElastic.indices.answer,
                     id: answerID.toString(),
                     body: {
                         create_user_id: userID,
@@ -448,9 +447,9 @@ exports.removeQuestionAnswer = function (answerID, callback) {
 
             //删除搜索引擎索引
             deleteElasticSearchIndex: function(cb) {
-                elasticsearch.delete({
-                    index: elasticsearch.indices.answer,
-                    type: elasticsearch.indices.answer,
+                ifibbsElastic.delete({
+                    index: ifibbsElastic.indices.answer,
+                    type: ifibbsElastic.indices.answer,
                     id: answerID.toString()
                 }, function (err, results) {
                     if(err && err.status == 404){

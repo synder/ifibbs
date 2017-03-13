@@ -5,10 +5,10 @@
  */
 
 
-const ifibbs = require('../service/mongodb').ifibbs;
-const elasticsearch = require('../service/elasticsearch').client;
+const ifibbsMongodb = require('../service/mongodb').ifibbs;
+const ifibbsElasticsearch = require('../service/elasticsearch').ifibbs;
 
-const QuestionTag = ifibbs.model('QuestionTag');
+const QuestionTag = ifibbsMongodb.model('QuestionTag');
 
 
 /**
@@ -28,8 +28,8 @@ exports.getRecommenedQuestionTags = function(count, callback){
  * @desc 搜索标签
  * */
 exports.searchQuestionTags = function (content, callback) {
-    elasticsearch.search({
-        index: elasticsearch.indices.tags,
+    ifibbsElasticsearch.search({
+        index: ifibbsElasticsearch.indices.tags,
         body: {
             query: {
                 multi_match: {

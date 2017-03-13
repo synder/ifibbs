@@ -11,33 +11,33 @@ const Mock = require('mockjs');
 
 
 const mongodb = require('../../../public/service/mongodb');
-const elasticsearch = require('../../../public/service/elasticsearch').client;
 
-const ifibbs = mongodb.ifibbs;
+const ifibbsElasticsearch = require('../../../public/service/elasticsearch').ifibbs;
+const ifibbsMongodb = mongodb.ifibbs;
 
-const Activity = ifibbs.model('Activity');
-const QuestionAnswer = ifibbs.model('QuestionAnswer');
-const Article = ifibbs.model('Article');
-const AttentionQuestion = ifibbs.model('AttentionQuestion');
-const AttentionSubject = ifibbs.model('AttentionSubject');
-const AttentionUser = ifibbs.model('AttentionUser');
-const SecurityCode = ifibbs.model('SecurityCode');
-const UserAnswerCollection = ifibbs.model('UserAnswerCollection');
-const UserArticleCollection = ifibbs.model('UserArticleCollection');
-const AnswerComment = ifibbs.model('AnswerComment');
-const UserDevice = ifibbs.model('UserDevice');
-const UserFavourAnswer = ifibbs.model('UserFavourAnswer');
-const UserFavourArticle = ifibbs.model('UserFavourArticle');
-const UserFavourAnswerComment = ifibbs.model('UserFavourAnswerComment');
-const UserHistory = ifibbs.model('UserHistory');
-const UserNotification = ifibbs.model('UserNotification');
-const Question = ifibbs.model('Question');
-const Recommend = ifibbs.model('Recommend');
-const QuestionTag = ifibbs.model('QuestionTag');
-const Subject = ifibbs.model('Subject');
-const User = ifibbs.model('User');
-const UserDynamic = ifibbs.model('UserDynamic');
-const UserShare = ifibbs.model('UserShare');
+const Activity = ifibbsMongodb.model('Activity');
+const QuestionAnswer = ifibbsMongodb.model('QuestionAnswer');
+const Article = ifibbsMongodb.model('Article');
+const AttentionQuestion = ifibbsMongodb.model('AttentionQuestion');
+const AttentionSubject = ifibbsMongodb.model('AttentionSubject');
+const AttentionUser = ifibbsMongodb.model('AttentionUser');
+const SecurityCode = ifibbsMongodb.model('SecurityCode');
+const UserAnswerCollection = ifibbsMongodb.model('UserAnswerCollection');
+const UserArticleCollection = ifibbsMongodb.model('UserArticleCollection');
+const AnswerComment = ifibbsMongodb.model('AnswerComment');
+const UserDevice = ifibbsMongodb.model('UserDevice');
+const UserFavourAnswer = ifibbsMongodb.model('UserFavourAnswer');
+const UserFavourArticle = ifibbsMongodb.model('UserFavourArticle');
+const UserFavourAnswerComment = ifibbsMongodb.model('UserFavourAnswerComment');
+const UserHistory = ifibbsMongodb.model('UserHistory');
+const UserNotification = ifibbsMongodb.model('UserNotification');
+const Question = ifibbsMongodb.model('Question');
+const Recommend = ifibbsMongodb.model('Recommend');
+const QuestionTag = ifibbsMongodb.model('QuestionTag');
+const Subject = ifibbsMongodb.model('Subject');
+const User = ifibbsMongodb.model('User');
+const UserDynamic = ifibbsMongodb.model('UserDynamic');
+const UserShare = ifibbsMongodb.model('UserShare');
 
 const USER_ID = "58aa50177ddbf5507c51f082";
 const USER_ID_OTHER = "58aa50177ddbf5507c51f083";
@@ -405,8 +405,8 @@ const initQuestion = function (callback) {
             questions.forEach(function (question) {
                 elasticQuestionDocuments.push({
                     "index": {
-                        "_index": elasticsearch.indices.question,
-                        "_type": elasticsearch.indices.question,
+                        "_index": ifibbsElasticsearch.indices.question,
+                        "_type": ifibbsElasticsearch.indices.question,
                         "_id": question._id.toString()
                     }
                 });
@@ -420,7 +420,7 @@ const initQuestion = function (callback) {
                 });
             });
 
-            elasticsearch.bulk({
+            ifibbsElasticsearch.bulk({
                 body: elasticQuestionDocuments
             }, cb);
         },
@@ -495,8 +495,8 @@ const initQuestionAnswer = function (callback) {
                 answers.forEach(function (answer) {
                     elasticQuestionAnswerDocuments.push({
                         "index": {
-                            "_index": elasticsearch.indices.answer,
-                            "_type": elasticsearch.indices.answer,
+                            "_index": ifibbsElasticsearch.indices.answer,
+                            "_type": ifibbsElasticsearch.indices.answer,
                             "_id": answer._id.toString()
                         }
                     });
@@ -513,7 +513,7 @@ const initQuestionAnswer = function (callback) {
                     });
                 });
 
-                elasticsearch.bulk({
+                ifibbsElasticsearch.bulk({
                     body: elasticQuestionAnswerDocuments
                 }, cb);
             },
@@ -911,8 +911,8 @@ const initQuestionTags = function (callback) {
         });
     }
 
-    elasticsearch.deleteByQuery({
-        index: elasticsearch.indices.tags,
+    ifibbsElasticsearch.deleteByQuery({
+        index: ifibbsElasticsearch.indices.tags,
         body: {
             query: {
                 match_all: ''
@@ -929,8 +929,8 @@ const initQuestionTags = function (callback) {
             tags.forEach(function (tag) {
                 elasticTagsDocuments.push({
                     "index": {
-                        "_index": elasticsearch.indices.tags,
-                        "_type": elasticsearch.indices.tags,
+                        "_index": ifibbsElasticsearch.indices.tags,
+                        "_type": ifibbsElasticsearch.indices.tags,
                         "_id": tag._id.toString()
                     }
                 });
@@ -941,7 +941,7 @@ const initQuestionTags = function (callback) {
                 });
             });
 
-            elasticsearch.bulk({
+            ifibbsElasticsearch.bulk({
                 body: elasticTagsDocuments
             }, callback);
         });

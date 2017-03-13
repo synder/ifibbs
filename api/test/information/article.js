@@ -35,8 +35,6 @@ describe('文章相关接口测试', function () {
                     chai.expect(result).to.have.ownProperty('icon');
                     chai.expect(result).to.have.ownProperty('cover');
                     chai.expect(result).to.have.ownProperty('content');
-                    chai.expect(result).to.have.ownProperty('is_favour');
-                    chai.expect(result).to.have.ownProperty('is_collect');
                 }
 
                 done();

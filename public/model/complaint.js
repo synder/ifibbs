@@ -6,10 +6,9 @@
 
 
 const async = require('async');
-const ifibbs = require('../service/mongodb').ifibbs;
-const elasticsearch = require('../service/elasticsearch').client;
+const ifibbsMongodb = require('../service/mongodb').ifibbs;
 
-const UserComplaint = ifibbs.model('UserComplaint');
+const UserComplaint = ifibbsMongodb.model('UserComplaint');
 
 
 exports.createNewComplaint = function (userID, type, reason, complaintID, callback) {

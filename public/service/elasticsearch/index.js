@@ -7,31 +7,33 @@
 const async = require('async');
 const elasticsearch = require('elasticsearch');
 
-const question = require('./indices/question');
-const tags = require('./indices/tags');
-const answer = require('./indices/answer');
-const article = require('./indices/article');
-const subject = require('./indices/subject');
+const question = require('./ifibbs/question');
+const tags = require('./ifibbs/tags');
+const answer = require('./ifibbs/answer');
+const article = require('./ifibbs/article');
+const subject = require('./ifibbs/subject');
 
 const config = require('../config');
 
-if(!config && !config.elasticsearch && !config.elasticsearch.host){
+if(!config && !config.elasticsearch && !config.elasticsearch.ifibbs){
     throw new Error('please provide elasticsearch config');
 }
 
-const host = config.elasticsearch.host;
-const port = config.elasticsearch.port || 9200;
-const log = config.elasticsearch.log || 'error'; 
+const IFIBBS_CONFIG = config.elasticsearch.ifibbs;
 
-const elasticSearchClient = new elasticsearch.Client({
+const host = IFIBBS_CONFIG.host;
+const port = IFIBBS_CONFIG.port || 9200;
+const log = IFIBBS_CONFIG.log || 'error'; 
+
+const IFIBBS_CLIENT = new elasticsearch.Client({
     host: host + ':' + port,
     log: log
 });
 
 //保存原来的indices对象，然后覆盖原来的indices对象，防止index被误删除
-const indices = elasticSearchClient.indices;
+const indices = IFIBBS_CLIENT.indices;
 
-elasticSearchClient.indices = {
+IFIBBS_CLIENT.indices = {
     question: question.index,
     tags: tags.index,
     answer: answer.index,
@@ -39,9 +41,9 @@ elasticSearchClient.indices = {
     subject: subject.index,
 };
 
-exports.client = elasticSearchClient;
+exports.ifibbs = IFIBBS_CLIENT;
 
-exports.init = init = function (callback) {
+exports.ifibbs.init_index = function init(callback) {
     let initIndexMapping = function (mapping, callback) {
         indices.delete({
             index: mapping.index,

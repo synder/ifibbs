@@ -3,23 +3,23 @@
  * */
 
 const config = require('../config');
-
-if(!config.getui || !config.getui.appID){
-    throw new Error('please provide getui config');
-}
-
 const GeTui = require('./sdk/push');
 const Target = require('./sdk/getui/Target');
 
-const HOST = config.getui.protocol === 'http' ? 'http://sdk.open.api.igexin.com/apiex.htm' : 'https://api.getui.com/apiex.htm';
-const APP_ID = config.getui.appID;
-const APP_KEY = config.getui.appKey;
-const MASTER_SECRET = config.getui.masterSecret;
+if(!config.getui || !config.getui.ifibbs){
+    throw new Error('please provide getui config');
+}
+
+const IFIBBS_CONFIG = config.getui.ifibbs;
+const HOST = IFIBBS_CONFIG.protocol === 'http' ? 'http://sdk.open.api.igexin.com/apiex.htm' : 'https://api.getui.com/apiex.htm';
+const APP_ID = IFIBBS_CONFIG.appID;
+const APP_KEY = IFIBBS_CONFIG.appKey;
+const MASTER_SECRET = IFIBBS_CONFIG.masterSecret;
 
 /**
  * @desc 创建推送客户端
  * */
-const client = new GeTui(HOST, APP_KEY, MASTER_SECRET);
+const ifibbs = new GeTui(HOST, APP_KEY, MASTER_SECRET);
 
 /**
  * @desc 苹果推送
@@ -105,7 +105,7 @@ exports.notifyClientToOpenApp = function (isIOS, clientID, title, summary, detai
         template.setApnInfo(payload);
     }
 
-    const batch = client.getBatch();
+    const batch = ifibbs.getBatch();
 
     //个推信息体
     let message = new SingleMessage({
@@ -183,7 +183,7 @@ exports.notifyClientToOpenUrl = function (isIOS, clientID, title, summary, url, 
         template.setApnInfo(payload);
     }
 
-    const batch = client.getBatch();
+    const batch = ifibbs.getBatch();
 
     //个推信息体
     let message = new SingleMessage({
@@ -269,7 +269,7 @@ exports.notifyClientToDownload = function (isIOS, clientID, title, content, icon
         template.setApnInfo(payload);
     }
 
-    const batch = client.getBatch();
+    const batch = ifibbs.getBatch();
 
     //个推信息体
     let message = new SingleMessage({
@@ -354,7 +354,7 @@ exports.notifyTransmissionMsg = function (clientIDS, title, content, callback) {
     template.setApnInfo(payload);
 
     //get batch
-    const batch = client.getBatch();
+    const batch = ifibbs.getBatch();
     
     if(Array.isArray(clientIDS)){
         clientIDS.forEach(function (clientID) {
@@ -449,7 +449,7 @@ exports.broadcastClientsToOpenApp = function (isIOS, title, summary, detail, cal
         speed: 1000
     });
 
-    client.pushMessageToApp(message, taskGroupName, function (err, res) {
+    ifibbs.pushMessageToApp(message, taskGroupName, function (err, res) {
         
         if(err){
             return callback(err);
@@ -519,7 +519,7 @@ exports.broadcastClientsToOpenUrl = function (isIOS, title, summary, url, callba
     }
 
 
-    client.pushMessageToApp(message, taskGroupName, function (err, res) {
+    ifibbs.pushMessageToApp(message, taskGroupName, function (err, res) {
 
         if(err){
             return callback(err);
@@ -596,7 +596,7 @@ exports.broadcastClientsToDownload = function (isIOS, title, content, icon, url,
     }
 
 
-    client.pushMessageToApp(message, taskGroupName, function (err, res) {
+    ifibbs.pushMessageToApp(message, taskGroupName, function (err, res) {
 
         if(err){
             return callback(err);
@@ -659,7 +659,7 @@ exports.broadcastTransmissionMsg = function (isIOS, content, callback) {
     }
 
 
-    client.pushMessageToApp(message, taskGroupName, function (err, res) {
+    ifibbs.pushMessageToApp(message, taskGroupName, function (err, res) {
 
         if(err){
             return callback(err);

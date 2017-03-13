@@ -6,9 +6,9 @@
 
 
 const async = require('async');
-const ifibbs = require('../service/mongodb').ifibbs;
+const ifibbsMongodb = require('../service/mongodb').ifibbs;
 
-const UserDevice = ifibbs.model('UserDevice');
+const UserDevice = ifibbsMongodb.model('UserDevice');
 
 /**
  * @desc 创建新的设备记录

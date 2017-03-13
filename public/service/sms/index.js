@@ -4,14 +4,16 @@
  * @desc 短消息服务
  */
 
-const config = require('../config').sms;
+const config = require('../config');
 
 const DefaultSMSClient = require('./lib/client').DefaultSMSClient;
 
-if(!config && !config.username && !config.password){
-    throw new Error('please provide sms config');
+if(!config && !config.sms && !config.sms.ifibbs){
+    throw new Error('please provide sms.ifibbs config');
 }
 
-const client = new DefaultSMSClient(config.username, config.password);
+const IFIBBS_CONFIG = config.sms.ifibbs;
 
-exports.client = client;
+const IFIBBS_CLIENT = new DefaultSMSClient(IFIBBS_CONFIG.username, IFIBBS_CONFIG.password);
+
+exports.ifibbs = IFIBBS_CLIENT;
