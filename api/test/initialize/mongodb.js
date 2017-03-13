@@ -18,6 +18,7 @@ const ifibbsMongodb = mongodb.client;
 const Activity = ifibbsMongodb.model('Activity');
 const QuestionAnswer = ifibbsMongodb.model('QuestionAnswer');
 const Article = ifibbsMongodb.model('Article');
+const ArticleComment = ifibbsMongodb.model('ArticleComment');
 const AttentionQuestion = ifibbsMongodb.model('AttentionQuestion');
 const AttentionSubject = ifibbsMongodb.model('AttentionSubject');
 const AttentionUser = ifibbsMongodb.model('AttentionUser');
@@ -358,6 +359,35 @@ const initArticle = function (callback) {
     Article.create(docs, callback);
 };
 
+/**
+ * @desc 初始化文章评论数据
+ * */
+const initArticleComment = function (callback) {
+
+    let docs = [{
+        status          : Article.STATUS.PUBLISHED,    //文章状态
+        content         : Mock.Random.ctitle(10, 20),    //评论内容
+        favour_count    : Mock.Random.natural(10, 20),   //评论点赞数
+        create_time     : new Date(),   //创建时间
+        update_time     : new Date(),    //更新时间
+        article_id      : ARTICLE_ID,  //文章ID
+        create_user_id  : USER_ID     //创建人
+    }];
+
+    for (let i = 0; i < 100; i++) {
+        docs.push({
+            status          : Article.STATUS.PUBLISHED,    //文章状态
+            content         : Mock.Random.ctitle(10, 50),    //评论内容
+            favour_count    : Mock.Random.natural(10, 20),   //评论点赞数
+            create_time     : new Date(),   //创建时间
+            update_time     : new Date(),    //更新时间
+            article_id      : ARTICLE_ID,  //文章ID
+            create_user_id  : USER_ID     //创建人
+        });
+    }
+
+    ArticleComment.create(docs, callback);
+};
 
 /**
  * @desc 初始化问题数据
@@ -1030,6 +1060,9 @@ exports.init = function (callback) {
 
             function (cb) {
                 initMongodbSecurityCode(cb);
+            },
+            function (cb) {
+                initArticleComment(cb)
             }
 
         ], callback);
