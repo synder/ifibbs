@@ -164,6 +164,10 @@ exports.removeNotification = function (userID, notificationIDS, callback) {
 exports.produceForQuestionBeenStickiedMQS = function (questionID, callback) {
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_STICKIED;
+    
+    if(!questionID){
+        return callback(new Error('questionID is null'));
+    }
 
     let message = questionID + '';
 
@@ -376,6 +380,10 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
  * */
 exports.produceForQuestionBeenDeletedMQS = function (questionID, callback) {
 
+    if(!questionID){
+        return callback(new Error('questionID is null'));
+    }
+
     questionID = questionID.toString();
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_DELETED;
@@ -463,7 +471,14 @@ exports.consumeForQuestionBeenDeletedMQS = function (callback) {
  * @desc 问题被关注
  * */
 exports.produceForQuestionBeenAttentionMQS = function (userID, questionID, callback) {
-    questionID = questionID.toString();
+    
+    if(!userID){
+        return callback(new Error('userID is null'));
+    }
+
+    if(!questionID){
+        return callback(new Error('questionID is null'));
+    }
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_ATTENTION;
 
@@ -566,7 +581,13 @@ exports.consumeForQuestionBeenAttentionMQS = function (callback) {
  * */
 exports.produceForQuestionBeenAnsweredMQS = function (questionID, answerID, callback) {
 
-    answerID = answerID.toString();
+    if(!answerID){
+        return callback(new Error('answerID is null'));
+    }
+
+    if(!questionID){
+        return callback(new Error('questionID is null'));
+    }
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_ANSWERED;
 
@@ -818,7 +839,13 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
  * */
 exports.produceForQuestionBeenSharedMQS = function (userID, questionID, callback) {
 
-    questionID = questionID.toString();
+    if(!userID){
+        return callback(new Error('userID is null'));
+    }
+
+    if(!questionID){
+        return callback(new Error('questionID is null'));
+    }
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_QUESTION_BEEN_SHARED;
 
@@ -924,6 +951,15 @@ exports.consumeForQuestionBeenSharedMQS = function (callback) {
  * */
 exports.produceForAnswerBeenFavouredMQS = function (userID, answerID, callback) {
 
+    if(!userID){
+        return callback(new Error('userID is null'));
+    }
+
+    if(!answerID){
+        return callback(new Error('answerID is null'));
+    }
+
+
     const QUEUE = ifibbsRabbit.queues.notifications.USER_ANSWER_BEEN_FAVOURED;
 
     let message = userID + ':' + answerID;
@@ -1028,6 +1064,14 @@ exports.consumeForAnswerBeenFavouredMQS = function (callback) {
  * @desc 回答被评论
  * */
 exports.produceForAnswerBeenCommendedMQS = function (answerID, commentID, callback) {
+
+    if(!answerID){
+        return callback(new Error('answerID is null'));
+    }
+
+    if(!commentID){
+        return callback(new Error('commentID is null'));
+    }
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_ANSWER_BEEN_COMMEND;
 
@@ -1139,6 +1183,9 @@ exports.consumeForAnswerBeenCommendedMQS = function (callback) {
  * @desc 用户发布了新的问题
  * */
 exports.produceForUserPublishNewQuestionMQS = function (questionID, callback) {
+    if(!questionID){
+        return callback(new Error('questionID is null'));
+    }
 
     const QUEUE = ifibbsRabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
 
@@ -1301,6 +1348,14 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
  * @desc 专题有了新的文章
  * */
 exports.produceForSubjectHasNewArticleMQS = function (subjectID, articleID, callback) {
+
+    if(!subjectID){
+        return callback(new Error('subjectID is null'));
+    }
+
+    if(!articleID){
+        return callback(new Error('articleID is null'));
+    }
 
     const QUEUE = ifibbsRabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
 
@@ -1474,6 +1529,14 @@ exports.consumeForSubjectHasNewArticleMQS = function (callback) {
  * @desc 用户被关注
  * */
 exports.produceForUserBeenAttentionMQS = function (userID, toUserID, callback) {
+
+    if(!userID){
+        return callback(new Error('userID is null'));
+    }
+
+    if(!toUserID){
+        return callback(new Error('toUserID is null'));
+    }
 
     const QUEUE = ifibbsRabbit.queues.notifications.USER_BEEN_ATTENTION;
 
