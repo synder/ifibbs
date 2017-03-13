@@ -24,7 +24,7 @@ module.exports =  {
      * */
     server: {
         port: {
-            http: 8000,
+            http: 8001,
             https: null
         },
         host: null,
@@ -76,6 +76,17 @@ module.exports =  {
             username: '*@1caifu.com',
             password: '*',
             ssl: true
+        }
+    },
+
+    //拼接地址配置
+    hosts: {
+        //图片拼接地址
+        image: {
+            protocol: 'http',
+            port: 80,
+            host: '192.168.1.193',
+            pathname: 'images'
         }
     }
 };

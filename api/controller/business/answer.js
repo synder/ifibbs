@@ -212,8 +212,8 @@ exports.getAnswerDetail = function(req, res, next){
         }
         
         let answer = results.answerDetail;
-        let isFavour = results.isFavour;
-        let isCollected = results.isCollected;
+        let isFavour = !!results.isFavour;
+        let isCollected = !!results.isCollected;
         
         if(!answer){
             return res.json({

@@ -78,12 +78,15 @@ module.exports =  {
             ssl: true
         }
     },
-    
-    upload: {
+
+    //拼接地址配置
+    hosts: {
+        //图片拼接地址
         image: {
-            dir: '',
-            max:  4 * 1024 * 1024,
-            ext: true
+            protocol: 'http',
+            port: 80,
+            host: '192.168.1.193',
+            pathname: 'images'
         }
     }
 };
