@@ -6,9 +6,9 @@
 
 const async = require('async');
 
-const questionModel = require('../../../public/model/question');
-const notificationModel = require('../../../public/model/notification');
-const tagsModel = require('../../../public/model/tags');
+const questionModel = require('../../../public/ifibbs/question');
+const notificationModel = require('../../../public/ifibbs/notification');
+const tagsModel = require('../../../public/ifibbs/tags');
 
 /**
  * @desc 获取用户提问信息

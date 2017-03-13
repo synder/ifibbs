@@ -4,8 +4,8 @@
  * @desc
  */
 
-const subjectModel = require('../../../public/model/subject');
-const attentionModel = require('../../../public/model/attention');
+const subjectModel = require('../../../public/ifibbs/subject');
+const attentionModel = require('../../../public/ifibbs/attention');
 
 /**
  * @desc 获取专题列表

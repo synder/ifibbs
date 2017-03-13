@@ -5,7 +5,7 @@
  */
 const async = require('async');
 
-const notificationModel = require('../../../public/model/notification');
+const notificationModel = require('../../../public/ifibbs/notification');
 
 /**
  * @desc 检测用户是否有通知

@@ -4,8 +4,8 @@
  * @desc
  */
 
-const commentModel = require('../../../public/model/comment');
-const notificationModel = require('../../../public/model/notification');
+const commentModel = require('../../../public/ifibbs/comment');
+const notificationModel = require('../../../public/ifibbs/notification');
 
 /**
  * @desc 对回答新增评论

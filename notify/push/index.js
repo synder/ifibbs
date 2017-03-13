@@ -5,7 +5,7 @@
  */
 
 
-const notificationModel = require('../../public/model/notification');
+const notificationModel = require('.././notification');
 
 exports.start = function (callback) {
     notificationModel.consumeForQuestionBeenAnsweredMQS(callback);

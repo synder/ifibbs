@@ -5,7 +5,7 @@
  */
 
 
-const userModel = require('../../../public/model/user');
+const userModel = require('../.././user');
 
 const NODE_ENV = process.env.NODE_ENV;
 

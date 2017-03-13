@@ -4,8 +4,8 @@
  * @desc
  */
 
-const answerModel = require('../../../public/model/answer');
-const notificationModel = require('../../../public/model/notification');
+const answerModel = require('../../../public/ifibbs/answer');
+const notificationModel = require('../../../public/ifibbs/notification');
 
 /**
  * @desc 获取用户提问信息

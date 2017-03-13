@@ -5,7 +5,7 @@
  */
 
 
-const captchaModel = require('../../../public/model/captcha');
+const captchaModel = require('../../../public/ifibbs/captcha');
 
 /***
  * @desc 发送短信验证码

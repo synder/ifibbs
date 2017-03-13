@@ -4,7 +4,7 @@
  * @desc 用户举报
  */
 
-const complaintModel = require('../../../public/model/complaint');
+const complaintModel = require('../../../public/ifibbs/complaint');
 
 /**
  * @desc 用户举报

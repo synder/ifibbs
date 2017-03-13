@@ -4,8 +4,8 @@
  * @desc
  */
 
-const favourModel = require('../../../public/model/favour');
-const notificationModel = require('../../../public/model/notification');
+const favourModel = require('../../../public/ifibbs/favour');
+const notificationModel = require('../../../public/ifibbs/notification');
 
 /**
  * @desc 用户对回答点赞

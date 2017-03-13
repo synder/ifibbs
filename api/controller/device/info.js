@@ -6,7 +6,7 @@
 
 const async = require('async');
 
-const deviceModel = require('../../../public/model/device');
+const deviceModel = require('../../../public/ifibbs/device');
 
 /**
  * @desc 上报用户设备信息

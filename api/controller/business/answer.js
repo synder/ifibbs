@@ -6,10 +6,10 @@
 
 const async = require('async');
 
-const answerModel = require('../../../public/model/answer');
-const favourModel = require('../../../public/model/favour');
-const attentionModel = require('../../../public/model/attention');
-const collectionModel = require('../../../public/model/collection');
+const answerModel = require('../../../public/ifibbs/answer');
+const favourModel = require('../../../public/ifibbs/favour');
+const attentionModel = require('../../../public/ifibbs/attention');
+const collectionModel = require('../../../public/ifibbs/collection');
 
 /**
  * @desc 热门回答

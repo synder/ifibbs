@@ -4,8 +4,8 @@
  * @desc
  */
 
-const attentionModel = require('../../../public/model/attention');
-const notificationModel = require('../../../public/model/notification');
+const attentionModel = require('../../../public/ifibbs/attention');
+const notificationModel = require('../../../public/ifibbs/notification');
 
 /**
  * @desc 获取用户关注的问题列表

@@ -15,10 +15,10 @@ if(!(hosts && hosts.h5)){
 //文章详情H5页面
 const ARTICLE_H5_PAGE_NAME = 'article.html';
 
-const articleModel = require('../../../public/model/article');
-const collectionModel = require('../../../public/model/collection');
-const favourModel = require('../../../public/model/favour');
-const historyModel = require('../../../public/model/history');
+const articleModel = require('../../../public/ifibbs/article');
+const collectionModel = require('../../../public/ifibbs/collection');
+const favourModel = require('../../../public/ifibbs/favour');
+const historyModel = require('../../../public/ifibbs/history');
 
 /**
  * @desc 获取推荐文章列表

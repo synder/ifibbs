@@ -17,7 +17,7 @@ if(!(hosts && hosts.h5)){
     throw new Error('please provide h5 host config');
 }
 
-const recommendModel = require('../../../public/model/recommend');
+const recommendModel = require('../../../public/ifibbs/recommend');
 
 exports.getRecommendList = function(req, res, next){
     let pageSize = req.query.page_size;
