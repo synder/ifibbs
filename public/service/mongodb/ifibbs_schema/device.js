@@ -25,7 +25,7 @@ UserDeviceSchema.virtual('id', function () {
  });
 
 UserDeviceSchema.index({belong_user_id : 1});
-UserDeviceSchema.index({device_token : 1, unique: true});
+UserDeviceSchema.index({device_token : 1});
 
 UserDeviceSchema.statics.PLATFORM = {
     ANDROID: 1,
