@@ -45,9 +45,13 @@ class LocalFileService extends DefaultFileService {
     }
 }
 
+
+/**
+ * @desc 保存数据到oss
+ * */
 class OssFileService extends DefaultFileService {
 
-    persistence(target, filename, stream, callback){
+    persistence(filename, stream, callback){
 
     }
 }
