@@ -33,61 +33,65 @@ exports.page = function (req, res, next) {
  * @desc 批量上传接口
  * */
 exports.batch = function (req, res, next) {
+    
+    let contentLength = req.headers['content-length'];
 
     const form = new formidable.IncomingForm();
 
     form.keepExtensions = true;
     form.maxFieldsSize = 1024;
     form.multiples = true;
+    form.maxFields = 10;
 
     let result = {};
 
     form.onPart = function (part) {
+        
+        let self = this;
 
         let fileName = part.filename;
+        let mime = part.mime;
+        let ext = path.extname(fileName).toLowerCase();
 
         if (!fileName) {
             return;
         }
+        
+        if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') {
+            return;
+        }
+
+        self._flushing++;
 
         result[fileName] = {
             url: null,
             msg: null
         };
-
-        let mime = part.mime;
-        let ext = path.extname(fileName).toLowerCase();
-
-        if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') {
-            return part.emit('close');
-        }
-
+        
         imageFileModel.saveUserUploadImages(ext, mime, part, function (err, image) {
+            
             if (err) {
                 result[fileName].msg = err.message;
-                return logger.error(err);
+                logger.error(err);
+            }else{
+                result[fileName].url = url.format({
+                    protocol: hosts.image.protocol,
+                    hostname: hosts.image.host,
+                    port: hosts.image.port,
+                    pathname: hosts.image.pathname + '/'+ image.file_name,
+                });
             }
-
-            result[fileName].url = url.format({
-                protocol: hosts.image.protocol,
-                hostname: hosts.image.host,
-                port: hosts.image.port,
-                pathname: hosts.image.pathname + image.file_name,
-            });
+            
+            self._flushing--;
+            self._maybeEnd();
         });
     };
-
-    form
-        .on()
-        .on('error', function (err) {
-            return next(err);
-        })
-        .on('end', function () {
-            res.json({
-                flag: '0000',
-                msg: '',
-                result: result
-            });
-        })
-        .parse(req);
+        
+    form.on('end', function () {
+        res.json({
+            flag: '0000',
+            msg: '',
+            result: result
+        });
+    }).parse(req);
 };
