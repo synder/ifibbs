@@ -281,11 +281,11 @@ exports.getArticleSocialInfo = function (req, res, next) {
             if(comment.create_user_id){
                 result.hottest_comment_list.push({
                     id: comment._id,
-                    content: comment.comment,
+                    content: comment.content,
                     favour_count: comment.favour_count,
                     user_name: comment.create_user_id.user_name,
                     user_avatar: comment.create_user_id.user_avatar,
-                    create_time: comment.create_time,
+                    create_time: comment.create_time.valueOf(),
                     article_id: articleID,
                 });
             }
@@ -295,11 +295,11 @@ exports.getArticleSocialInfo = function (req, res, next) {
             if(comment.create_user_id){
                 result.latest_comment_list.push({
                     id: comment._id,
-                    content: comment.comment,
+                    content: comment.content,
                     favour_count: comment.favour_count,
                     user_name: comment.create_user_id.user_name,
                     user_avatar: comment.create_user_id.user_avatar,
-                    create_time: comment.create_time,
+                    create_time: comment.create_time.valueOf(),
                     article_id: articleID,
                 });
             }
