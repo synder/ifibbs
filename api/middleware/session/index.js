@@ -23,9 +23,9 @@ module.exports = function () {
         let now = Date.now();
 
         if(req.method === 'GET' || req.method === 'DELETE'){
-            token = req.query.token;
+            token = req.query.login_token;
         }else{
-            token = req.body.token;
+            token = req.body.login_token;
         }
         
         token = token ? token.trim() : null;
