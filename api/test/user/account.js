@@ -15,7 +15,7 @@ describe('用户未登录相关接口测试', function() {
             .send({
                 user_mobile: '13550501565',
                 user_password: '12345678',
-                code_id: '58bce997fc71500981a75187',
+                security_code_id: '58bce997fc71500981a75187',
                 code: '903488',
                 register_platform: 1,
                 register_deviceno: 'zhuce',
@@ -242,7 +242,7 @@ describe('用户已登陆接口测试', function() {
             .send({
                 user_mobile: '13550501566',
                 user_password: '12345678',
-                code_id: '58bce997fc71500981a75188',
+                security_code_id: '58bce997fc71500981a75188',
                 code: '903487'
             })
             .expect(200)
