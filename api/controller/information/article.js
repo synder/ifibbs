@@ -293,7 +293,7 @@ exports.getArticleSocialInfo = function (req, res, next) {
 
         latestComments.forEach(function (comment) {
             if(comment.create_user_id){
-                result.hottest_comment_list.push({
+                result.latest_comment_list.push({
                     id: comment._id,
                     content: comment.comment,
                     favour_count: comment.favour_count,
