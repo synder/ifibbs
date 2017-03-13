@@ -14,7 +14,7 @@ const QuestionSchema = new Schema({
     status     : {type: Number, required: true},   //状态
     tags       : {type: Array, required: false},    //标签
     title      : {type: String, required: true},   //问题
-    describe   : {type: String, required: true},   //问题描述
+    describe   : {type: String, required: false},   //问题描述
     answer_count    : {type: Number, required: true},  //回答数量
     favour_count    : {type: Number, required: true},  //点赞数量
     attention_count : {type: Number, required: true},  //关注数量

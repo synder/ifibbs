@@ -34,8 +34,6 @@ exports.createNewQuestion = function (userID, question, callback) {
         create_time: now,
         update_time: now,
     };
-    
-    console.log(questionDoc);
 
     async.parallel({
         //创建问题
