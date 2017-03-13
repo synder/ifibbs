@@ -4,8 +4,17 @@
  * @desc
  */
 
+const url = require('url');
 const path = require('path');
 const formidable = require('formidable');
+
+const imageFileModel = require('../../../public/file/image');
+
+const hosts = global.config.hosts;
+
+if (!(hosts && hosts.image)) {
+    throw new Error('please provide image host config');
+}
 
 /**
  * @desc 测试页面
@@ -13,9 +22,9 @@ const formidable = require('formidable');
 exports.page = function (req, res, next) {
     res.writeHead(200, {'content-type': 'text/html'});
     res.end(
-        '<form action="/upload/images" enctype="multipart/form-data" method="post">'+
-        '<input type="file" name="upload" multiple="multiple"><br>'+
-        '<input type="submit" value="Upload">'+
+        '<form action="/upload/images" enctype="multipart/form-data" method="post">' +
+        '<input type="file" name="upload" multiple="multiple"><br>' +
+        '<input type="submit" value="Upload">' +
         '</form>'
     );
 };
@@ -27,25 +36,58 @@ exports.batch = function (req, res, next) {
 
     const form = new formidable.IncomingForm();
 
-    form.uploadDir = '/Users/synder/Downloads';
     form.keepExtensions = true;
-    form.maxFieldsSize = 1024 * 1024;
+    form.maxFieldsSize = 1024;
     form.multiples = true;
 
-    form.parse(req, function (err, fields, files) {
+    let result = {};
 
-        if (err) {
-            return next(err);
+    form.onPart = function (part) {
+
+        let fileName = part.filename;
+
+        if (!fileName) {
+            return;
         }
 
-        console.log(fields, files);
+        result[fileName] = {
+            url: null,
+            msg: null
+        };
 
-        res.json({
-            flag: '0000',
-            msg: '',
-            result: {
-                file_id: "586f4ceee4b04fdfe6fd2fca"
+        let mime = part.mime;
+        let ext = path.extname(fileName).toLowerCase();
+
+        if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') {
+            return part.emit('close');
+        }
+
+        imageFileModel.saveUserUploadImages(ext, mime, part, function (err, image) {
+            if (err) {
+                result[fileName].msg = err.message;
+                return logger.error(err);
             }
+
+            result[fileName].url = url.format({
+                protocol: hosts.image.protocol,
+                hostname: hosts.image.host,
+                port: hosts.image.port,
+                pathname: hosts.image.pathname + image.file_name,
+            });
         });
-    });
+    };
+
+    form
+        .on()
+        .on('error', function (err) {
+            return next(err);
+        })
+        .on('end', function () {
+            res.json({
+                flag: '0000',
+                msg: '',
+                result: result
+            });
+        })
+        .parse(req);
 };

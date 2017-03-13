@@ -13,7 +13,7 @@ const ObjectId = Schema.Types.ObjectId;
 const ImageFileSchema = new Schema({
     status          : {type: Number, required: true},   //图片状态
     belong_app      : {type: Number, required: true},   //所属APP
-    file_size       : {type: Number, required: true},   //图片大小
+    file_mime       : {type: String, required: true},   //图片大小
     file_path       : {type: String, required: true},   //回答内容
     file_name       : {type: String, required: true},   //图片名称
     create_time     : {type: Date,   required: true},   //创建时间
@@ -31,6 +31,12 @@ ImageFileSchema.index({file_name : 1, unique: true});
 ImageFileSchema.statics.STATUS = {
     ENABLE : 1,
     DISABLE : 0,
+};
+
+//文件状态
+ImageFileSchema.statics.APPS = {
+    IFIBBS_API : 1,
+    IFIBBS_ADMIN : 1,
 };
 
 exports.ImageFileSchema = ImageFileSchema;
