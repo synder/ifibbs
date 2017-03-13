@@ -40,7 +40,7 @@ exports.getRecommendArticleList = function (req, res, next) {
                 port : hosts.h5.port,
                 pathname : ARTICLE_H5_PAGE_NAME,
                 query : {
-                    article_id: article._id.toString()
+                    article_id: '58ae5da34171fd177d387638'//todo 测试修改
                 }
             });
 
