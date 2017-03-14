@@ -7,6 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const mkdirp = require('mkdirp');
 
 class DefaultFileService {
     
@@ -29,7 +30,11 @@ class LocalFileService extends DefaultFileService {
         }
 
         if(!fs.existsSync(this.dir)){
-            fs.mkdirSync(this.dir);
+            mkdirp(this.dir, function (err) {
+                if(err){
+                    console.error(err.stack);
+                }
+            });
         }
     }
 
@@ -45,9 +50,13 @@ class LocalFileService extends DefaultFileService {
     }
 }
 
+
+/**
+ * @desc 保存数据到oss
+ * */
 class OssFileService extends DefaultFileService {
 
-    persistence(target, filename, stream, callback){
+    persistence(filename, stream, callback){
 
     }
 }

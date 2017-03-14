@@ -27,29 +27,6 @@ server.config(function(app){
 });
 
 
-//======================================
-const body = require('body-parser');
-const cookie = require('cookie-parser');
-const timeout = require('connect-timeout');
-const compression = require('compression');
-
-server.middleware(function(app){
-    app.use(compression());
-    app.use(timeout('20s'));
-    app.use(cookie());
-    app.use(body.json());
-    app.use(body.urlencoded({
-        extended: true
-    }));
-});
-
-//=======================================
-
-server.middleware(function (app) {
-   
-});
-
-
 //=======================================
 
 const image = require('./router/image');
