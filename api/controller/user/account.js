@@ -206,7 +206,7 @@ exports.checkThirdParty = function (req, res, next) {
  * @desc 用户注册接口
  * */
 exports.userRegisterWithPhone = function (req, res, next) {
-    let string = Math.random().toString().substr(2, 12);
+
     let mobile = req.body.user_mobile;
     let password = req.body.user_password;
     let codeID = req.body.security_code_id;
@@ -254,7 +254,15 @@ exports.userRegisterWithPhone = function (req, res, next) {
         }
 
         if (!result) {
-            return next(new BadRequestError('this security code has been tampered with'));
+            return res.json({
+                flag: '0000',
+                msg: '',
+                result: {
+                    ok: false,
+                    failed_message: '注册失败',
+                    success_message: null,
+                }
+            });
         }
 
         //写入用户数据
@@ -559,7 +567,7 @@ exports.userBindPhone = function (req, res, next) {
                 msg: '',
                 result: {
                     ok: false,
-                    failed_message: '该短信验证码不可用',
+                    failed_message: '绑定手机失败',
                     success_message: null,
                 }
             });
@@ -722,7 +730,7 @@ exports.modifyUserPassword = function (req, res, next) {
                 msg: '',
                 result: {
                     ok: false,
-                    failed_message: '该短信验证码不可用',
+                    failed_message: '修改密码失败',
                     success_message: null,
                 }
             });
@@ -788,7 +796,7 @@ exports.resetUserPassword = function (req, res, next) {
                 msg: '',
                 result: {
                     ok: false,
-                    failed_message: '该短信验证码不可用',
+                    failed_message: '重置密码失败',
                     success_message: null,
                 }
             });
