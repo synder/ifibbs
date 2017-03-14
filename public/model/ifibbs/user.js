@@ -160,8 +160,9 @@ exports.getUserByMobileAndPassword = function (phone, pass, cid, callback) {
         }
         user.getui_cid = cid;
 
-        user.save();
-        callback(null, user);
+        user.save(function (err) {
+            callback(err, user);
+        });
     });
 };
 
