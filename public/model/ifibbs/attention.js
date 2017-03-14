@@ -151,13 +151,10 @@ exports.findUserAttentionBySubjectID = function (userID, subjectID, callback) {
  * */
 exports.findUserAttentionByUserID = function (userID, otherUserID, callback) {
     
-    userID = userID.trim();
-    otherUserID = otherUserID.trim();
-    
     if(!userID){
         return callback(null, null);
     }
-    
+
     if(!otherUserID){
         return callback(null, null);
     }
