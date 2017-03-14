@@ -40,6 +40,10 @@ class LocalFileService extends DefaultFileService {
         const self = this;
         
         let dirPath = path.join(this.dir, domain);
+        
+        return callback(null, this.dir);
+        
+        //todo
 
         if (this.dirs[dirPath] === true) {
             return callback(null, dirPath);
@@ -51,7 +55,7 @@ class LocalFileService extends DefaultFileService {
                 return callback(null, dirPath);
             }
 
-            fs.mkdir(dirPath, 0o777, function (err) {
+            fs.mkdir(dirPath, 0o755, function (err) {
                 if(err){
                     return callback(err);
                 }
@@ -75,7 +79,10 @@ class LocalFileService extends DefaultFileService {
 
             let writeStream = fs.createWriteStream(filePath);
 
-            readStream.on('error', callback);
+            readStream.on('error', function (err) {
+                fs.unlink();
+            });
+            writeStream.on('error', callback);
 
             writeStream.on('finish', function () {
                 callback(null, filePath);
