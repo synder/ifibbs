@@ -51,7 +51,7 @@ class LocalFileService extends DefaultFileService {
                 return callback(null, dirPath);
             }
 
-            fs.mkdir(dirPath, 0o755, function (err) {
+            fs.mkdir(dirPath, 0o777, function (err) {
                 if(err){
                     return callback(err);
                 }
