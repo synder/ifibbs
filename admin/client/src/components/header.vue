@@ -22,13 +22,11 @@
               console.log(error);
             });
 
-
-  console.log(get())
   export default {
     name: 'header',
     data () {
       return {
-        msg: get()
+        msg: '这是一个头部'
       };
     },
 
