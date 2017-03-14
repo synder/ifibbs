@@ -35,6 +35,10 @@ exports.page = function (req, res, next) {
 exports.batch = function (req, res, next) {
     
     let contentLength = req.headers['content-length'];
+    
+    if(contentLength > 10485760){
+        return next(new Error('request entity too large'));
+    }
 
     const form = new formidable.IncomingForm();
 
