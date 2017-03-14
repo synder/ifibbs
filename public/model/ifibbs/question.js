@@ -61,7 +61,6 @@ exports.createNewQuestion = function (userID, question, callback) {
 
         let questionID = question._id.toString();
 
-
         async.parallel({
             createElasticSearchDoc: function (cb) {
                 
@@ -303,9 +302,6 @@ exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback
 
             let title = hit.highlight.question_title ? hit.highlight.question_title.join() : hit._source.question_title;
             let answerContent = hit.highlight.answer_content ? hit.highlight.answer_content.join() : hit._source.answer_content;
-
-            
-            console.log(hit);
             
             return {
                 question_id: hit._source.question_id,
