@@ -680,6 +680,17 @@ exports.userRemoveThirdParty = function (req, res, next) {
             return next(err);
         }
 
+        if (!success){
+            return res.json({
+                flag: '0000',
+                msg: '',
+                result: {
+                    ok: false,
+                    failed_message: '解绑失败',
+                    success_message: null,
+                }
+            })
+        }
         res.json({
             flag: '0000',
             msg: '',

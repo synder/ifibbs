@@ -870,8 +870,36 @@ exports.removeUserTencentWechat = function (userID, callback) {
             bind_tencent_wechat: true,
         }
     };
+    User.findOne(condition,function (err, result) {
+        if (err){
+            return callback(err)
+        }
 
-    User.update(condition, update, callback)
+        let num = 0;
+
+        if(result && result.bind_tencent_wechat.uid){
+            num +=1;
+        }
+
+        if(result && result.bind_sina_weibo.uid){
+            num +=1;
+        }
+
+        if(result && result.bind_tencent_qq.uid){
+            num +=1;
+        }
+
+        if(result && result.user_mobile){
+            num +=1;
+        }
+
+        if(num < 2){ //判断是否满足解绑条件
+            return callback(null, false)
+        }
+
+        User.update(condition, update, callback)
+    });
+
 };
 
 /*
@@ -893,7 +921,35 @@ exports.removeUserTencentQQ = function (userID, callback) {
         }
     };
 
-    User.update(condition, update, callback)
+    User.findOne(condition,function (err, result) {
+        if (err){
+            return callback(err)
+        }
+
+        let num = 0;
+
+        if(result && result.bind_tencent_wechat.uid){
+            num +=1;
+        }
+
+        if(result && result.bind_sina_weibo.uid){
+            num +=1;
+        }
+
+        if(result && result.bind_tencent_qq.uid){
+            num +=1;
+        }
+
+        if(result && result.user_mobile){
+            num +=1;
+        }
+
+        if(num < 2){ //判断是否满足解绑条件
+            return callback(null, false)
+        }
+
+        User.update(condition, update, callback)
+    });
 };
 
 /*
@@ -915,7 +971,35 @@ exports.removeUserSinaWeibo = function (userID, callback) {
         }
     };
 
-    User.update(condition, update, callback)
+    User.findOne(condition,function (err, result) {
+        if (err){
+            return callback(err)
+        }
+
+        let num = 0;
+
+        if(result && result.bind_tencent_wechat.uid){
+            num +=1;
+        }
+
+        if(result && result.bind_sina_weibo.uid){
+            num +=1;
+        }
+
+        if(result && result.bind_tencent_qq.uid){
+            num +=1;
+        }
+
+        if(result && result.user_mobile){
+            num +=1;
+        }
+
+        if(num < 2){ //判断是否满足解绑条件
+            return callback(null, false)
+        }
+
+        User.update(condition, update, callback)
+    });
 };
 
 //用户统计信息================================================================
