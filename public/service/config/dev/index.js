@@ -97,7 +97,7 @@ module.exports =  {
         //ifibbs的文件服务
         ifibbs: {
             image: {
-                base: '/Users/synder/Downloads',
+                base: '/var/ifibbs/images/',
                 domains: ['avatar', 'question', 'article'] //允许上传的域
             }
         }
