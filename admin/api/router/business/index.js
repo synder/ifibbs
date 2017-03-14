@@ -4,17 +4,10 @@
  * @desc
  */
 
+const test = require('../../controller/business/test')
 
 
 
 exports.map = function (app) {
-    app.get('/test',function (req, res) {
-        res.json({
-            flag: '0000',
-            msg:  '',
-            result: {
-                a:'test'
-            }
-        })
-    })
+    app.get('/test',test.test)
 };

@@ -5,7 +5,7 @@
  */
 
 
-const userModel = require('../../../../public/model/admin/user');
+// const userModel = require('../../../../public/model/admin');
 
 const NODE_ENV = process.env.NODE_ENV;
 
@@ -30,15 +30,24 @@ module.exports = function () {
         
         token = token ? token.trim() : null;
 
+        if(!token && (NODE_ENV === 'pre' || NODE_ENV === 'dev')){
+            req.session = {
+                id: '58aa50177ddbf5507c51f082',
+                username: 'synder',
+                expire: Date.now() + 100000000
+            };
+            return next();
+        }
 
-        userModel.getUserLoginToken(token,function (err, session) {
-            if(err){
-                return next();
-            }
 
-            req.session = session;
-            next();
-        });
+        // userModel.getUserLoginToken(token,function (err, session) {
+        //     if(err){
+        //         return next();
+        //     }
+        //
+        //     req.session = session;
+        //     next();
+        // });
 
 
     }
