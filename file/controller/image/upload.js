@@ -84,7 +84,7 @@ exports.batch = function (req, res, next) {
                     protocol: hosts.image.protocol,
                     hostname: hosts.image.host,
                     port: hosts.image.port,
-                    pathname: hosts.image.pathname(image.file_name),
+                    pathname: hosts.image.pathname(domain, image.file_name),
                 });
             }
             

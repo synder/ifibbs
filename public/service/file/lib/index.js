@@ -68,12 +68,8 @@ class LocalFileService extends DefaultFileService {
             if(err){
                 return callback(err);
             }
-            
-            console.log(dirPath);
 
             let filePath = path.join(dirPath, filename);
-
-            console.log(filePath);
 
             let writeStream = fs.createWriteStream(filePath);
 
