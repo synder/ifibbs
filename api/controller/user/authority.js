@@ -9,7 +9,7 @@
  * */
 exports.check = function (req, res, next) {
     
-    if(!req.session.id){
+    if(!req.session){
         return next(new UnauthorizedError('not login, please login and then try again'));
     }
     
