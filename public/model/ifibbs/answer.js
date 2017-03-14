@@ -369,9 +369,9 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
                     body: {
                         create_user_id: userID,
                         question_id: question._id,
-                        question_title: question.title,
-                        question_describe: question.describe,
-                        answer_content: answer.content,
+                        question_title: decodeURIComponent(question.title),
+                        question_describe: decodeURIComponent(question.describe),
+                        answer_content: decodeURIComponent(answer.content),
                         create_time: answer.create_time,
                         update_time: answer.update_time
                     }

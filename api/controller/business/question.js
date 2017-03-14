@@ -124,10 +124,10 @@ exports.searchQuestionsByAnswer = function (req, res, next) {
         results.questions.forEach(function (question) {
             questions.push({
                 question_id: question.question_id,
-                question_title: question.question_title,
+                question_title: encodeURIComponent(question.question_title),
                 question_tags: question.question_tags || [],
                 answer_id: question.answer_id,
-                answer_content: question.answer_content,
+                answer_content: encodeURIComponent(question.answer_content),
                 answer_comment_count: question.comment_count || 0,
                 answer_favour_count: question.favour_count || 0,
                 answer_collect_count: question.collect_count || 0,
@@ -173,9 +173,9 @@ exports.searchQuestionsByAttr = function(req, res, next){
         results.questions.forEach(function (question) {
             questions.push({
                 question_id: question.question_id,
-                question_title: question.question_title,
+                question_title: encodeURIComponent(question.question_title),
                 question_tags: question.question_tags || [],
-                question_describe: question.question_describe,
+                question_describe: encodeURIComponent(question.question_describe),
                 question_answer_count: question.answer_count || 0,
                 question_favour_count: question.favour_count || 0,
                 question_collect_count: question.collect_count || 0,
