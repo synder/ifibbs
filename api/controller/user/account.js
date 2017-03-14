@@ -327,6 +327,7 @@ exports.userRegisterWithPhone = function (req, res, next) {
  * @desc 用户系统手机账户登录接口
  * */
 exports.userLoginWithSystemAccount = function (req, res, next) {
+    
     let mobile = req.body.user_mobile;
     let password = req.body.user_password;
     let registerPlatform = req.body.register_platform;  //1: ANDROID 2: IOS 3: PC 4: H5 5: OTHER

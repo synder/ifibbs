@@ -22,7 +22,7 @@ const self = this;
  * @desc 密码加密
  * */
 const hashUserPassword = function (salt, password) {
-    salt = salt.trim();
+    salt = salt ? salt.trim() : '@';
     password = password.trim();
     return crypto.createHash('md5').update(`${salt}&${password}`).digest('hex');
 };
