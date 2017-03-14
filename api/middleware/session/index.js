@@ -17,8 +17,6 @@ module.exports = function () {
 
         req.session = {};
 
-
-
         let token = null;
         let now = Date.now();
 
@@ -38,14 +36,20 @@ module.exports = function () {
             };
             return next();
         }
-
-
+        
+        if(!token){
+            return next();
+        }
+        
         userModel.getUserLoginToken(token,function (err, session) {
             if(err){
                 return next();
             }
-
-            req.session = session;
+            
+            if(session){
+                req.session = session;
+            }
+            
             next();
         });
 
