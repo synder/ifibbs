@@ -33,10 +33,10 @@ exports.page = function (req, res, next) {
  * @desc 批量上传接口
  * */
 exports.batch = function (req, res, next) {
-    
+
     let contentLength = req.headers['content-length'];
-    
-    if(contentLength > 10485760){
+
+    if (contentLength > 10485760) {
         return next(new Error('request entity too large'));
     }
 
@@ -50,25 +50,25 @@ exports.batch = function (req, res, next) {
     let result = {};
 
     form.onPart = function (stream) {
-        
+
         let self = this;
 
         let domain = stream.name;
         let fileName = stream.filename;
-        
+
         if (!fileName) {
             return;
         }
-        
-        if(domain){
+
+        if (domain) {
             domain = domain.replace(path.sep, '');
-        }else {
+        } else {
             domain = 'other';
         }
 
         let mime = stream.mime;
         let ext = path.extname(fileName).toLowerCase();
-        
+
         if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') {
             return;
         }
@@ -79,13 +79,13 @@ exports.batch = function (req, res, next) {
             url: null,
             msg: null
         };
-        
+
         imageFileModel.saveUserUploadImages(ext, mime, domain, stream, function (err, image) {
-            
+
             if (err) {
                 result[fileName].msg = err.message;
                 logger.error(err);
-            }else{
+            } else {
                 result[fileName].url = url.format({
                     protocol: hosts.image.protocol,
                     hostname: hosts.image.host,
@@ -93,19 +93,22 @@ exports.batch = function (req, res, next) {
                     pathname: path.join(hosts.image.pathname, domain, image.file_name),
                 });
             }
-            
+
             self._flushing--;
             self._maybeEnd();
         });
     };
-    
-    form.on('error', function (err) {
-        return next(err);
-    }).on('end', function () {
-        res.json({
-            flag: '0000',
-            msg: '',
-            result: result
-        });
-    }).parse(req);
+
+    form
+        .on('error', function (err) {
+            return next(err);
+        })
+        .on('end', function () {
+            res.json({
+                flag: '0000',
+                msg: '',
+                result: result
+            });
+        })
+        .parse(req);
 };
