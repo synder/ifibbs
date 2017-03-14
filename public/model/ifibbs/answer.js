@@ -3,7 +3,7 @@
  * @copyright
  * @desc
  */
-
+const utf8 = require('utf8');
 const async = require('async');
 const ifibbsMongodb = require('../../service/mongodb/ifibbs').client;
 const ifibbsElastic = require('../../service/elasticsearch/ifibbs').client;
@@ -369,9 +369,9 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
                     body: {
                         create_user_id: userID,
                         question_id: question._id,
-                        question_title: decodeURIComponent(question.title),
-                        question_describe: decodeURIComponent(question.describe),
-                        answer_content: decodeURIComponent(answer.content),
+                        question_title: utf8.decode(question.title),
+                        question_describe: utf8.decode(question.describe),
+                        answer_content: utf8.decode(answer.content),
                         create_time: answer.create_time,
                         update_time: answer.update_time
                     }

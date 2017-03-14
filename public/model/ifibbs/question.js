@@ -3,7 +3,7 @@
  * @copyright
  * @desc
  */
-
+const utf8 = require('utf8');
 const async = require('async');
 const ifibbsMongodb = require('../../service/mongodb/ifibbs').client;
 const ifibbsElasticsearch = require('../../service/elasticsearch/ifibbs').client;
@@ -65,10 +65,11 @@ exports.createNewQuestion = function (userID, question, callback) {
 
         async.parallel({
             createElasticSearchDoc: function (cb) {
+                
                 //在搜索引擎中创建索引
                 let elasticDoc = {
-                    title: decodeURIComponent(questionDoc.title),
-                    describe: decodeURIComponent(questionDoc.describe),
+                    title: utf8.decode(questionDoc.title),
+                    describe: utf8.decode(questionDoc.describe),
                     tags: questionDoc.tags,
                     create_time: questionDoc.create_time,
                     update_time: questionDoc.update_time,

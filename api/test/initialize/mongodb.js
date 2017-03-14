@@ -4,6 +4,7 @@
  * @desc
  */
 
+const utf8 = require('utf8');
 const async = require('async');
 const chai = require('chai');
 const request = require('supertest');
@@ -325,7 +326,7 @@ const initArticle = function (callback) {
         icon: icon,    //文章图标
         cover: cover,    //封面图片
         tags: ['测试'],    //文章标签
-        content: encodeURIComponent(content),    //文章内容
+        content: utf8.encode(content),    //文章内容
         browse_count: 6,    //浏览次数
         favour_count: 7,    //被赞次数
         comment_count: 8,    //被评论次数
@@ -345,7 +346,7 @@ const initArticle = function (callback) {
             icon: icon,    //文章图标
             cover: cover,    //封面图片
             tags: ['测试'],    //文章标签
-            content: encodeURIComponent(Mock.Random.ctitle(100, 200)),    //文章内容
+            content: utf8.encode(Mock.Random.ctitle(100, 200)),    //文章内容
             browse_count: 6,    //浏览次数
             favour_count: 7,    //被赞次数
             comment_count: 8,    //被评论次数
@@ -367,7 +368,7 @@ const initArticleComment = function (callback) {
 
     let docs = [{
         status          : Article.STATUS.PUBLISHED,    //文章状态
-        content         : encodeURIComponent(Mock.Random.ctitle(10, 20)),    //评论内容
+        content         : utf8.encode(Mock.Random.ctitle(10, 20)),    //评论内容
         favour_count    : Mock.Random.natural(10, 20),   //评论点赞数
         create_time     : new Date(),   //创建时间
         update_time     : new Date(),    //更新时间
@@ -378,7 +379,7 @@ const initArticleComment = function (callback) {
     for (let i = 0; i < 100; i++) {
         docs.push({
             status          : Article.STATUS.PUBLISHED,    //文章状态
-            content         : encodeURIComponent(Mock.Random.ctitle(10, 50)),    //评论内容
+            content         : utf8.encode(Mock.Random.ctitle(10, 50)),    //评论内容
             favour_count    : Mock.Random.natural(10, 20),   //评论点赞数
             create_time     : new Date(),   //创建时间
             update_time     : new Date(),    //更新时间
@@ -397,8 +398,8 @@ const initQuestion = function (callback) {
     let questions = [{
         "_id": QUESTION_ID,
         "status": 1,
-        "title": encodeURIComponent(Mock.Random.ctitle(5, 20)),
-        "describe": encodeURIComponent(Mock.Random.ctitle(50, 100)),
+        "title": utf8.encode(Mock.Random.ctitle(5, 20)),
+        "describe": utf8.encode(Mock.Random.ctitle(50, 100)),
         "answer_count": 0,
         "favour_count": 0,
         "attention_count": 1,
@@ -413,8 +414,8 @@ const initQuestion = function (callback) {
         questions.push({
             "_id": mongodb.ObjectId(),
             "status": 1,
-            "title": encodeURIComponent(Mock.Random.ctitle(5, 20)),
-            "describe": encodeURIComponent(Mock.Random.ctitle(50, 100)),
+            "title": utf8.encode(Mock.Random.ctitle(5, 20)),
+            "describe": utf8.encode(Mock.Random.ctitle(50, 100)),
             "answer_count": 0,
             "favour_count": 0,
             "attention_count": 1,
@@ -471,8 +472,8 @@ const initQuestionAnswer = function (callback) {
     let question = {
         "_id": '58ae5da34171fd177d387666',
         "status": 1,
-        "title": encodeURIComponent('基金公司在中国的生存状态'),
-        "describe": encodeURIComponent('最早的对冲基金是哪一只，这还不确定。在上世纪20年代美国的大牛市时期，这种专门面向富人的投资工具数不胜数。其中最有名的是Benjamin Graham和Jerry Newman创立的Graham-Newman Partnership基金。'),
+        "title": utf8.encode('基金公司在中国的生存状态'),
+        "describe": utf8.encode('最早的对冲基金是哪一只，这还不确定。在上世纪20年代美国的大牛市时期，这种专门面向富人的投资工具数不胜数。其中最有名的是Benjamin Graham和Jerry Newman创立的Graham-Newman Partnership基金。'),
         "answer_count": 0,
         "favour_count": 0,
         "attention_count": 1,
@@ -486,7 +487,7 @@ const initQuestionAnswer = function (callback) {
     answers.push({
         "_id": ANSWER_ID,
         "status": 1,
-        "content": encodeURIComponent('最早的对冲基金是哪一只，这还不确定。在上世纪20年代美国的大牛市时期，这种专门面向富人的投资工具数不胜数。其中最有名的是Benjamin Graham和Jerry Newman创立的Graham-Newman Partnership基金。'),
+        "content": utf8.encode('最早的对冲基金是哪一只，这还不确定。在上世纪20年代美国的大牛市时期，这种专门面向富人的投资工具数不胜数。其中最有名的是Benjamin Graham和Jerry Newman创立的Graham-Newman Partnership基金。'),
         "comment_count": 0,
         "favour_count": 0,
         "collect_count": 0,
@@ -500,7 +501,7 @@ const initQuestionAnswer = function (callback) {
         answers.push({
             "_id": mongodb.ObjectId(),
             "status": 1,
-            "content": encodeURIComponent(Mock.Random.ctitle(20, 50)),
+            "content": utf8.encode(Mock.Random.ctitle(20, 50)),
             "comment_count": 0,
             "favour_count": 0,
             "collect_count": 0,
@@ -587,8 +588,8 @@ const initRecommend = function (callback) {
         let question = {
             "_id": questionID,
             "status": 1,
-            "title": encodeURIComponent(Mock.Random.ctitle(5, 20)),
-            "describe": encodeURIComponent(Mock.Random.ctitle(50, 100)),
+            "title": utf8.encode(Mock.Random.ctitle(5, 20)),
+            "describe": utf8.encode(Mock.Random.ctitle(50, 100)),
             "answer_count": 0,
             "favour_count": 0,
             "attention_count": 1,
@@ -602,7 +603,7 @@ const initRecommend = function (callback) {
         let answer = {
             "_id": answerID,
             "status": 1,
-            "content": encodeURIComponent(Mock.Random.ctitle(20, 50)),
+            "content": utf8.encode(Mock.Random.ctitle(20, 50)),
             "comment_count": 0,
             "favour_count": 0,
             "collect_count": 0,
@@ -635,7 +636,7 @@ const initRecommend = function (callback) {
             icon: avatar,    //文章图标
             cover: avatar,    //封面图片
             tags: ['基金'],    //文章标签
-            content: encodeURIComponent(Mock.Random.ctitle(100, 200)),    //文章内容
+            content: utf8.encode(Mock.Random.ctitle(100, 200)),    //文章内容
             browse_count: 0,    //浏览次数
             favour_count: 0,    //被赞次数
             comment_count: 0,    //被评论次数
@@ -742,8 +743,8 @@ const initCollection = function (callback) {
     let question = {
         "_id": questionID,
         "status": 1,
-        "title": encodeURIComponent(Mock.Random.ctitle(5, 20)),
-        "describe": encodeURIComponent(Mock.Random.ctitle(50, 100)),
+        "title": utf8.encode(Mock.Random.ctitle(5, 20)),
+        "describe": utf8.encode(Mock.Random.ctitle(50, 100)),
         "answer_count": 0,
         "favour_count": 0,
         "attention_count": 1,
@@ -757,7 +758,7 @@ const initCollection = function (callback) {
     let answer = {
         "_id": answerID,
         "status": 1,
-        "content": encodeURIComponent(Mock.Random.ctitle(20, 50)),
+        "content": utf8.encode(Mock.Random.ctitle(20, 50)),
         "comment_count": 0,
         "favour_count": 0,
         "collect_count": 0,
@@ -776,7 +777,7 @@ const initCollection = function (callback) {
         icon: avatar,    //文章图标
         cover: avatar,    //封面图片
         tags: ['基金'],    //文章标签
-        content: encodeURIComponent(Mock.Random.ctitle(100, 200)),    //文章内容
+        content: utf8.encode(Mock.Random.ctitle(100, 200)),    //文章内容
         browse_count: 0,    //浏览次数
         favour_count: 0,    //被赞次数
         comment_count: 0,    //被评论次数
