@@ -41,7 +41,11 @@ exports.getUserInfo = function (req, res, next) {
         }
 
         if(!result.userInfo){
-            return next(new BadRequestError('without the user data'));
+            return res.json({
+                flag: '0000',
+                msg: '',
+                result: null
+            });
         }
 
         let userInfo = {
