@@ -181,13 +181,14 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
  * */
 exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, callback) {
     
-    QuestionAnswer.findOne({ question_id: questionID}, function (err, answer) {
+    QuestionAnswer.findOne({question_id: questionID}, function (err, answer) {
+        
         if(err){
             return callback(err);
         }
         
         if(!answer){
-            return callback(null, []);
+            return callback(null, [answerID]);
         }
         
         let createTime = answer.create_time;
@@ -225,9 +226,13 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
             },
         }, function (err, results) {
 
+           
+
             if(err){
-                return ;
+                return callback(err);
             }
+            
+            
 
             let prev = results.prev;
             let next = results.next;
