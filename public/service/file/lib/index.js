@@ -73,12 +73,7 @@ class LocalFileService extends DefaultFileService {
 
             let filePath = path.join(dirPath, filename);
 
-            let writeStream = fs.createWriteStream(filePath, {
-                flags: 'w',
-                fd: null,
-                mode: 0o644,
-                autoClose: true
-            });
+            let writeStream = fs.createWriteStream(filePath);
 
             readStream.on('error', callback);
 
