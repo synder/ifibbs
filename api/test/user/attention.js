@@ -15,8 +15,8 @@ describe('用户关注问题', function() {
         request(app)
             .put('/user/question')
             .send({
-                title: Mock.Random.ctitle(3, 20),
-                describe: Mock.Random.cparagraph(10, 50),
+                title: encodeURIComponent(Mock.Random.ctitle(3, 20)),
+                describe: encodeURIComponent(Mock.Random.cparagraph(10, 50)),
                 tags: []
             })
             .expect(200)
@@ -70,8 +70,8 @@ describe('用户取消关注问题', function() {
         request(app)
             .put('/user/question')
             .send({
-                title: Mock.Random.ctitle(3, 20),
-                describe: Mock.Random.cparagraph(10, 50),
+                title: encodeURIComponent(Mock.Random.ctitle(3, 20)),
+                describe: encodeURIComponent(Mock.Random.cparagraph(10, 50)),
                 tags: []
             })
             .expect(200)
@@ -288,8 +288,8 @@ describe('用户关注的问题列表', function(){
         request(app)
             .put('/user/question')
             .send({
-                title: Mock.Random.ctitle(3, 20),
-                describe: Mock.Random.cparagraph(10, 50),
+                title: encodeURIComponent(Mock.Random.ctitle(3, 20)),
+                describe: encodeURIComponent(Mock.Random.cparagraph(10, 50)),
                 tags: []
             })
             .expect(200)
