@@ -220,7 +220,7 @@ exports.getAnswerDetail = function(req, res, next){
     }, function (err, results) {
     
         if(err){
-             return ;
+             return next(err);
         }
         
         let answer = results.answerDetail;

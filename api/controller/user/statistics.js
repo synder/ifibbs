@@ -30,7 +30,7 @@ exports.getUserStatisticsData = function (req, res, next) {
     }, function (err, results) {
     
         if(err){
-             return ;
+             return next(err);
         }
         
         let userAttentionUserCount = results.userAttentionUserCount;
