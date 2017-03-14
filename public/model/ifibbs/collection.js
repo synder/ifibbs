@@ -114,7 +114,7 @@ exports.findUserCollectionAnswerByCollectionID = function (userID, collectionID,
     let condition = {
         status: UserAnswerCollection.STATUS.COLLECTED,
         user_id: userID,
-        target_id: collectionID,
+        answer_id: collectionID,
     };
     
     UserAnswerCollection.findOne(condition)
@@ -136,7 +136,7 @@ exports.findUserCollectionArticleByCollectionID = function (userID, collectionID
     let condition = {
         status: UserArticleCollection.STATUS.COLLECTED,
         user_id: userID,
-        target_id: collectionID,
+        article_id: collectionID,
     };
     
     UserArticleCollection.findOne(condition)
