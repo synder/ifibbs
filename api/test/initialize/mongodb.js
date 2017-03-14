@@ -469,7 +469,7 @@ const initQuestionAnswer = function (callback) {
     let questionID = mongodb.ObjectId();
     
     let question = {
-        "_id": questionID,
+        "_id": '58ae5da34171fd177d387666',
         "status": 1,
         "title": '基金公司在中国的生存状态',
         "describe": '最早的对冲基金是哪一只，这还不确定。在上世纪20年代美国的大牛市时期，这种专门面向富人的投资工具数不胜数。其中最有名的是Benjamin Graham和Jerry Newman创立的Graham-Newman Partnership基金。',
@@ -490,7 +490,7 @@ const initQuestionAnswer = function (callback) {
         "comment_count": 0,
         "favour_count": 0,
         "collect_count": 0,
-        "question_id": QUESTION_ID,
+        "question_id": '58ae5da34171fd177d387666',
         "create_user_id": USER_ID,
         "create_time": new Date(),
         "update_time": new Date(),
