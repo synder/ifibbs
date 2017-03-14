@@ -86,9 +86,7 @@ module.exports =  {
             protocol: 'http',
             port: 80,
             host: '192.168.1.193',
-            pathname: function (domain, filename) {
-                return path.join('images', domain, filename);
-            }
+            pathname: 'images'
         }
     }
 };

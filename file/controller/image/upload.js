@@ -65,8 +65,6 @@ exports.batch = function (req, res, next) {
         }else {
             domain = 'other';
         }
-        
-        domain = '';
 
         let mime = stream.mime;
         let ext = path.extname(fileName).toLowerCase();
@@ -92,7 +90,7 @@ exports.batch = function (req, res, next) {
                     protocol: hosts.image.protocol,
                     hostname: hosts.image.host,
                     port: hosts.image.port,
-                    pathname: hosts.image.pathname(domain, image.file_name),
+                    pathname: path.join(hosts.image.pathname, domain, image.file_name),
                 });
             }
             

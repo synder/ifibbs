@@ -4,6 +4,8 @@
  * @desc
  */
 
+const path = require('path');
+
 module.exports =  {
     /**
      * redis 配置文件
@@ -89,11 +91,15 @@ module.exports =  {
             password: 'KEluo1205'
         }
     },
-
+    
     //文件服务
     file: {
+        //ifibbs的文件服务
         ifibbs: {
-            image: '/var/ifibbs/images/'
+            image: {
+                base: '/var/ifibbs/images/',
+                domains: ['avatar', 'question', 'article'] //允许上传的域
+            }
         }
     }
 };

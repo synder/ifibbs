@@ -10,8 +10,8 @@ const path = require('path');
 
 class DefaultFileService {
     
-    constructor(dir){
-        this.dir = dir;
+    constructor(base){
+        this.base = base;
     }
 
     persistence(filename, stream, callback){
@@ -21,75 +21,57 @@ class DefaultFileService {
 
 class LocalFileService extends DefaultFileService {
     
-    constructor(dir){
-        super(dir);
+    constructor(base, domains){
+        super(base);
         
-        this.dirs = {};
+        const self = this;
+
+        self.domains = {};
+
+        self.mode = fs.constants.R_OK | fs.constants.W_OK | fs.constants.X_OK;
         
-        this.mode = fs.constants.R_OK | fs.constants.W_OK | fs.constants.X_OK;
+        if(!Array.isArray(domains)){
+            throw new Error('domains must be array type');
+        }
         
-        if(!this.dir){
+        if(!self.base){
             throw new Error('base dir should not be null');
         }
 
-        fs.accessSync(this.dir, this.mode);
-    }
-    
-    mkdir(domain, callback) {
-        
-        const self = this;
-        
-        let dirPath = path.join(this.dir, domain);
-        
-        return callback(null, this.dir);
-        
-        //todo
+        fs.accessSync(self.base, self.mode);
 
-        if (this.dirs[dirPath] === true) {
-            return callback(null, dirPath);
-        }
-
-        fs.access(dirPath, this.mode, function(err) {
-            
-            if(!err){
-                return callback(null, dirPath);
-            }
-
-            fs.mkdir(dirPath, 0o755, function (err) {
-                if(err){
-                    return callback(err);
-                }
-
-                self.dirs[dirPath] = true;
-
-                callback(null, dirPath);
-            });
+        domains.forEach(function (domain) {
+            self.domains[domain] = true;
+            fs.accessSync(path.join(self.base, domain), self.mode);
         });
     }
     
     
     persistence(domain, filename, readStream, callback){
         
-        this.mkdir(domain, function (err, dirPath) {
-            if(err){
-                return callback(err);
-            }
+        if(!this.domains[domain]){
+            return callback(new Error(domain + 'is not allow to update'));
+        }
+        
+        let filePath = path.join(this.base, domain, filename);
 
-            let filePath = path.join(dirPath, filename);
+        let writeStream = fs.createWriteStream(filePath);
 
-            let writeStream = fs.createWriteStream(filePath);
-
-            readStream.on('error', function (err) {
-                fs.unlink();
-            });
-            writeStream.on('error', callback);
-
-            writeStream.on('finish', function () {
-                callback(null, filePath);
-            });
-
-            readStream.pipe(writeStream);
+        readStream.on('error', function (err) {
+            console.error(err.stack);
+            fs.unlink(filePath);
         });
+        
+        writeStream.on('error', function (err) {
+            console.error(err.stack);
+            fs.unlink(filePath);
+        });
+
+        writeStream.on('finish', function () {
+            callback(null, filePath);
+        });
+
+        readStream.pipe(writeStream);
     }
 }
 

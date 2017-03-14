@@ -13,6 +13,6 @@ if(!config && !config.file && !config.file.ifibbs){
 
 const IFIBBS_CONFIG = config.file.ifibbs;
 
-const client = new LocalFileService(IFIBBS_CONFIG.image);
+const client = new LocalFileService(IFIBBS_CONFIG.image.base, IFIBBS_CONFIG.image.domains);
 
 exports.client = client;
