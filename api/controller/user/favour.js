@@ -40,7 +40,9 @@ exports.addAnswerToFavour = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: true
+                ok: !!success,
+                failed_message: !!success ? null : '点赞失败',
+                success_message: null,
             }
         });
     });
@@ -67,7 +69,9 @@ exports.removeAnswerFromFavour = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '取消点赞失败',
+                success_message: null,
             }
         });
     });
@@ -100,7 +104,9 @@ exports.addArticleToFavour = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '点赞失败',
+                success_message: null,
             }
         });
     });
@@ -126,7 +132,9 @@ exports.removeArticleFromFavour = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '取消点赞失败',
+                success_message: null,
             }
         });
     });
@@ -159,7 +167,9 @@ exports.addAnswerCommentToFavour = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '点赞失败',
+                success_message: null,
             }
         });
     });
@@ -186,7 +196,9 @@ exports.removeAnswerCommentFromFavour = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '取消点赞失败',
+                success_message: null,
             }
         });
     });

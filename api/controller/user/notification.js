@@ -33,6 +33,9 @@ exports.checkUserHasNewNotification = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 system_unread_count: systemNotificationCount,
                 business_unread_count: businessNotificationCount,
             }
@@ -71,6 +74,9 @@ exports.getUserSystemNotification = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: list
             }
@@ -111,6 +117,9 @@ exports.getUserBusinessNotification = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: list
             }
@@ -139,7 +148,9 @@ exports.changeNotificationToRead = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: !!success
+                ok: !!success,
+                failed_message: null,
+                success_message: null,
             }
         });
     })
@@ -166,7 +177,9 @@ exports.removeNotification = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: !!success
+                ok: !!success,
+                failed_message: !!success ? null : '删除通知失败',
+                success_message: null,
             }
         });
     })

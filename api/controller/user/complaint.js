@@ -42,6 +42,9 @@ exports.userComplaint = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: !!complaint._id,
+                failed_message: !!complaint._id ? null : '举报失败',
+                success_message: !!complaint._id ? '举报成功' : null,
                 complaint_id: complaint._id
             }
         });

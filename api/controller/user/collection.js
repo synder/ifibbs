@@ -45,6 +45,9 @@ exports.getUserArticleCollections = function(req, res, next){
            flag: '0000',
            msg: '',
            result: {
+               ok: true,
+               failed_message: null,
+               success_message: null,
                count : count,
                list : collections
            }
@@ -94,6 +97,9 @@ exports.getUserAnswerCollections = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count : count,
                 list : collections
             }
@@ -126,7 +132,9 @@ exports.addAnswerToCollection = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '收藏失败',
+                success_message: null,
             }
         });
     });
@@ -152,7 +160,9 @@ exports.removeAnswerFromCollection = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '取消收藏失败',
+                success_message: null,
             }
         });
     });
@@ -179,7 +189,9 @@ exports.addArticleToCollection = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '收藏失败',
+                success_message: null,
             }
         });
     });
@@ -205,7 +217,9 @@ exports.removeArticleFromCollection = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '取消收藏失败',
+                success_message: null,
             }
         });
     });

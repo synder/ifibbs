@@ -47,6 +47,9 @@ exports.getAttentionQuestionList = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: questions
             }
@@ -90,6 +93,9 @@ exports.getUserAttentionUserList = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: users
             }
@@ -134,6 +140,9 @@ exports.getUserAttentionSubjectList = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: subjects
             }
@@ -170,7 +179,9 @@ exports.addQuestionToAttention = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '关注失败',
+                success_message: null,
             }
         });
     });
@@ -197,7 +208,9 @@ exports.removeQuestionFromAttention = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '取消关注失败',
+                success_message: null,
             }
         });
     });
@@ -226,7 +239,9 @@ exports.addSubjectToAttention = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '关注失败',
+                success_message: null,
             }
         });
     });
@@ -252,7 +267,9 @@ exports.removeSubjectFromAttention = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '取消关注失败',
+                success_message: null,
             }
         });
     });
@@ -287,7 +304,9 @@ exports.addUserToAttention = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '关注失败',
+                success_message: null,
             }
         });
     });
@@ -313,7 +332,9 @@ exports.removeUserFromAttention = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '取消关注失败',
+                success_message: null,
             }
         });
     });

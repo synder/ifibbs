@@ -25,6 +25,9 @@ exports.addCommentToArticle = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: !!comment._id,
+                failed_message: !!comment._id ? null : '创建评论失败',
+                success_message: null,
                 comment_id: comment._id
             }
         });

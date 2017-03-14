@@ -76,6 +76,9 @@ exports.batch = function (req, res, next) {
         self._flushing++;
 
         result[fileName] = {
+            ok : true,
+            failed_message: null,
+            success_message: null,
             url: null,
             msg: null
         };
@@ -104,6 +107,7 @@ exports.batch = function (req, res, next) {
             return next(err);
         })
         .on('end', function () {
+            
             res.json({
                 flag: '0000',
                 msg: '',

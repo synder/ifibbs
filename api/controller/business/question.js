@@ -57,11 +57,18 @@ exports.getQuestionDetail = function(req, res, next){
             return res.json({
                 flag: '0000',
                 msg: '',
-                result: null
+                result: {
+                    ok: false,
+                    failed_message: null,
+                    success_message: null,
+                }
             });
         }
 
         let result = {
+            ok: true,
+            failed_message: null,
+            success_message: null,
             id: question._id,
             title: question.title,
             describe: question.describe,
@@ -97,6 +104,9 @@ exports.searchQuestionsByAnswer = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: 0,
                 list: []
             }
@@ -128,6 +138,9 @@ exports.searchQuestionsByAnswer = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: questions
             }
@@ -176,6 +189,9 @@ exports.searchQuestionsByAttr = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: questions
             }
@@ -209,6 +225,9 @@ exports.getDefaultQuestionTags = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: tags.length,
                 list: tags
             }
@@ -228,6 +247,9 @@ exports.findQuestionTags = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: 0,
                 list: []
             }
@@ -255,6 +277,9 @@ exports.findQuestionTags = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count : count,
                 list: tags
             }

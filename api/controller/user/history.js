@@ -56,6 +56,9 @@ exports.getUserBrowseHistory = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count : count,
                 list: histories
             }

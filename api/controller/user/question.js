@@ -48,6 +48,9 @@ exports.getUserQuestions = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: questions
             }
@@ -76,7 +79,9 @@ exports.removeUserQuestion = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '删除问题失败',
+                success_message: null,
             }
         });
     });
@@ -154,6 +159,9 @@ exports.addNewUserQuestion = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
+                ok: !!questionID,
+                failed_message: !!questionID ? null : '发布问题失败',
+                success_message: null,
                 question_id: questionID
             }
         });

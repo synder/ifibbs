@@ -45,6 +45,9 @@ exports.getHottestAnswer = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: answers
             }
@@ -87,6 +90,9 @@ exports.getLatestAnswer = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: answers
             }
@@ -133,6 +139,9 @@ exports.getQuestionAnswerList = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: answers
             }
@@ -166,6 +175,9 @@ exports.getAnswerNextAndPrevIDS = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: ids.length,
                 list: ids
             }
@@ -219,11 +231,18 @@ exports.getAnswerDetail = function(req, res, next){
             return res.json({
                 flag: '0000',
                 msg: '',
-                result: null
+                result: {
+                    ok: false,
+                    failed_message: '该问题不存在',
+                    success_message: null,
+                }
             });
         }
 
         let result = {
+            ok: true,
+            failed_message: null,
+            success_message: null,
             question_id: answer.question_id ? answer.question_id._id : null,
             answer_id: answer.id,
             answer_content: answer.content,

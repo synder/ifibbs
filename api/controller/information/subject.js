@@ -39,6 +39,9 @@ exports.getSubjectList = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count : count,
                 list: subjects
             }
@@ -70,11 +73,18 @@ exports.getSubjectDetail = function(req, res, next){
             return res.json({
                 flag: '0000',
                 msg: '',
-                result: null
+                result: {
+                    ok: false,
+                    failed_message: '主题不存在',
+                    success_message: null,
+                }
             });
         }
         
         let result = {
+            ok: true,
+            failed_message: null,
+            success_message: null,
             id : subject._id,
             title : subject.title,
             describe : subject.describe,

@@ -41,6 +41,9 @@ exports.getUserStatisticsData = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 be_favour_count: userBeenFavouredCount,
                 be_attention_count: userBeenAttentionCount,
                 favour_user_count: userAttentionUserCount,

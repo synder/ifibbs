@@ -45,6 +45,9 @@ exports.getUserAnswers = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: answers
             }
@@ -84,6 +87,9 @@ exports.createNewAnswer = function(req, res, next){
             flag: '0000',
             msg: '',
             result: {
+                ok: !!answerID,
+                failed_message: !!answerID ? null : '创建回答失败',
+                success_message: null,
                 question_id: questionID,
                 answer_id: answerID,
             }
@@ -112,7 +118,9 @@ exports.removeUserAnswer = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '删除回答失败',
+                success_message: null,
             }
         });
     });

@@ -44,11 +44,18 @@ exports.getUserInfo = function (req, res, next) {
             return res.json({
                 flag: '0000',
                 msg: '',
-                result: null
+                result: {
+                    ok: false,
+                    failed_message: '用户信息不存在',
+                    success_message: null,
+                }
             });
         }
 
         let userInfo = {
+            ok: true,
+            failed_message: null,
+            success_message: null,
             user_id: userID,
             user_avatar: result.userInfo.user_avatar,
             user_name: result.userInfo.user_name,
@@ -106,7 +113,9 @@ exports.updateUserInfo = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: !!success
+                ok: !!success,
+                failed_message: !!success ? null : '用户信息更新失败',
+                success_message: null,
             }
         });
     })
@@ -139,7 +148,9 @@ exports.checkPhoneRegistered = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: !user
+                ok: !user,
+                failed_message: null,
+                success_message: null,
             }
         })
     });
@@ -180,6 +191,9 @@ exports.checkThirdParty = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: !!userInfo,
+                failed_message: !!userInfo ? null : '该账户已经绑定',
+                success_message: null,
                 is_bound: !!userInfo,
                 user_name: userInfo ? userInfo.user_name : null,
             }
@@ -250,7 +264,15 @@ exports.userRegisterWithPhone = function (req, res, next) {
             }
 
             if (!user) {
-                return next(new BadRequestError('the mobile has been used'));
+                return res.json({
+                    flag: '0000',
+                    msg: '',
+                    result: {
+                        ok: false,
+                        failed_message: '注册失败',
+                        success_message: null,
+                    }
+                });
             }
 
             let userId = user._id;
@@ -276,6 +298,9 @@ exports.userRegisterWithPhone = function (req, res, next) {
                     flag: '0000',
                     msg: '',
                     result: {
+                        ok: true,
+                        failed_message: null,
+                        success_message: null,
                         user_id: userId,
                         login_token: token,
                         user_mobile: user.user_mobile,
@@ -329,7 +354,15 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
         }
 
         if (!user) {
-            return next(new BadRequestError('mobile or password error'));
+            return res.json({
+                flag: '0000',
+                msg: '',
+                result: {
+                    ok: false,
+                    failed_message: '登录失败',
+                    success_message: null,
+                }
+            });
         }
 
         let userId = user._id;
@@ -357,6 +390,9 @@ exports.userLoginWithSystemAccount = function (req, res, next) {
                 flag: '0000',
                 msg: '',
                 result: {
+                    ok: true,
+                    failed_message: null,
+                    success_message: null,
                     user_id: userId,
                     login_token: token,
                     user_mobile: user.user_mobile,
@@ -436,6 +472,18 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
         let userId = user._id;
         let token = uuid();
         let expire = Date.now() + 1000 * 3600 * 24 * 30;
+        
+        if(!user){
+            return res.json({
+                flag: '0000',
+                msg: '',
+                result: {
+                    ok: false,
+                    failed_message: '登录失败',
+                    success_message: null,
+                }
+            });
+        }
 
         async.parallel({
             updateDeviceInfo: function(cb) {
@@ -457,6 +505,9 @@ exports.userLoginWithThirdPartyAccount = function (req, res, next) {
                 flag: '0000',
                 msg: '',
                 result: {
+                    ok: true,
+                    failed_message: null,
+                    success_message: null,
                     user_id: userId,
                     login_token: token,
                     login_fashion: loginType,
@@ -503,7 +554,15 @@ exports.userBindPhone = function (req, res, next) {
         }
 
         if (!result) {
-            return next(new BadRequestError('this security code has been tampered with'));
+            return res.json({
+                flag: '0000',
+                msg: '',
+                result: {
+                    ok: false,
+                    failed_message: '该短信验证码不可用',
+                    success_message: null,
+                }
+            });
         }
 
         userModel.updateUserPhone(userID, mobile, password, function (err, success) {
@@ -515,7 +574,9 @@ exports.userBindPhone = function (req, res, next) {
                 flag: '0000',
                 msg: '',
                 result: {
-                    ok: !!success
+                    ok: !!success,
+                    failed_message: !!success ? null : '绑定手机失败',
+                    success_message: null,
                 }
             })
         })
@@ -545,17 +606,23 @@ exports.userBindThirdParty = function (req, res, next) {
     }
 
     let bindFunction;
+    let failedMessage = null;
+    let successMessage = null;
 
     if (loginType == 1) {
+        failedMessage = '绑定微信失败';
+        successMessage = '绑定微信成功';
         bindFunction = userModel.updateUserTencentWechat;
-    }
-
-    if (loginType == 2) {
+    }else if(loginType == 2){
+        failedMessage = '绑定QQ失败';
+        successMessage = '绑定QQ成功';
         bindFunction = userModel.updateUserTencentQQ;
-    }
-
-    if (loginType == 3) {
+    }else if(loginType == 3){
+        failedMessage = '绑定新浪微博失败';
+        successMessage = '绑定新浪微博成功';
         bindFunction = userModel.updateUserSinaWeibo;
+    }else{
+        return next(new BadRequestError('login_type is not in [1,2,3]'));
     }
 
     bindFunction(uid, union_id, userName, userId, function (err, success) {
@@ -567,7 +634,9 @@ exports.userBindThirdParty = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: !!success
+                ok: !!success,
+                failed_message: !!success ? null : failedMessage,
+                success_message: !!success ? successMessage : null,
             }
         })
     })
@@ -608,6 +677,8 @@ exports.userRemoveThirdParty = function (req, res, next) {
             msg: '',
             result: {
                 ok: true,
+                failed_message: null,
+                success_message: null,
             }
         })
     })
@@ -646,7 +717,15 @@ exports.modifyUserPassword = function (req, res, next) {
         }
 
         if (!result) {
-            return next(new BadRequestError('this security code has been tampered with'));
+            return res.json({
+                flag: '0000',
+                msg: '',
+                result: {
+                    ok: false,
+                    failed_message: '该短信验证码不可用',
+                    success_message: null,
+                }
+            });
         }
 
         userModel.updateUserPasswordWithOldPassword(userID, mobile, newPassword, function (err, success) {
@@ -658,7 +737,9 @@ exports.modifyUserPassword = function (req, res, next) {
                 flag: '0000',
                 msg: '',
                 result: {
-                    ok: !!success
+                    ok: !!success,
+                    failed_message: !!success ? null : '修改密码失败',
+                    success_message: null,
                 }
             });
         });
@@ -702,7 +783,15 @@ exports.resetUserPassword = function (req, res, next) {
         }
 
         if (!result) {
-            return next(new BadRequestError('this code security has been tampered with'));
+            return res.json({
+                flag: '0000',
+                msg: '',
+                result: {
+                    ok: false,
+                    failed_message: '该短信验证码不可用',
+                    success_message: null,
+                }
+            });
         }
 
         userModel.updateUserPasswordWithMobile(mobileNumber, newPassword, function (err, success) {
@@ -714,7 +803,9 @@ exports.resetUserPassword = function (req, res, next) {
                 flag: '0000',
                 msg: '',
                 result: {
-                    ok: !!success
+                    ok: !!success,
+                    failed_message: !!success ? null : '重置密码失败',
+                    success_message: null,
                 }
             });
         });

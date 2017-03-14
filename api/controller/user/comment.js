@@ -58,6 +58,9 @@ exports.addNewCommentToAnswer = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: !!commentID,
+                failed_message: !!commentID ? null : '评论失败',
+                success_message: null,
                 question_id: questionId,
                 answer_id: answerId,
                 comment_id: commentID
@@ -91,7 +94,9 @@ exports.removeUserComments = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
-                ok: success
+                ok: !!success,
+                failed_message: !!success ? null : '删除评论失败',
+                success_message: null,
             }
         });
     });
@@ -140,6 +145,9 @@ exports.getUserCommentsList = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: comments
             }

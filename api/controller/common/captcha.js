@@ -32,8 +32,10 @@ exports.getSmsSecurityCode = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: captcha && captcha.uid,
+                failed_message: captcha ? null : '验证码发送失败',
+                success_message: null,
                 security_code_id: captcha ? captcha.uid : null,
-                msg: captcha ? null : '验证码发送失败'
             }
         });
     });
@@ -56,7 +58,9 @@ exports.verifySmsSecurityCode = function (req, res, next) {
            flag: '0000',
            msg: '',
            result: {
-               ok: !!success
+               ok: !!success,
+               failed_message: !!success ? null : '验证码校验失败',
+               success_message: null,
            }
        });
     });
