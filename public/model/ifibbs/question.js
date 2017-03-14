@@ -68,7 +68,7 @@ exports.createNewQuestion = function (userID, question, callback) {
                 //在搜索引擎中创建索引
                 let elasticDoc = {
                     title: questionDoc.title,
-                    describe: questionDoc.describe,
+                    describe: decodeURIComponent(questionDoc.describe),
                     tags: questionDoc.tags,
                     create_time: questionDoc.create_time,
                     update_time: questionDoc.update_time,
