@@ -15,10 +15,10 @@ if(!(hosts && hosts.h5)){
 //文章详情H5页面
 const ARTICLE_H5_PAGE_NAME = 'article.html';
 
-const articleModel = require('../../../public/ifibbs/article');
-const collectionModel = require('../../../public/ifibbs/collection');
-const favourModel = require('../../../public/ifibbs/favour');
-const historyModel = require('../../../public/ifibbs/history');
+const articleModel = require('../../../public/model/ifibbs/article');
+const collectionModel = require('../../../public/model/ifibbs/collection');
+const favourModel = require('../../../public/model/ifibbs/favour');
+const historyModel = require('../../../public/model/ifibbs/history');
 
 /**
  * @desc 获取推荐文章列表
@@ -40,7 +40,7 @@ exports.getRecommendArticleList = function (req, res, next) {
                 port : hosts.h5.port,
                 pathname : ARTICLE_H5_PAGE_NAME,
                 query : {
-                    article_id: '58ae5da34171fd177d387638'//todo 测试修改  article._id.toString()
+                    article_id: article._id.toString()
                 }
             });
 

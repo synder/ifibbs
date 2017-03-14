@@ -4,7 +4,7 @@
  * @desc 用户动态生成
  */
 
-const dynamicModel = require('../../../public/ifibbs/dynamic');
+const dynamicModel = require('../../../public/model/ifibbs/dynamic');
 
 
 /**

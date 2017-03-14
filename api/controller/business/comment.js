@@ -5,7 +5,7 @@
  */
 
 
-const commentModel = require('../../../public/ifibbs/comment');
+const commentModel = require('../../../public/model/ifibbs/comment');
 
 /**
  * @desc 回答评论列表

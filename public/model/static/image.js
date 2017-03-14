@@ -7,8 +7,8 @@
 const path = require('path');
 const async = require('async');
 
-const fileMongodb = require('../service/mongodb/file');
-const ifibbsFile = require('../service/file/ifibbs');
+const fileMongodb = require('../../service/mongodb/file');
+const ifibbsFile = require('../../service/static/ifibbs');
 
 const fileMongodbClient = fileMongodb.client;
 const ifibbsFileClient = ifibbsFile.client;

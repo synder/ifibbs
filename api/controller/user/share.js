@@ -6,8 +6,8 @@
 
 const async = require('async');
 
-const shareModel = require('../../../public/ifibbs/share');
-const notificationModel = require('../../../public/ifibbs/notification');
+const shareModel = require('../../../public/model/ifibbs/share');
+const notificationModel = require('../../../public/model/ifibbs/notification');
 
 /**
  * @desc 创建分享

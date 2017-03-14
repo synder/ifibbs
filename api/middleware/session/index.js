@@ -5,7 +5,7 @@
  */
 
 
-const userModel = require('../../../public/ifibbs/user');
+const userModel = require('../../../public/model/ifibbs/user');
 
 const NODE_ENV = process.env.NODE_ENV;
 

@@ -8,7 +8,7 @@ const url = require('url');
 const path = require('path');
 const formidable = require('formidable');
 
-const imageFileModel = require('../../../public/file/image');
+const imageFileModel = require('../../../public/model/static/image');
 
 const hosts = global.config.hosts;
 

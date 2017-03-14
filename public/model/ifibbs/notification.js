@@ -5,9 +5,9 @@
  */
 
 const async = require('async');
-const ifibbsMongodb = require('../service/mongodb/ifibbs').client;
-const ifibbsRabbit = require('../service/rabbit/ifibbs');
-const ifibbsGetui = require('../service/getui/ifibbs');
+const ifibbsMongodb = require('../../service/mongodb/ifibbs').client;
+const ifibbsRabbit = require('../../service/rabbit/ifibbs');
+const ifibbsGetui = require('../../service/getui/ifibbs');
 
 const User = ifibbsMongodb.model('User');
 const Article = ifibbsMongodb.model('Article');

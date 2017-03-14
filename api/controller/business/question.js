@@ -6,10 +6,10 @@
 
 const async = require('async');
 
-const questionModel = require('../../../public/ifibbs/question');
-const attentionModel = require('../../../public/ifibbs/attention');
-const tagsModel = require('../../../public/ifibbs/tags');
-const historyModel = require('../../../public/ifibbs/history');
+const questionModel = require('../../../public/model/ifibbs/question');
+const attentionModel = require('../../../public/model/ifibbs/attention');
+const tagsModel = require('../../../public/model/ifibbs/tags');
+const historyModel = require('../../../public/model/ifibbs/history');
 
 
 /**

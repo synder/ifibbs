@@ -5,8 +5,8 @@
  */
 
 const async = require('async');
-const ifibbsMongodb = require('../service/mongodb/ifibbs').client;
-const ifibbsElasticsearch = require('../service/elasticsearch/ifibbs').client;
+const ifibbsMongodb = require('../../service/mongodb/ifibbs').client;
+const ifibbsElasticsearch = require('../../service/elasticsearch/ifibbs').client;
 
 const UserShare = ifibbsMongodb.model('UserShare');
 const UserDynamic = ifibbsMongodb.model('UserDynamic');

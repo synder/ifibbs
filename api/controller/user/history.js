@@ -4,7 +4,7 @@
  * @desc
  */
 
-const historyModel = require('../../../public/ifibbs/history');
+const historyModel = require('../../../public/model/ifibbs/history');
 
 /**
  * @desc 用户浏览历史接口

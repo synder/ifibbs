@@ -5,7 +5,7 @@
  */
 
 const async = require('async');
-const userModel = require('../../../public/ifibbs/user');
+const userModel = require('../../../public/model/ifibbs/user');
 
 /**
  * @desc 获取用户统计数据

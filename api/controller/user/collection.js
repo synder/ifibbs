@@ -4,7 +4,7 @@
  * @desc
  */
 
-const collectionModel = require('../../../public/ifibbs/collection');
+const collectionModel = require('../../../public/model/ifibbs/collection');
 
 /**
  * @desc 用户收藏文章列表

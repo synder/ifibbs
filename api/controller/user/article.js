@@ -5,7 +5,7 @@
  */
 
 
-const articleModel = require('../../../public/ifibbs/article');
+const articleModel = require('../../../public/model/ifibbs/article');
 
 /**
  * @desc 文章新增评论

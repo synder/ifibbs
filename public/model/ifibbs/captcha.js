@@ -5,9 +5,9 @@
  */
 
 const uuid = require('uuid/v4');
-const ifibbsMongodb = require('../service/mongodb/ifibbs').client;
-const ifibbsRedis = require('../service/redis/ifibbs').client;
-const ifibbsSms = require('../service/sms/ifibbs').client;
+const ifibbsMongodb = require('../../service/mongodb/ifibbs').client;
+const ifibbsRedis = require('../../service/redis/ifibbs').client;
+const ifibbsSms = require('../../service/sms/ifibbs').client;
 
 const SecurityCode = ifibbsMongodb.model('SecurityCode');
 

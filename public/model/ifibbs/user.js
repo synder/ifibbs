@@ -7,9 +7,9 @@
 const async = require('async');
 const crypto = require('crypto');
 
-const mongodb = require('../service/mongodb/ifibbs');
+const mongodb = require('../../service/mongodb/ifibbs');
 const ifibbsMongodb = mongodb.client;
-const ifibbsRedis = require('../service/redis/ifibbs').client;
+const ifibbsRedis = require('../../service/redis/ifibbs').client;
 
 const User = ifibbsMongodb.model('User');
 const AttentionUser = ifibbsMongodb.model('AttentionUser');

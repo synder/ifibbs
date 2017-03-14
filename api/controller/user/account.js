@@ -6,10 +6,10 @@
 const uuid = require('uuid/v4');
 const async = require('async');
 
-const userModel = require('../../../public/ifibbs/user');
-const captchaModel = require('../../../public/ifibbs/captcha');
-const attentionModel = require('../../../public/ifibbs/attention');
-const deviceModel = require('../../../public/ifibbs/device');
+const userModel = require('../../../public/model/ifibbs/user');
+const captchaModel = require('../../../public/model/ifibbs/captcha');
+const attentionModel = require('../../../public/model/ifibbs/attention');
+const deviceModel = require('../../../public/model/ifibbs/device');
 
 
 
