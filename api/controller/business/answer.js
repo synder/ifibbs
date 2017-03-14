@@ -250,6 +250,14 @@ exports.getAnswerDetail = function(req, res, next){
 
         let toUserID =  answer.create_user_id ? answer.create_user_id.id : null;
         
+        if(!toUserID){
+            return res.json({
+                flag: '0000',
+                msg: '',
+                result: result
+            });
+        }
+        
         attentionModel.findUserAttentionByUserID(userID, toUserID, function (err, doc) {
             if(err){
                 return next(err);
