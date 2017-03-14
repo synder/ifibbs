@@ -8,6 +8,7 @@
 const userModel = require('../../../public/model/ifibbs/user');
 
 const NODE_ENV = process.env.NODE_ENV;
+const NODE_TEST = process.env.NODE_TEST;
 
 /**
  * 对分页参数进行修正, 防止被攻击
@@ -23,6 +24,17 @@ module.exports = function () {
             token = req.query.login_token;
         }else{
             token = req.body.login_token;
+        }
+
+        if(NODE_TEST === 'yes'){
+            
+            req.session = {
+                id: '58aa50177ddbf5507c51f082',
+                username: 'synder',
+                expire: Date.now() + 100000000
+            };
+            
+            return next();
         }
         
         token = token ? token.trim() : null;

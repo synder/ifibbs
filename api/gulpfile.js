@@ -12,11 +12,17 @@ const plumber = require("gulp-plumber");
  * 
  * */
 gulp.task('test_init_env', function (done) {
-    if(process.env.NODE_ENV && process.env.NODE_ENV !== 'dev'){
+    
+    if(!process.env.NODE_ENV){
+        process.env.NODE_ENV = 'dev';
+    }
+
+    if(process.env.NODE_ENV && process.env.NODE_ENV === 'pro'){
         return done(new Error('can not run test on this ' + process.env.NODE_ENV));
     }
     
-    process.env.NODE_ENV = 'dev';
+    process.env.NODE_TEST = 'yes';
+    
     global.config = require('./config');
     done();
 });
