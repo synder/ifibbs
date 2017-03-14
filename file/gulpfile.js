@@ -8,10 +8,21 @@ const babel = require('gulp-babel');
 const mocha = require('gulp-mocha');
 const plumber = require("gulp-plumber");
 
+gulp.task('test_init_env', function (done) {
+    if(process.env.NODE_ENV && process.env.NODE_ENV !== 'dev'){
+        return done(new Error('can not run test on this ' + process.env.NODE_ENV));
+    }
+
+    process.env.NODE_ENV = 'dev';
+    global.config = require('./config');
+    done();
+});
+
+
 /**
  * @desc 运行测试
  * */
-gulp.task('test', function (done) {
+gulp.task('test', ['test_init_env'], function (done) {
     
     let stream = gulp.src('./test/**/*.js')
         .pipe(mocha());
