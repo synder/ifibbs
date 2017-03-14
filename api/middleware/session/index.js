@@ -41,8 +41,9 @@ module.exports = function () {
             return next();
         }
         
-        userModel.getUserLoginToken(token,function (err, session) {
+        userModel.getUserLoginToken(token, function (err, session) {
             if(err){
+                logger.error(err);
                 return next();
             }
             
