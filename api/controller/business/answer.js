@@ -246,6 +246,8 @@ exports.getAnswerDetail = function(req, res, next){
             if(err){
                 return next(err);
             }
+            
+            console.log(doc);
 
             result.is_attention_user = !!doc;
 
