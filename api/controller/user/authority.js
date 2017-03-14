@@ -13,6 +13,10 @@ exports.check = function (req, res, next) {
         return next(new UnauthorizedError('not login, please login and then try again'));
     }
     
+    if(!req.session.id){
+        return next(new UnauthorizedError('not login, please login and then try again'));
+    }
+    
     next();
     
 };  
