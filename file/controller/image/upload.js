@@ -23,7 +23,7 @@ exports.page = function (req, res, next) {
     res.writeHead(200, {'content-type': 'text/html'});
     res.end(
         '<form action="/upload/images" enctype="multipart/form-data" method="post">' +
-        '<input type="file" name="upload" multiple="multiple"><br>' +
+        '<input type="file" name="avatar" multiple="multiple"><br>' +
         '<input type="submit" value="Upload">' +
         '</form>'
     );
@@ -49,17 +49,19 @@ exports.batch = function (req, res, next) {
 
     let result = {};
 
-    form.onPart = function (part) {
+    form.onPart = function (stream) {
         
         let self = this;
 
-        let fileName = part.filename;
-        let mime = part.mime;
-        let ext = path.extname(fileName).toLowerCase();
-
+        let domain = stream.name;
+        let fileName = stream.filename;
+        
         if (!fileName) {
             return;
         }
+
+        let mime = stream.mime;
+        let ext = path.extname(fileName).toLowerCase();
         
         if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') {
             return;
@@ -72,7 +74,7 @@ exports.batch = function (req, res, next) {
             msg: null
         };
         
-        imageFileModel.saveUserUploadImages(ext, mime, part, function (err, image) {
+        imageFileModel.saveUserUploadImages(ext, mime, domain, stream, function (err, image) {
             
             if (err) {
                 result[fileName].msg = err.message;
@@ -82,7 +84,7 @@ exports.batch = function (req, res, next) {
                     protocol: hosts.image.protocol,
                     hostname: hosts.image.host,
                     port: hosts.image.port,
-                    pathname: hosts.image.pathname + '/'+ image.file_name,
+                    pathname: hosts.image.pathname(domain, image.file_name),
                 });
             }
             
@@ -90,8 +92,10 @@ exports.batch = function (req, res, next) {
             self._maybeEnd();
         });
     };
-        
-    form.on('end', function () {
+    
+    form.on('error', function (err) {
+        return next(err);
+    }).on('end', function () {
         res.json({
             flag: '0000',
             msg: '',

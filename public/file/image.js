@@ -15,11 +15,11 @@ const ifibbsFileClient = ifibbsFile.client;
 
 const ImageFile = fileMongodbClient.model('ImageFile');
 
-exports.saveUserUploadImages = function (ext, mime, readStream, callback) {
+exports.saveUserUploadImages = function (ext, mime, domain, readStream, callback) {
     
     let filename = fileMongodb.ObjectId().toString() + ext;
     
-    ifibbsFileClient.persistence(filename, readStream, function (err, filePath) {
+    ifibbsFileClient.persistence(domain, filename, readStream, function (err, filePath) {
         if(err){
             return callback(err);
         }
@@ -37,11 +37,11 @@ exports.saveUserUploadImages = function (ext, mime, readStream, callback) {
     
 };
 
-exports.saveAdminUploadImages = function (ext, mime, readStream, callback) {
+exports.saveAdminUploadImages = function (ext, mime, domain, readStream, callback) {
     
     let filename = fileMongodb.ObjectId() + ext;
 
-    ifibbsFileClient.persistence(filename, readStream, function (err, filename, filePath) {
+    ifibbsFileClient.persistence(domain, filename, readStream, function (err, filename, filePath) {
         if(err){
             return callback(err);
         }
