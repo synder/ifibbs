@@ -93,7 +93,7 @@ module.exports =  {
     //文件服务
     file: {
         ifibbs: {
-            image: '/var/ifibbs/images'
+            image: '/Users/synder/Downloads'
         }
     }
 };

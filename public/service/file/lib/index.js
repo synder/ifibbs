@@ -25,6 +25,8 @@ class LocalFileService extends DefaultFileService {
     constructor(dir){
         super(dir);
         
+        this.dirs = {};
+        
         if(!this.dir){
             throw new Error('base dir should not be null');
         }
@@ -37,16 +39,52 @@ class LocalFileService extends DefaultFileService {
             });
         }
     }
+    
+    mkdir(domain, callback) {
+        
+        const self = this;
+        
+        let dirPath = path.join(this.dir, domain);
 
-    persistence(filename, readStream, callback){
-        let filePath = path.join(this.dir, filename);
-        let writeStream = fs.createWriteStream(filePath);
-        writeStream.on('error', callback);
-        readStream.on('error', callback);
-        writeStream.on('finish', function () {
-            callback(null, filePath);
+        if (this.dirs[dirPath] === true) {
+            return callback(null, dirPath);
+        }
+
+        mkdirp(dirPath, function (err) {
+            if(err){
+                return callback(err);
+            }
+
+            self.dirs[dirPath] = true;
+            
+            callback(null, dirPath);
         });
-        readStream.pipe(writeStream);
+    }
+    
+    
+    persistence(domain, filename, readStream, callback){
+        
+        this.mkdir(domain, function (err, dirPath) {
+            if(err){
+                return callback(err);
+            }
+            
+            console.log(dirPath);
+
+            let filePath = path.join(dirPath, filename);
+
+            console.log(filePath);
+
+            let writeStream = fs.createWriteStream(filePath);
+
+            readStream.on('error', callback);
+
+            writeStream.on('finish', function () {
+                callback(null, filePath);
+            });
+
+            readStream.pipe(writeStream);
+        });
     }
 }
 
