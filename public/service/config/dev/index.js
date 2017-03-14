@@ -4,6 +4,8 @@
  * @desc
  */
 
+const path = require('path');
+
 module.exports =  {
     /**
      * redis 配置文件

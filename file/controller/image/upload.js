@@ -65,6 +65,8 @@ exports.batch = function (req, res, next) {
         }else {
             domain = 'other';
         }
+        
+        domain = '';
 
         let mime = stream.mime;
         let ext = path.extname(fileName).toLowerCase();
