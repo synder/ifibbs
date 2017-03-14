@@ -18,7 +18,6 @@ module.exports = function () {
         req.session = {};
 
         let token = null;
-        let now = Date.now();
 
         if(req.method === 'GET' || req.method === 'DELETE'){
             token = req.query.login_token;
@@ -28,15 +27,6 @@ module.exports = function () {
         
         token = token ? token.trim() : null;
 
-        if(!token && (NODE_ENV === 'pre' || NODE_ENV === 'dev')){
-            req.session = {
-                id: '58aa50177ddbf5507c51f082',
-                username: 'synder',
-                expire: Date.now() + 100000000
-            };
-            return next();
-        }
-        
         if(!token){
             return next();
         }
