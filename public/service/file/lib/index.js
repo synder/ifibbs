@@ -7,7 +7,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const mkdirp = require('mkdirp');
 
 class DefaultFileService {
     
@@ -27,17 +26,13 @@ class LocalFileService extends DefaultFileService {
         
         this.dirs = {};
         
+        this.mode = fs.constants.R_OK | fs.constants.W_OK | fs.constants.X_OK;
+        
         if(!this.dir){
             throw new Error('base dir should not be null');
         }
 
-        if(!fs.existsSync(this.dir)){
-            mkdirp(this.dir, function (err) {
-                if(err){
-                    console.error(err.stack);
-                }
-            });
-        }
+        fs.accessSync(this.dir, this.mode);
     }
     
     mkdir(domain, callback) {
@@ -50,14 +45,21 @@ class LocalFileService extends DefaultFileService {
             return callback(null, dirPath);
         }
 
-        mkdirp(dirPath, function (err) {
-            if(err){
-                return callback(err);
+        fs.access(dirPath, this.mode, function(err) {
+            
+            if(!err){
+                return callback(null, dirPath);
             }
 
-            self.dirs[dirPath] = true;
-            
-            callback(null, dirPath);
+            fs.mkdir(dirPath, 0o755, function (err) {
+                if(err){
+                    return callback(err);
+                }
+
+                self.dirs[dirPath] = true;
+
+                callback(null, dirPath);
+            });
         });
     }
     
@@ -71,7 +73,12 @@ class LocalFileService extends DefaultFileService {
 
             let filePath = path.join(dirPath, filename);
 
-            let writeStream = fs.createWriteStream(filePath);
+            let writeStream = fs.createWriteStream(filePath, {
+                flags: 'w',
+                fd: null,
+                mode: 0o644,
+                autoClose: true
+            });
 
             readStream.on('error', callback);
 

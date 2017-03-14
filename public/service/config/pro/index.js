@@ -88,5 +88,12 @@ module.exports =  {
             username: 'nx-keluo',
             password: 'KEluo1205'
         }
+    },
+
+    //文件服务
+    file: {
+        ifibbs: {
+            image: '/var/ifibbs/images/'
+        }
     }
 };

@@ -59,6 +59,12 @@ exports.batch = function (req, res, next) {
         if (!fileName) {
             return;
         }
+        
+        if(domain){
+            domain = domain.replace(path.sep, '');
+        }else {
+            domain = 'other';
+        }
 
         let mime = stream.mime;
         let ext = path.extname(fileName).toLowerCase();
