@@ -12,7 +12,7 @@ module.exports =  {
      * */
     redis: {
         ifibbs: {
-            host: '127.0.0.1',
+            host: '192.168.1.193',
             port: 6379,
             password: null,
             db: 0
@@ -24,13 +24,13 @@ module.exports =  {
      * */
     mongodb: {
         ifibbs: {
-            url: 'mongodb://127.0.0.1:27017/ifibbs',
+            url: 'mongodb://192.168.1.193:27017/ifibbs',
             password: '',
             db: ''
         },
         //文件服务
         file: {
-            url: 'mongodb://127.0.0.1:27017/file',
+            url: 'mongodb://192.168.1.193:27017/file',
             password: '',
             db: ''
         }
@@ -41,7 +41,7 @@ module.exports =  {
      * */
     mysql: {
         ifibbs: {
-            host: '127.0.0.1',
+            host: '192.168.1.193',
             port: 3306,
             username: 'root',
             password: 'yuwei7496560',
@@ -54,7 +54,7 @@ module.exports =  {
      * */
     elasticsearch: {
         ifibbs: {
-            host: '127.0.0.1',
+            host: '192.168.1.193',
             port: 9200,
             log: 'error'
         }
