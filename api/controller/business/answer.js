@@ -239,29 +239,15 @@ exports.getAnswerDetail = function(req, res, next){
             is_favour: isFavour,
             is_collected: isCollected,
         };
-        
-        if(!userID){
-            return res.json({
-                flag: '0000',
-                msg: '',
-                result: result
-            });
-        }
 
         let toUserID =  answer.create_user_id ? answer.create_user_id.id : null;
-        
-        if(!toUserID){
-            return res.json({
-                flag: '0000',
-                msg: '',
-                result: result
-            });
-        }
         
         attentionModel.findUserAttentionByUserID(userID, toUserID, function (err, doc) {
             if(err){
                 return next(err);
             }
+            
+            console.log(doc);
 
             result.is_attention_user = !!doc;
 
