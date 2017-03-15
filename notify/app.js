@@ -6,7 +6,12 @@ push.start(function (err, channel, message) {
         console.error(err.stack);
     }
     
-    if(channel){
-        channel.ack(message);
+    if(channel && message){
+        try{
+            channel.ack(message);
+        }catch(ex){
+            console.error(err);
+        }
+        
     }
 });
