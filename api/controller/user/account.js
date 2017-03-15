@@ -149,7 +149,7 @@ exports.checkPhoneRegistered = function (req, res, next) {
             msg: '',
             result: {
                 ok: !user,
-                failed_message: null,
+                failed_message: !user ? null : '手机号已经被绑定',
                 success_message: null,
             }
         })
