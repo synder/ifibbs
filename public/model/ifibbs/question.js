@@ -221,7 +221,7 @@ exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callb
         body: {
             query: {
                 multi_match: {
-                    query: content,
+                    query: decodeURIComponent(content),
                     fields: ['title', 'describe']
                 }
             },
@@ -279,7 +279,7 @@ exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback
         body: {
             query: {
                 multi_match: {
-                    query: content,
+                    query: decodeURIComponent(content),
                     fields: ['question_title', 'question_describe' , 'answer_content']
                 }
             },
