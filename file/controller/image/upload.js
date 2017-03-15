@@ -47,7 +47,11 @@ exports.batch = function (req, res, next) {
     form.multiples = true;
     form.maxFields = 10;
 
-    let result = {};
+    let result = {
+        ok : true,
+        failed_message: null,
+        success_message: null,
+    };
 
     form.onPart = function (stream) {
 
@@ -76,9 +80,6 @@ exports.batch = function (req, res, next) {
         self._flushing++;
 
         result[fileName] = {
-            ok : true,
-            failed_message: null,
-            success_message: null,
             url: null,
             msg: null
         };
