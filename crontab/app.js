@@ -10,38 +10,37 @@ const Logger = require('./lib/logger');
 const error = require('./lib/error');
 
 const config = global.config = require('./config');
-const logger = global.logger = new Logger(config.log);
 
 const daemon = new Naemon();
 
 daemon.start(path.join(config.project.path, './jobs/recommend_answer.js'), null, null, function (err, module) {
     if(err){
-        return logger.error(err);
+        return console.error(err);
     }
     
-    console.log('module:', module, 'started');
+    console.log('module:', module, 'job started');
 });
 
 daemon.start(path.join(config.project.path, './jobs/recommend_article.js'), null, null, function (err, module) {
     if(err){
-        return logger.error(err);
+        return console.error(err);
     }
 
-    console.log('module:', module, 'started');
+    console.log('module:', module, 'job started');
 });
 
 daemon.start(path.join(config.project.path, './jobs/recommend_answer.js'), null, null, function (err, module) {
     if(err){
-        return logger.error(err);
+        return console.error(err);
     }
 
-    console.log('module:', module, 'started');
+    console.log('module:', module, 'job started');
 });
 
 daemon.start(path.join(config.project.path, './jobs/recommend_subject.js'), null, null, function (err, module) {
     if(err){
-        return logger.error(err);
+        return console.error(err);
     }
 
-    console.log('module:', module, 'started');
+    console.log('module:', module, 'job started');
 });

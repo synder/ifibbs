@@ -58,9 +58,6 @@ const recommendActivityJobs = new cron.CronJob(schedule(CONFIG), function () {
             saveLog(err);
         });
     });
-    
-    
 });
-
 
 recommendActivityJobs.start();
