@@ -86,6 +86,12 @@ module.exports =  {
             protocol: 'http',
             port: 80,
             host: '192.168.1.193',
+            pages: {
+                article: 'article.html',
+                about: 'about.html',
+                agreements: 'agreements.html',
+                feedback: 'feedback.html',
+            }
         },
         //图片拼接地址
         image: {

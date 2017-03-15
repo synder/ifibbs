@@ -3,6 +3,15 @@
  * @copyright
  * @desc
  */
+const url = require('url');
+const hosts = global.config.hosts;
+
+if(!(hosts && hosts.h5 && hosts.h5.pages && hosts.h5.pages.article)){
+    throw new Error('please provide h5 host config');
+}
+
+//文章详情H5页面
+const ARTICLE_H5_PAGE_NAME = hosts.h5.pages.article;
 
 const collectionModel = require('../../../public/model/ifibbs/collection');
 
@@ -27,18 +36,33 @@ exports.getUserArticleCollections = function(req, res, next){
         let collections = [];
 
         results.collections.forEach(function (collection) {
-            collections.push({
-                collection_id: collection._id,
-                subject_id: collection.subject_id ? collection.subject_id._id : null,
-                subject_title: collection.subject_id ? collection.subject_id.title : null,
-                subject_icon: collection.subject_id ? collection.subject_id.icon : null,
-                article_id: collection.article_id ? collection.article_id._id : null,
-                article_title: collection.article_id ? collection.article_id.title : null,
-                article_favour_count: collection.article_id ? collection.article_id.favour_count : null,
-                article_comment_count: collection.article_id ? collection.article_id.comment_count : null,
-                article_collect_count: collection.article_id ? collection.article_id.collect_count : null,
-                article_browse_count: collection.article_id ? collection.article_id.browse_count : null,
-            });
+            if(collection.subject_id && collection.article_id){
+
+                let articleUrl = url.format({
+                    protocol : hosts.h5.protocol,
+                    hostname: hosts.h5.host,
+                    port : hosts.h5.port,
+                    pathname : ARTICLE_H5_PAGE_NAME,
+                    query : {
+                        article_id: collection.article_id._id.toString()
+                    }
+                });
+                
+                collections.push({
+                    collection_id: collection._id,
+                    subject_id: collection.subject_id._id,
+                    subject_title: collection.subject_id.title,
+                    subject_icon: collection.subject_id.icon,
+                    article_id: collection.article_id._id,
+                    article_url: articleUrl,
+                    article_title: collection.article_id.title,
+                    article_favour_count: collection.article_id.favour_count,
+                    article_comment_count: collection.article_id.comment_count,
+                    article_collect_count: collection.article_id.collect_count,
+                    article_browse_count: collection.article_id.browse_count,
+                });
+            }
+            
         });
        
        res.json({
@@ -77,20 +101,22 @@ exports.getUserAnswerCollections = function(req, res, next){
 
         results.collections.forEach(function (collection) {
             
-            collections.push({
-                collection_id: collection._id,
-                question_id: collection.question_id ? collection.question_id._id : null,
-                question_title: collection.question_id ? collection.question_id.title : null,
-                question_tags: collection.question_id ? collection.question_id.tags : null,
-                answer_user_id: collection.user_id ? collection.user_id._id : null,
-                answer_user_name: collection.user_id ? collection.user_id.user_name : null,
-                answer_user_avatar: collection.user_id ? collection.user_id.user_avatar : null,
-                answer_id: collection.answer_id ? collection.answer_id._id : null,
-                answer_content: collection.answer_id ? collection.answer_id.content : null,
-                answer_comment_count: collection.answer_id ? collection.answer_id.comment_count : null,
-                answer_favour_count: collection.answer_id ? collection.answer_id.favour_count : null,
-                answer_collect_count: collection.answer_id ? collection.answer_id.collect_count : null,
-            });
+            if(collection.question_id && collection.user_id && collection.answer_id){
+                collections.push({
+                    collection_id: collection._id,
+                    question_id: collection.question_id._id,
+                    question_title: collection.question_id.title,
+                    question_tags: collection.question_id.tags,
+                    answer_user_id: collection.user_id._id,
+                    answer_user_name: collection.user_id.user_name,
+                    answer_user_avatar: collection.user_id.user_avatar,
+                    answer_id: collection.answer_id._id,
+                    answer_content: collection.answer_id.content,
+                    answer_comment_count: collection.answer_id.comment_count,
+                    answer_favour_count: collection.answer_id.favour_count,
+                    answer_collect_count: collection.answer_id.collect_count,
+                });
+            }
         });
 
         res.json({

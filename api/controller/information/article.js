@@ -8,12 +8,12 @@ const url = require('url');
 
 const hosts = global.config.hosts;
 
-if(!(hosts && hosts.h5)){
+if(!(hosts && hosts.h5 && hosts.h5.pages && hosts.h5.pages.article)){
     throw new Error('please provide h5 host config');
 }
 
 //文章详情H5页面
-const ARTICLE_H5_PAGE_NAME = 'article.html';
+const ARTICLE_H5_PAGE_NAME = hosts.h5.pages.article;
 
 const articleModel = require('../../../public/model/ifibbs/article');
 const collectionModel = require('../../../public/model/ifibbs/collection');
