@@ -169,16 +169,20 @@ exports.checkThirdParty = function (req, res, next) {
     }
 
     let checkFunction;
+    let failedMessage = null;
 
     if(loginType == 1){
+        failedMessage = '该微信账户已经被其他人绑定';
         checkFunction = userModel.getUserByWechat;
     }
 
     if(loginType == 2){
+        failedMessage = '该QQ账户已经被其他人绑定';
         checkFunction = userModel.getUserByQQ;
     }
 
     if(loginType == 3){
+        failedMessage = '该微博账户已经被其他人绑定';
         checkFunction = userModel.getUserByWeibo();
     }
 
@@ -192,7 +196,7 @@ exports.checkThirdParty = function (req, res, next) {
             msg: '',
             result: {
                 ok: !!userInfo,
-                failed_message: !!userInfo ? null : '该账户已经绑定',
+                failed_message: !!userInfo ? null : failedMessage,
                 success_message: null,
                 is_bound: !!userInfo,
                 user_name: userInfo ? userInfo.user_name : null,
