@@ -38,6 +38,7 @@ exports.getNotReadSysNotificationCount = function (userID, callback) {
  * @desc 获取未读业务通知
  * */
 exports.getNotReadBusinessNotificationCount = function (userID, callback) {
+    
     let condition = {
         user_id: userID,
         category: UserNotification.CATEGORY.BUSINESS,
@@ -185,7 +186,7 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
             return callback(err, channel, message);
         }
 
-        let questionID = message.pushContent.toString();
+        let questionID = message.content.toString();
 
         let questionCondition = {
             _id: questionID,
@@ -236,8 +237,8 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
                                     status: UserNotification.STATUS.UNREAD,      //通知状态
                                     category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                                     type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
-                                    push_title: message,      //通知标题
-                                    push_content: questionTitle,      //通知内容
+                                    push_title: pushMessage,      //通知标题
+                                    push_content: JSON.stringify(pushContent),      //通知内容
                                     push_content_id: questionID,     //通知内容ID
                                     push_client_id: createUserGetuiCID,     //客户端ID，详见个推文档
                                     push_task_id: null,     //任务ID，详见个推文档
@@ -286,7 +287,7 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
                                     UserNotification.create(notifications, cb);
                                 },
                                 push: function (cb) {
-                                    ifibbsGetui.notifyTransmissionMsg(true, clientIDS, pushMessage, pushContent, cb);
+                                    ifibbsGetui.notifyTransmissionMsg(clientIDS, pushMessage, pushContent, cb);
                                 },
                             }, function (err) {
 
@@ -318,7 +319,7 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
                                     category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                                     type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
                                     push_title: pushMessage,      //通知标题
-                                    push_content: questionTitle,      //通知内容
+                                    push_content: JSON.stringify(pushContent),      //通知内容
                                     push_content_id: questionID,     //通知内容ID
                                     push_client_id: getuiCID,     //客户端ID，详见个推文档
                                     push_task_id: null,     //任务ID，详见个推文档
@@ -401,7 +402,7 @@ exports.consumeForQuestionBeenDeletedMQS = function (callback) {
             return callback(err, channel, message);
         }
 
-        let questionID = message.pushContent.toString();
+        let questionID = message.content.toString();
 
         //查找问题的创建者
         Question.findOne({_id: questionID})
@@ -449,7 +450,7 @@ exports.consumeForQuestionBeenDeletedMQS = function (callback) {
                             category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                             type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
                             push_title: pushMessage,      //通知标题
-                            push_content: question.title,      //通知内容
+                            push_content: JSON.stringify(pushContent),      //通知内容
                             push_content_id: questionID,     //通知内容ID
                             push_client_id: getuiCID,     //客户端ID，详见个推文档
                             push_task_id: null,     //任务ID，详见个推文档
@@ -497,16 +498,16 @@ exports.consumeForQuestionBeenAttentionMQS = function (callback) {
             return callback(err, channel, message);
         }
 
-        let pushContent = message.pushContent.toString();
+        let content = message.content.toString();
 
-        if (!pushContent) {
+        if (!content) {
             return callback(null, channel, message);
         }
 
-        pushContent = pushContent.split(':');
+        content = content.split(':');
 
-        let userID = pushContent[0];
-        let questionID = pushContent[1];
+        let userID = content[0];
+        let questionID = content[1];
 
         //查找问题
         let attentionCondition = {question_id: questionID, user_id: userID};
@@ -607,16 +608,16 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
             return callback(err, channel, message);
         }
 
-        let pushContent = message.pushContent.toString();
+        let content = message.content.toString();
 
-        pushContent = pushContent.split(':');
+        content = content.split(':');
 
-        if (!pushContent) {
+        if (!content) {
             return callback(null, channel, message);
         }
 
-        let questionID = pushContent[0];
-        let answerID = pushContent[1];
+        let questionID = content[0];
+        let answerID = content[1];
 
 
         async.parallel({
@@ -697,7 +698,7 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
                                 category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                                 type: UserNotification.TYPE.USER_QUESTION_BEEN_ANSWERED,      //通知类型
                                 push_title: pushMessage,      //通知标题
-                                push_content: questionTitle,      //通知内容
+                                push_content: JSON.stringify(pushContent),      //通知内容
                                 push_content_id: questionID,     //通知内容ID
                                 push_client_id: questionCreateUserGetuiCID,     //客户端ID，详见个推文档
                                 push_task_id: null,     //任务ID，详见个推文档
@@ -733,7 +734,7 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
                                 getui_cid: {$exists: true}
                             }
                         })
-                        .stream();
+                        .cursor();
 
                     let clientIDS = [];
                     let notifications = [];
@@ -745,7 +746,7 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
                                 UserNotification.create(notifications, cb);
                             },
                             push: function (cb) {
-                                ifibbsGetui.notifyTransmissionMsg(true, clientIDS, pushMessage, pushContent, cb);
+                                ifibbsGetui.notifyTransmissionMsg(clientIDS, pushMessage, pushContent, cb);
                             },
                         }, function (err) {
 
@@ -777,7 +778,7 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
                                 category: UserNotification.CATEGORY.BUSINESS,      //通知类别
                                 type: UserNotification.TYPE.USER_QUESTION_BEEN_ANSWERED,      //通知类型
                                 push_title: pushMessage,      //通知标题
-                                push_content: questionTitle,      //通知内容
+                                push_content: JSON.stringify(pushContent),      //通知内容
                                 push_content_id: questionID,     //通知内容ID
                                 push_client_id: getuiCID,     //客户端ID，详见个推文档
                                 push_task_id: null,     //任务ID，详见个推文档
@@ -863,16 +864,16 @@ exports.consumeForQuestionBeenSharedMQS = function (callback) {
             return callback(err, channel, message);
         }
 
-        let pushContent = message.pushContent.toString();
+        let content = message.content.toString();
 
-        if (!pushContent) {
+        if (!content) {
             return callback(null, channel, message);
         }
 
-        pushContent = pushContent.split(':');
+        content = content.split(':');
 
-        let userID = pushContent[0];
-        let questionID = pushContent[1];
+        let userID = content[0];
+        let questionID = content[1];
 
         async.parallel({
             shareUser: function (cb) {
@@ -928,7 +929,7 @@ exports.consumeForQuestionBeenSharedMQS = function (callback) {
                         category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                         type: UserNotification.TYPE.USER_QUESTION_BEEN_SHARED,      //通知类型
                         push_title: pushMessage,      //通知标题
-                        push_content: questionTitle,      //通知内容
+                        push_content: JSON.stringify(pushContent),      //通知内容
                         push_content_id: questionID,     //通知内容ID
                         push_client_id: questionOwnerGetuiCID,     //客户端ID，详见个推文档
                         push_task_id: null,     //任务ID，详见个推文档
@@ -976,16 +977,16 @@ exports.consumeForAnswerBeenFavouredMQS = function (callback) {
             return callback(err, channel, message);
         }
 
-        let pushContent = message.pushContent.toString();
+        let content = message.content.toString();
 
-        if (!pushContent) {
+        if (!content) {
             return callback(null, channel, message);
         }
 
-        pushContent = pushContent.split(':');
+        content = content.split(':');
 
-        let userID = pushContent[0];
-        let answerID = pushContent[1];
+        let userID = content[0];
+        let answerID = content[1];
 
         async.parallel({
             favourUser: function (cb) {
@@ -1042,7 +1043,7 @@ exports.consumeForAnswerBeenFavouredMQS = function (callback) {
                         category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                         type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
                         push_title: pushMessage,      //通知标题
-                        push_content: answerContent,      //通知内容
+                        push_content: JSON.stringify(pushContent),      //通知内容
                         push_content_id: answerID,        //通知内容ID
                         push_client_id: answerUserGetuiCID,     //客户端ID，详见个推文档
                         push_task_id: null,     //任务ID，详见个推文档
@@ -1086,20 +1087,21 @@ exports.consumeForAnswerBeenCommendedMQS = function (callback) {
     const QUEUE = ifibbsRabbit.queues.notifications.USER_ANSWER_BEEN_COMMEND;
 
     ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+        
         if (err) {
             return callback(err, channel, message);
         }
 
-        let pushContent = message.pushContent.toString();
+        let content = message.content.toString();
 
-        if (!pushContent) {
+        if (!content) {
             return callback(null, channel, message);
         }
 
-        pushContent = pushContent.split(':');
+        content = content.split(':');
 
-        let answerID = pushContent[0];
-        let commentID = pushContent[1];
+        let answerID = content[0];
+        let commentID = content[1];
 
         async.parallel({
             comment: function (cb) {
@@ -1131,11 +1133,9 @@ exports.consumeForAnswerBeenCommendedMQS = function (callback) {
 
             let commentUserID = comment.create_user_id ? comment.create_user_id._id : null;
             let commentUserName = comment.create_user_id ? comment.create_user_id.user_name : null;
-            let commentContent = comment.pushContent;
 
             let answerUserID = answer.create_user_id ? answer.create_user_id._id : null;
             let answerUserGetuiCID = answer.create_user_id ? answer.create_user_id.getui_cid : null;
-            let answerContent = answer.pushContent;
 
             if (!(commentUserID && answerUserID && answerUserGetuiCID)) {
                 return callback(null, channel, message);
@@ -1159,7 +1159,7 @@ exports.consumeForAnswerBeenCommendedMQS = function (callback) {
                         category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                         type: UserNotification.TYPE.USER_ANSWER_BEEN_COMMEND,      //通知类型
                         push_title: pushMessage,      //通知标题
-                        push_content: answerContent,      //通知内容
+                        push_content: JSON.stringify(pushContent),      //通知内容
                         push_content_id: answerID,        //通知内容ID
                         push_client_id: answerUserGetuiCID,     //客户端ID，详见个推文档
                         push_task_id: null,     //任务ID，详见个推文档
@@ -1195,14 +1195,15 @@ exports.produceForUserPublishNewQuestionMQS = function (questionID, callback) {
 };
 
 exports.consumeForUserPublishNewQuestionMQS = function (callback) {
-    const QUEUE = ifibbsRabbit.queues.notifications.ATTENTION_USER_PUBLISH_NEW_QUESTION;
+    
+    const QUEUE = ifibbsRabbit.queues.notifications.USER_PUBLISH_NEW_QUESTION;
 
     ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
 
-        let questionID = message.pushContent.toString();
+        let questionID = message.content.toString();
 
         if (!questionID) {
             return callback(null, channel, message);
@@ -1220,7 +1221,6 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
                 let questionCreateUserID = question.create_user_id ? question.create_user_id._id : null;
                 let questionCreateUserName = question.create_user_id ? question.create_user_id.user_name : null;
                 
-                let questionTitle = question.title;
 
                 if (!questionCreateUserID){
                     return callback(null, channel, message);
@@ -1247,7 +1247,7 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
                             getui_cid: {$exists: true}
                         }
                     })
-                    .stream();
+                    .cursor();
 
                 let clientIDS = [];
                 let notifications = [];
@@ -1259,7 +1259,7 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
                             UserNotification.create(notifications, cb);
                         },
                         push: function (cb) {
-                            ifibbsGetui.notifyTransmissionMsg(true, clientIDS, pushMessage, pushContent, cb);
+                            ifibbsGetui.notifyTransmissionMsg(clientIDS, pushMessage, pushContent, cb);
                         },
                     }, function (err) {
 
@@ -1291,7 +1291,7 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
                             category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                             type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
                             push_title: pushMessage,      //通知标题
-                            push_content: questionTitle,      //通知内容
+                            push_content: JSON.stringify(pushContent),      //通知内容
                             push_content_id: questionID,     //通知内容ID
                             push_client_id: getuiCID,     //客户端ID，详见个推文档
                             push_task_id: null,     //任务ID，详见个推文档
@@ -1366,23 +1366,23 @@ exports.produceForSubjectHasNewArticleMQS = function (subjectID, articleID, call
 
 exports.consumeForSubjectHasNewArticleMQS = function (callback) {
 
-    const QUEUE = ifibbsRabbit.queues.notifications.ATTENTION_SUBJECT_HAS_NEW_ARTICLE;
+    const QUEUE = ifibbsRabbit.queues.notifications.SUBJECT_HAS_NEW_ARTICLE;
 
     ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
         if (err) {
             return callback(err, channel, message);
         }
 
-        let pushContent = message.pushContent.toString();
+        let content = message.content.toString();
 
-        if (!pushContent) {
+        if (!content) {
             return callback(null, channel, message);
         }
 
-        pushContent = pushContent.split(':');
+        content = content.split(':');
 
-        let subjectID = pushContent[0];
-        let articleID = pushContent[1];
+        let subjectID = content[0];
+        let articleID = content[1];
         
         async.parallel({
             subject: function(cb) { 
@@ -1418,7 +1418,7 @@ exports.consumeForSubjectHasNewArticleMQS = function (callback) {
                         UserNotification.create(notifications, cb);
                     },
                     push: function (cb) {
-                        ifibbsGetui.notifyTransmissionMsg(true, clientIDS, pushMessage, pushContent, cb);
+                        ifibbsGetui.notifyTransmissionMsg(clientIDS, pushMessage, pushContent, cb);
                     },
                 }, function (err) {
 
@@ -1445,7 +1445,7 @@ exports.consumeForSubjectHasNewArticleMQS = function (callback) {
                         getui_cid: {$exists: true}
                     }
                 })
-                .stream();
+                .cursor();
             
             let clientIDS = [];
             let notifications = [];
@@ -1471,7 +1471,7 @@ exports.consumeForSubjectHasNewArticleMQS = function (callback) {
                         category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                         type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
                         push_title: pushMessage,      //通知标题
-                        push_content: article.title,      //通知内容
+                        push_content: JSON.stringify(pushContent),      //通知内容
                         push_content_id: article._id,     //通知内容ID
                         push_client_id: getuiCID,     //客户端ID，详见个推文档
                         push_task_id: null,     //任务ID，详见个推文档
@@ -1550,20 +1550,21 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
     const QUEUE = ifibbsRabbit.queues.notifications.USER_BEEN_ATTENTION;
 
     ifibbsRabbit.client.consumeMessage(QUEUE, function (err, channel, message) {
+        
         if (err) {
             return callback(err, channel, message);
         }
+        
+        let content = message.content.toString();
 
-        let pushContent = message.pushContent.toString();
-
-        if (!pushContent) {
+        if (!content) {
             return callback(null, channel, message);
         }
 
-        pushContent = pushContent.split(':');
+        content = content.split(':');
 
-        let userID = pushContent[0];
-        let toUserID = pushContent[1];
+        let userID = content[0];
+        let toUserID = content[1];
         
         async.parallel({
             user: function(cb) { 
@@ -1575,7 +1576,7 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
         }, function (err, results) {
         
             if(err){
-                 return ;
+                 return callback(err, channel, message);
             }
             
             let user = results.user;
@@ -1605,8 +1606,8 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
                         status: UserNotification.STATUS.UNREAD,      //通知状态
                         category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                         type: UserNotification.TYPE.USER_ANSWER_BEEN_COMMEND,      //通知类型
-                        push_title: message,      //通知标题
-                        push_content: '',      //通知内容
+                        push_title: pushMessage,      //通知标题
+                        push_content: JSON.stringify(pushContent),      //通知内容
                         push_content_id: userID,        //通知内容ID
                         push_client_id: toUserGetuiCID,     //客户端ID，详见个推文档
                         push_task_id: null,     //任务ID，详见个推文档

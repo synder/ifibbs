@@ -206,7 +206,6 @@ describe('根据问题标题、描述搜索问题', function () {
                 if (list.length > 0) {
                     chai.expect(list[0]).to.have.ownProperty('question_id');
                     chai.expect(list[0]).to.have.ownProperty('question_title');
-                    chai.expect(list[0]).to.have.ownProperty('question_describe');
                     chai.expect(list[0]).to.have.ownProperty('question_tags');
                     chai.expect(list[0]).to.have.ownProperty('question_answer_count');
                     chai.expect(list[0]).to.have.ownProperty('question_favour_count');

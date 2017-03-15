@@ -33,7 +33,7 @@ exports.searchQuestionTags = function (content, callback) {
         body: {
             query: {
                 multi_match: {
-                    query: content,
+                    query: decodeURIComponent(content),
                     fields: ['title', 'describe']
                 }
             }
