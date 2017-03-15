@@ -72,9 +72,9 @@ module.exports =  {
     getui: {
         ifibbs: {
             protocol: 'http', //https or http
-            appID: 'itskAyu3yF6r70JWl4Usn6',
-            appKey: 'cuEwvzQhZc5r2Pp4Tp1hEA',
-            masterSecret: 'z9z1MB64ux9QAKuK1XdX01'
+            appID: 'QkiX2QV47s539A3qwKMY9A',
+            appKey: 'RqmLRqDNxd6hHKKLn8gRk6',
+            masterSecret: 'ZtrRSyKzY06h2N7gvWBOW7'
         }
     },
 

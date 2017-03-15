@@ -15,6 +15,7 @@ const UserNotificationSchema = new Schema({
     category     : {type: Number, required: true},      //通知类别
     type         : {type: Number, required: true},      //通知类型
     push_title        : {type: String, required: true},      //通知标题
+    notify_content    : {type: String, required: false},      //通知内容
     push_content      : {type: String, required: true},      //通知内容
     push_content_id   : {type: String, required: false},     //通知内容ID
     push_client_id    : {type: String, required: false},     //客户端ID，详见个推文档

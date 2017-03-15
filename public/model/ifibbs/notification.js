@@ -238,6 +238,7 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
                                     category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                                     type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
                                     push_title: pushMessage,      //通知标题
+                                    notify_content: questionTitle,
                                     push_content: JSON.stringify(pushContent),      //通知内容
                                     push_content_id: questionID,     //通知内容ID
                                     push_client_id: createUserGetuiCID,     //客户端ID，详见个推文档
@@ -319,6 +320,7 @@ exports.consumeForQuestionBeenStickiedMQS = function (callback) {
                                     category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                                     type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
                                     push_title: pushMessage,      //通知标题
+                                    notify_content: question.title,
                                     push_content: JSON.stringify(pushContent),      //通知内容
                                     push_content_id: questionID,     //通知内容ID
                                     push_client_id: getuiCID,     //客户端ID，详见个推文档
@@ -450,6 +452,7 @@ exports.consumeForQuestionBeenDeletedMQS = function (callback) {
                             category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                             type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
                             push_title: pushMessage,      //通知标题
+                            notify_content: question.title,
                             push_content: JSON.stringify(pushContent),      //通知内容
                             push_content_id: questionID,     //通知内容ID
                             push_client_id: getuiCID,     //客户端ID，详见个推文档
@@ -515,6 +518,7 @@ exports.consumeForQuestionBeenAttentionMQS = function (callback) {
         AttentionQuestion.findOne(attentionCondition)
             .populate('user_id')
             .populate('question_user_id')
+            .populate('question_id')
             .exec(function (err, question) {
                 if (err) {
                     return callback(err, channel, message);
@@ -559,6 +563,7 @@ exports.consumeForQuestionBeenAttentionMQS = function (callback) {
                             category: UserNotification.CATEGORY.BUSINESS,      //通知类别
                             type: UserNotification.TYPE.USER_QUESTION_BEEN_ATTENTION,      //通知类型
                             push_title: pushMessage,      //通知标题
+                            notify_content: question.question_id ? question.question_id.title : null,
                             push_content: JSON.stringify(pushContent),      //通知内容
                             push_content_id: questionID,     //通知内容ID
                             push_client_id: questionCreateUserGetuiCID,     //客户端ID，详见个推文档
@@ -698,6 +703,7 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
                                 category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                                 type: UserNotification.TYPE.USER_QUESTION_BEEN_ANSWERED,      //通知类型
                                 push_title: pushMessage,      //通知标题
+                                notify_content: questionTitle,
                                 push_content: JSON.stringify(pushContent),      //通知内容
                                 push_content_id: questionID,     //通知内容ID
                                 push_client_id: questionCreateUserGetuiCID,     //客户端ID，详见个推文档
@@ -778,6 +784,7 @@ exports.consumeForQuestionBeenAnsweredMQS = function (callback) {
                                 category: UserNotification.CATEGORY.BUSINESS,      //通知类别
                                 type: UserNotification.TYPE.USER_QUESTION_BEEN_ANSWERED,      //通知类型
                                 push_title: pushMessage,      //通知标题
+                                notify_content: questionTitle,
                                 push_content: JSON.stringify(pushContent),      //通知内容
                                 push_content_id: questionID,     //通知内容ID
                                 push_client_id: getuiCID,     //客户端ID，详见个推文档
@@ -929,6 +936,7 @@ exports.consumeForQuestionBeenSharedMQS = function (callback) {
                         category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                         type: UserNotification.TYPE.USER_QUESTION_BEEN_SHARED,      //通知类型
                         push_title: pushMessage,      //通知标题
+                        notify_content: questionTitle,
                         push_content: JSON.stringify(pushContent),      //通知内容
                         push_content_id: questionID,     //通知内容ID
                         push_client_id: questionOwnerGetuiCID,     //客户端ID，详见个推文档
@@ -1019,7 +1027,7 @@ exports.consumeForAnswerBeenFavouredMQS = function (callback) {
             let answerUserID = answer.create_user_id ? answer.create_user_id._id : null;
             let answerUserName = answer.create_user_id ? answer.create_user_id.user_name : null;
             let answerUserGetuiCID = answer.create_user_id ? answer.create_user_id.getui_cid : null;
-            let answerContent = answer.pushContent;
+            let answerContent = answer.content;
 
             if (!(favourUserID && answerUserID && answerUserGetuiCID)) {
                 return callback(null, channel, message);
@@ -1043,6 +1051,7 @@ exports.consumeForAnswerBeenFavouredMQS = function (callback) {
                         category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                         type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
                         push_title: pushMessage,      //通知标题
+                        notify_content: answerContent,
                         push_content: JSON.stringify(pushContent),      //通知内容
                         push_content_id: answerID,        //通知内容ID
                         push_client_id: answerUserGetuiCID,     //客户端ID，详见个推文档
@@ -1159,6 +1168,7 @@ exports.consumeForAnswerBeenCommendedMQS = function (callback) {
                         category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                         type: UserNotification.TYPE.USER_ANSWER_BEEN_COMMEND,      //通知类型
                         push_title: pushMessage,      //通知标题
+                        notify_content: comment.content,
                         push_content: JSON.stringify(pushContent),      //通知内容
                         push_content_id: answerID,        //通知内容ID
                         push_client_id: answerUserGetuiCID,     //客户端ID，详见个推文档
@@ -1291,6 +1301,7 @@ exports.consumeForUserPublishNewQuestionMQS = function (callback) {
                             category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                             type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
                             push_title: pushMessage,      //通知标题
+                            notify_content: null,
                             push_content: JSON.stringify(pushContent),      //通知内容
                             push_content_id: questionID,     //通知内容ID
                             push_client_id: getuiCID,     //客户端ID，详见个推文档
@@ -1410,6 +1421,10 @@ exports.consumeForSubjectHasNewArticleMQS = function (callback) {
             }
 
             let pushMessage =  '您订阅的专题' + subject.title + ' 有了新的文章';
+            const pushContent = {
+                func: 'notification',
+                type: UserNotification.CATEGORY.BUSINESS
+            };
 
             //推送函数
             let pushAndSaveFunction = function (clientIDS, notifications, callback) {
@@ -1428,11 +1443,7 @@ exports.consumeForSubjectHasNewArticleMQS = function (callback) {
                     callback(err);
                 });
             };
-
-            const pushContent = {
-                func: 'notification',
-                type: UserNotification.CATEGORY.BUSINESS
-            };
+            
 
             let stream = AttentionSubject
                 .find({
@@ -1471,6 +1482,7 @@ exports.consumeForSubjectHasNewArticleMQS = function (callback) {
                         category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                         type: UserNotification.TYPE.USER_QUESTION_BEEN_STICKIED,      //通知类型
                         push_title: pushMessage,      //通知标题
+                        notify_content: null,
                         push_content: JSON.stringify(pushContent),      //通知内容
                         push_content_id: article._id,     //通知内容ID
                         push_client_id: getuiCID,     //客户端ID，详见个推文档
@@ -1582,7 +1594,11 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
             let user = results.user;
             let toUser = results.toUser;
             
-            if(!(user && toUser)){
+            if(!user){
+                return callback(null, channel, message);
+            }
+            
+            if(!toUser){
                 return callback(null, channel, message);
             }
             
@@ -1607,6 +1623,7 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
                         category: UserNotification.CATEGORY.SYSTEM,      //通知类别
                         type: UserNotification.TYPE.USER_ANSWER_BEEN_COMMEND,      //通知类型
                         push_title: pushMessage,      //通知标题
+                        notify_content: null,
                         push_content: JSON.stringify(pushContent),      //通知内容
                         push_content_id: userID,        //通知内容ID
                         push_client_id: toUserGetuiCID,     //客户端ID，详见个推文档
@@ -1617,7 +1634,7 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
                         user_id: toUserID,    //用户ID
                     }, cb);
                 },
-            }, function (err) {
+            }, function (err, results) {
                 callback(err, channel, message);
             });
         });

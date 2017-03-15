@@ -289,6 +289,19 @@ exports.addUserToAttention = function (req, res, next) {
         return next(new BadRequestError('user_id is needed'));
     }
 
+    //自己不能关注自己
+    if(userID.toString() === toUserID.toString()){
+        return res.json({
+            flag: '0000',
+            msg: '',
+            result: {
+                ok: false,
+                failed_message: '您无需关注您自己',
+                success_message: null,
+            }
+        });
+    }
+
     attentionModel.addAttentionToUser(userID, toUserID, function (err, success) {
         if(err){
             return next(err);

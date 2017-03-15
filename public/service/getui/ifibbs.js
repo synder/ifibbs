@@ -312,6 +312,9 @@ exports.notifyTransmissionMsg = function (clientIDS, title, content, callback) {
     if(typeof content !== 'string'){
         content = JSON.stringify(content);
     }
+    
+    console.log(APP_ID);
+    console.log(APP_KEY);
 
     let template = new TransmissionTemplate({
         appId: APP_ID,
@@ -379,13 +382,30 @@ exports.notifyTransmissionMsg = function (clientIDS, title, content, callback) {
     batch.submit(function (err, res) {
         if(err){
             return batch.retry(function (err, res) {
-                callback(err, res.info);
+                
+                if(err){
+                    return callback(err);
+                }
+                
+                if(res.result !== 'ok'){
+                    return callback(new Error('push failed to ge tui'));
+                }
+                
+                callback(null, res);
             });
         }
 
         if(res.result !== 'ok'){
             return batch.retry(function (err, res) {
-                callback(err, res.info);
+                if(err){
+                    return callback(err);
+                }
+                
+                if(res.result !== 'ok'){
+                    return callback(new Error('push failed to ge tui'));
+                }
+
+                callback(null, res);
             });
         }
 

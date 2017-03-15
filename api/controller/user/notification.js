@@ -63,7 +63,7 @@ exports.getUserSystemNotification = function (req, res, next) {
             list.push({
                 id: notification._id,
                 title: notification.push_title,
-                content: notification.push_content,
+                content: notification.notify_content,
                 add_on: notification.push_content_id,
                 type: notification.type,
                 status: notification.status,
@@ -105,7 +105,7 @@ exports.getUserBusinessNotification = function (req, res, next) {
             list.push({
                 id: notification._id,
                 title: notification.push_title,
-                content: notification.push_content,
+                content: notification.notify_content,
                 content_id: notification.push_content_id,
                 add_on: notification.push_content_id,
                 type: notification.type,
