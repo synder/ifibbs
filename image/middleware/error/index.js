@@ -33,7 +33,11 @@ exports.serverErrorHandler = function () {
         res.status(200).json({
             flag: '0' + err.code,
             msg: err.message,
-            result: null
+            result: {
+                ok : true,
+                failed_message: null,
+                success_message: null,
+            }
         });
     }
 };
