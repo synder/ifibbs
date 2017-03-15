@@ -9,39 +9,32 @@
 <script>
   import BodyFooter from './footer.vue'
 
-  import axios from 'axios';
-
-
-    axios.get('/apis/test')
-            .then(function (rs) {
-              console.log(rs.data.result.a)
-              return rs.data.result.a
-
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
-
   export default {
     name: 'header',
     data () {
       return {
-        msg: '这是一个头部'
+        msg: '这是一个头文件'
       };
     },
+    created:function(){
+      this.HelloAxios();
+    },
+    methods:{
+      HelloAxios(){
+        let self = this;
+        this.$http.get('/admin/test')
+                .then(function (rs) {
+                  self.msg = rs.data.result.a;
+                });
 
+      }
+    },
     components: {
       BodyFooter
     }
   }
-  axios.get('/apis/test')
-          .then(function (rs) {
-            console.log(rs.data.result.a)
 
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
