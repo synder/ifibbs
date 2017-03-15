@@ -4,19 +4,30 @@
  * @desc
  */
 
-
-const kue = require('kue');
-
+const path = require('path');
+const Naemon = require('./lib/naemon');
 const Logger = require('./lib/logger');
 const error = require('./lib/error');
 
 const config = global.config = require('./config');
 const logger = global.logger = new Logger(config.log);
 
-const server = kue.app.listen(config.server.port.http, function(err){
-    if (err) {
-        throw err;
-    }
+const daemon = new Naemon();
 
-    logger.log('cron tab app listening on port ', server.address().port);
+daemon.start(path.join(config.project.path, './jobs/recommend_answer.js'), null, null, function (err) {
+    if(err){
+        logger.error(err);
+    }
+});
+
+daemon.start(path.join(config.project.path, './jobs/recommend_article.js'), null, null, function (err) {
+    if(err){
+        logger.error(err);
+    }
+});
+
+daemon.start(path.join(config.project.path, './jobs/recommend_answer.js'), null, null, function (err) {
+    if(err){
+        logger.error(err);
+    }
 });

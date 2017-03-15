@@ -124,6 +124,9 @@ exports.getSubjectArticleList = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: articles
             }
@@ -151,11 +154,18 @@ exports.getSubjectArticleDetail = function (req, res, next) {
             return res.json({
                 flag: '0000',
                 msg: '',
-                result: null,
+                result: {
+                    ok: false,
+                    failed_message: '文章不存在',
+                    success_message: null,
+                },
             });
         }
         
         let result = {
+            ok: true,
+            failed_message: null,
+            success_message: null,
             id : article._id,
             title : article.title,
             icon : article.icon,
@@ -219,6 +229,9 @@ exports.getArticleCommentList = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: comments
             }
@@ -273,6 +286,9 @@ exports.getArticleSocialInfo = function (req, res, next) {
         let isFavoured = results.isFavoured;
         
         let result = {
+            ok: true,
+            failed_message: null,
+            success_message: null,
             favour_count: articleInfo.favour_count,
             comment_count: articleInfo.comment_count,
             collect_count: articleInfo.collect_count,

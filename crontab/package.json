@@ -2,7 +2,7 @@
   "name": "ifibbs-crontab",
   "version": "0.0.1",
   "dependencies": {
-    "kue": "*",
+    "cron": "*",
     "async": "*",
     "redis": "*",
     "winston": "*",

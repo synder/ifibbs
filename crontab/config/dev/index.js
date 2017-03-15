@@ -5,7 +5,7 @@
  */
 
 const path = require('path');
-const projectPath = process.cwd();
+const projectPath = path.join(__dirname, '../../');
 
 module.exports =  {
 
@@ -78,4 +78,33 @@ module.exports =  {
             ssl: true
         }
     },
+    
+    jobs: {
+        ifibbs: {
+            recommend_activity: {
+                months: '*',
+                days: '*',
+                weeks: '0-6',
+                hours: 18,
+                minutes: '0-59',
+                seconds: 0
+            },
+            recommend_article: {
+                months: '*',
+                days: '*',
+                weeks: '0-6',
+                hours: 18,
+                minutes: '0-59',
+                seconds: 0
+            },
+            recommend_answer: {
+                months: '*',
+                days: '*',
+                weeks: '0-6',
+                hours: 18,
+                minutes: '0-59',
+                seconds: 0
+            },
+        }
+    }
 };
