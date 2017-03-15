@@ -14,6 +14,7 @@ const ObjectId = Schema.Types.ObjectId;
 const SubjectSchema = new Schema({
     status          : {type: Number, required: true},   //专题状态
     title           : {type: String, required: true},   //专题名称
+    recommend       : {type: Boolean, required: true},  //是否推荐
     describe        : {type: String, required: true},   //专题描述
     icon            : {type: String, required: true},   //专题图标URL
     cover           : {type: String, required: true},   //专题封面图URL

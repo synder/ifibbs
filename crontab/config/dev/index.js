@@ -85,23 +85,23 @@ module.exports =  {
                 months: '*',
                 days: '*',
                 weeks: '0-6',
-                hours: 18,
-                minutes: '0-59',
+                hours: '0-23',
+                minutes: 10,
                 seconds: 0
             },
             recommend_article: {
                 months: '*',
                 days: '*',
                 weeks: '0-6',
-                hours: 18,
-                minutes: '0-59',
+                hours: '0-23',
+                minutes: 10,
                 seconds: 0
             },
             recommend_answer: {
                 months: '*',
                 days: '*',
                 weeks: '0-6',
-                hours: 18,
+                hours: '0-23',
                 minutes: '0-59',
                 seconds: 0
             },

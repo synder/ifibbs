@@ -329,6 +329,7 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
     let answerDoc = {
         status: QuestionAnswer.STATUS.NORMAL,
         content: content,
+        recommend: false,
         comment_count: 0,
         favour_count: 0,
         collect_count: 0,

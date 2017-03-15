@@ -13,6 +13,7 @@ const ObjectId = Schema.Types.ObjectId;
 const ActivitySchema = new Schema({
     status          : {type: Number, required: true},   //回答状态
     title           : {type: String, required: true},   //回答内容
+    recommend       : {type: Boolean, required: true},  //是否推荐
     cover           : {type: String, required: true},   //封面图片URL
     describe        : {type: String, required: true},   //封面图片URL
     url             : {type: String, required: true},  //活动地址URL

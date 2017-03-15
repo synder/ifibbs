@@ -28,6 +28,7 @@ exports.createOrUpdateNewArticle = function (createUserID, subjectID, article, c
     let update = {
         status          : Article.STATUS.PUBLISHED,    //文章状态
         top             : article.top || false,    //是否置顶
+        recommend       : false,
         title           : article.title,    //文章标题
         summary         : article.summary,    //文章摘要
         icon            : article.icon,    //文章图标

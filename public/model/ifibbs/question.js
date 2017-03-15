@@ -22,6 +22,7 @@ exports.createNewQuestion = function (userID, question, callback) {
     let questionDoc = {
         status: Question.STATUS.NORMAL,
         tags: question.tags,
+        recommend: false,
         title: question.title,
         describe: question.describe,
         answer_count: 0,

@@ -8,29 +8,29 @@
  * 生成job执行计划
  * */
 module.exports = function (config) {
-
+    
     if (!config.seconds) {
-        throw new Error('config.seconds is null or undefined');
+        config.seconds = 0;
     }
 
     if (!config.minutes) {
-        throw new Error('config.minutes is null or undefined');
+        config.minutes = 0;
     }
 
     if (!config.hours) {
-        throw new Error('config.hours is null or undefined');
+        config.hours = '*';
     }
 
     if (!config.months) {
-        throw new Error('config.months is null or undefined');
+        config.months = '*';
     }
 
     if (!config.days) {
-        throw new Error('config.days is null or undefined');
+        config.days = '*';
     }
 
     if (!config.weeks) {
-        throw new Error('config.weeks is null or undefined');
+        config.weeks = '*';
     }
 
     return [
