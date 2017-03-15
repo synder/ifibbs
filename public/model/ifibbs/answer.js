@@ -83,6 +83,25 @@ exports.getLatestAnswerList = function (pageSkip, pageSize, callback) {
 };
 
 /**
+ * @desc 获取首页推荐文章列表
+ * */
+exports.getFirstPageRecommendAnswers = function (callback) {
+
+    let end = new Date();
+    let temp = new Date();
+    let start = temp.setHours(temp.getHours() - 1);
+
+    let condition = {
+        recommend: true,
+        status: QuestionAnswer.STATUS.NORMAL,
+        update_time : { $gt: start, $lt: end}
+    };
+
+    QuestionAnswer.find(condition, callback);
+};
+
+
+/**
  * @desc 获取问题回答列表
  * */
 exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pageSize, callback) {
@@ -329,6 +348,7 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
     let answerDoc = {
         status: QuestionAnswer.STATUS.NORMAL,
         content: content,
+        recommend: false,
         comment_count: 0,
         favour_count: 0,
         collect_count: 0,

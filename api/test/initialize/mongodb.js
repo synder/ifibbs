@@ -193,7 +193,9 @@ const initSubject = function (callback) {
 
     docs.push({
         _id: SUBJECT_ID,
+        order: 10,
         status: Subject.STATUS.ENABLE,
+        recommend: true,
         title: Mock.Random.ctitle(10, 20),
         describe: Mock.Random.ctitle(50, 100),
         icon: icon,
@@ -208,6 +210,8 @@ const initSubject = function (callback) {
     for (let i = 0; i < 10; i++) {
         docs.push({
             status: Subject.STATUS.ENABLE,
+            order: 12,
+            recommend: false,
             title: Mock.Random.ctitle(10, 20),
             describe: Mock.Random.ctitle(50, 100),
             icon: icon,
@@ -319,7 +323,9 @@ const initArticle = function (callback) {
     let docs = [{
         _id: ARTICLE_ID,
         status: Article.STATUS.PUBLISHED,    //文章状态
+        order: 1,
         top: true,    //是否置顶
+        recommend: true,
         title: Mock.Random.ctitle(10, 20),    //文章标题
         summary: Mock.Random.ctitle(100, 200),    //文章摘要
         icon: icon,    //文章图标
@@ -339,7 +345,9 @@ const initArticle = function (callback) {
     for (let i = 0; i < 100; i++) {
         docs.push({
             status: Article.STATUS.PUBLISHED,    //文章状态
+            order: 1,
             top: true,    //是否置顶
+            recommend: false,
             title: Mock.Random.ctitle(10, 20),    //文章标题
             summary: Mock.Random.ctitle(100, 200),    //文章摘要
             icon: icon,    //文章图标
@@ -397,6 +405,7 @@ const initQuestion = function (callback) {
     let questions = [{
         "_id": QUESTION_ID,
         "status": 1,
+        "recommend": true,
         "title": encodeURIComponent(Mock.Random.ctitle(5, 20)),
         "describe": encodeURIComponent(Mock.Random.ctitle(50, 100)),
         "answer_count": 0,
@@ -413,6 +422,7 @@ const initQuestion = function (callback) {
         questions.push({
             "_id": mongodb.ObjectId(),
             "status": 1,
+            "recommend": false,
             "title": encodeURIComponent(Mock.Random.ctitle(5, 20)),
             "describe": encodeURIComponent(Mock.Random.ctitle(50, 100)),
             "answer_count": 0,
@@ -471,6 +481,7 @@ const initQuestionAnswer = function (callback) {
     let question = {
         "_id": '58ae5da34171fd177d387666',
         "status": 1,
+        "recommend": false,
         "title": encodeURIComponent('基金公司在中国的生存状态'),
         "describe": encodeURIComponent('最早的对冲基金是哪一只，这还不确定。在上世纪20年代美国的大牛市时期，这种专门面向富人的投资工具数不胜数。其中最有名的是Benjamin Graham和Jerry Newman创立的Graham-Newman Partnership基金。'),
         "answer_count": 0,
@@ -486,6 +497,7 @@ const initQuestionAnswer = function (callback) {
     answers.push({
         "_id": ANSWER_ID,
         "status": 1,
+        "recommend": true,
         "content": encodeURIComponent('最早的对冲基金是哪一只，这还不确定。在上世纪20年代美国的大牛市时期，这种专门面向富人的投资工具数不胜数。其中最有名的是Benjamin Graham和Jerry Newman创立的Graham-Newman Partnership基金。'),
         "comment_count": 0,
         "favour_count": 0,
@@ -500,6 +512,7 @@ const initQuestionAnswer = function (callback) {
         answers.push({
             "_id": mongodb.ObjectId(),
             "status": 1,
+            "recommend": true,
             "content": encodeURIComponent(Mock.Random.ctitle(20, 50)),
             "comment_count": 0,
             "favour_count": 0,
@@ -587,6 +600,7 @@ const initRecommend = function (callback) {
         let question = {
             "_id": questionID,
             "status": 1,
+            "recommend": false,
             "title": encodeURIComponent(Mock.Random.ctitle(5, 20)),
             "describe": encodeURIComponent(Mock.Random.ctitle(50, 100)),
             "answer_count": 0,
@@ -602,6 +616,7 @@ const initRecommend = function (callback) {
         let answer = {
             "_id": answerID,
             "status": 1,
+            "recommend": true,
             "content": encodeURIComponent(Mock.Random.ctitle(20, 50)),
             "comment_count": 0,
             "favour_count": 0,
@@ -615,6 +630,7 @@ const initRecommend = function (callback) {
         let activity = {
             _id: activityID,
             status: Activity.STATUS.DISPLAY,   //回答状态
+            recommend: true,
             title: Mock.Random.ctitle(10, 20),   //回答内容
             cover: avatar,   //封面图片URL
             describe: Mock.Random.ctitle(10, 20),   //封面图片URL
@@ -629,7 +645,9 @@ const initRecommend = function (callback) {
         let article = {
             _id: articleID,
             status: Article.STATUS.PUBLISHED,    //文章状态
+            order: 1,
             top: false,    //是否置顶
+            recommend: false,
             title: Mock.Random.ctitle(10, 20),    //文章标题
             summary: Mock.Random.ctitle(10, 20),    //文章摘要
             icon: avatar,    //文章图标
@@ -742,6 +760,7 @@ const initCollection = function (callback) {
     let question = {
         "_id": questionID,
         "status": 1,
+        "recommend": false,
         "title": encodeURIComponent(Mock.Random.ctitle(5, 20)),
         "describe": encodeURIComponent(Mock.Random.ctitle(50, 100)),
         "answer_count": 0,
@@ -757,6 +776,7 @@ const initCollection = function (callback) {
     let answer = {
         "_id": answerID,
         "status": 1,
+        "recommend": true,
         "content": encodeURIComponent(Mock.Random.ctitle(20, 50)),
         "comment_count": 0,
         "favour_count": 0,
@@ -770,7 +790,9 @@ const initCollection = function (callback) {
     let article = {
         _id: articleID,
         status: Article.STATUS.PUBLISHED,    //文章状态
+        order: 1,
         top: false,    //是否置顶
+        recommend: false,
         title: Mock.Random.ctitle(10, 20),    //文章标题
         summary: Mock.Random.ctitle(10, 20),    //文章摘要
         icon: avatar,    //文章图标

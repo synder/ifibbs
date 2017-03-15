@@ -12,6 +12,7 @@ const ObjectId = Schema.Types.ObjectId;
 //用户===================================================
 const QuestionAnswerSchema = new Schema({
     status          : {type: Number, required: true},   //回答状态
+    recommend       : {type: Boolean, required: true},  //是否推荐
     content         : {type: String, required: true},   //回答内容
     comment_count   : {type: Number, required: true},   //评论数量
     favour_count    : {type: Number, required: true},   //点赞数量

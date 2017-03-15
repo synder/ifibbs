@@ -20,6 +20,7 @@ const RecommendSchema = new Schema({
     answer      : {type: ObjectId, required: false, ref: 'QuestionAnswer'},    //推荐回答
     activity    : {type: ObjectId, required: false, ref: 'Activity'},          //推荐活动
     article     : {type: ObjectId, required: false, ref: 'Article'},           //推荐文章
+    subject     : {type: ObjectId, required: false, ref: 'Subject'},           //推荐专题
     create_time : {type: Date, required: true},     //排序方式
     update_time : {type: Date, required: true},     //排序方式
 });
@@ -30,6 +31,11 @@ RecommendSchema.virtual('id').get(function () {
 });
 
 RecommendSchema.index({order: -1, create_time : -1});
+
+RecommendSchema.index({answer: 1});
+RecommendSchema.index({activity: 1});
+RecommendSchema.index({article: 1});
+RecommendSchema.index({subject: 1});
 
 //推荐状态
 RecommendSchema.statics.STATUS = {

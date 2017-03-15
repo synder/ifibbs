@@ -121,24 +121,26 @@ exports.getUserCommentsList = function (req, res, next) {
         }
 
         let count = results.count;
-        let comments = results.comments;
+        let comments = [];
 
-        comments = comments.map(function (comment) {
-            return {
-                question_id: comment.question_id ? comment.question_id._id : null,
-                question_title: comment.question_id ? comment.question_id.title : null,
-                answer_id: comment.answer_id ? comment.answer_id._id : null,
-                answer_content: comment.answer_id ? comment.answer_id.content : null,
-                user_id: comment.create_user_id ? comment.create_user_id._id : null,
-                user_avatar: comment.create_user_id ? comment.create_user_id.user_avatar : null,
-                user_name: comment.create_user_id ? comment.create_user_id.user_name : null,
-                to_user_id: comment.to_user_id ? comment.to_user_id.user_name : null,
-                to_user_name: comment.to_user_id ? comment.to_user_id.user_name : null,
-                comment_id: comment._id,
-                comment_content: comment.content,
-                comment_favour_count: comment.favour_count,
-                comment_publish_time: comment.create_time.valueOf()
-            };
+        results.comments.forEach(function (comment) {
+            if(comment.question_id && comment.answer_id && comment.create_user_id){
+                comments.push({
+                    question_id: comment.question_id._id,
+                    question_title: comment.question_id.title,
+                    answer_id: comment.answer_id._id,
+                    answer_content: comment.answer_id.content,
+                    user_id: comment.create_user_id._id,
+                    user_avatar: comment.create_user_id.user_avatar,
+                    user_name: comment.create_user_id.user_name,
+                    to_user_id: comment.to_user_id ? comment.to_user_id.user_name : null,
+                    to_user_name: comment.to_user_id ? comment.to_user_id.user_name : null,
+                    comment_id: comment._id,
+                    comment_content: comment.content,
+                    comment_favour_count: comment.favour_count,
+                    comment_publish_time: comment.create_time.valueOf()
+                });
+            }
         });
 
         res.json({

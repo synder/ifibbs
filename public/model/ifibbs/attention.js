@@ -173,6 +173,11 @@ exports.findUserAttentionByUserID = function (userID, otherUserID, callback) {
  * @desc 添加关注用户
  * */
 exports.addAttentionToUser = function (userID, toUserID, callback) {
+    //自己不能关注自己
+    if(userID.toString() == toUserID.toString()){
+        return callback(null, false);
+    }
+    
     let condition = {
         user_id: userID,
         to_user_id: toUserID,

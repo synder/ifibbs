@@ -33,6 +33,12 @@ module.exports =  {
             url: 'mongodb://127.0.0.1:27017/file',
             password: '',
             db: ''
+        },
+        //job服务日志
+        cron: {
+            url: 'mongodb://127.0.0.1:27017/cron',
+            password: '',
+            db: ''
         }
     },
     

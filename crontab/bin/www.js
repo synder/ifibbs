@@ -3,3 +3,5 @@
  * @copyright
  * @desc
  */
+
+require('../app.js');

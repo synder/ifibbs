@@ -8,12 +8,12 @@ const url = require('url');
 
 const hosts = global.config.hosts;
 
-if(!(hosts && hosts.h5)){
+if(!(hosts && hosts.h5 && hosts.h5.pages && hosts.h5.pages.article)){
     throw new Error('please provide h5 host config');
 }
 
 //文章详情H5页面
-const ARTICLE_H5_PAGE_NAME = 'article.html';
+const ARTICLE_H5_PAGE_NAME = hosts.h5.pages.article;
 
 const articleModel = require('../../../public/model/ifibbs/article');
 const collectionModel = require('../../../public/model/ifibbs/collection');
@@ -124,6 +124,9 @@ exports.getSubjectArticleList = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: articles
             }
@@ -151,11 +154,18 @@ exports.getSubjectArticleDetail = function (req, res, next) {
             return res.json({
                 flag: '0000',
                 msg: '',
-                result: null,
+                result: {
+                    ok: false,
+                    failed_message: '文章不存在',
+                    success_message: null,
+                },
             });
         }
         
         let result = {
+            ok: true,
+            failed_message: null,
+            success_message: null,
             id : article._id,
             title : article.title,
             icon : article.icon,
@@ -219,6 +229,9 @@ exports.getArticleCommentList = function (req, res, next) {
             flag: '0000',
             msg: '',
             result: {
+                ok: true,
+                failed_message: null,
+                success_message: null,
                 count: count,
                 list: comments
             }
@@ -273,6 +286,9 @@ exports.getArticleSocialInfo = function (req, res, next) {
         let isFavoured = results.isFavoured;
         
         let result = {
+            ok: true,
+            failed_message: null,
+            success_message: null,
             favour_count: articleInfo.favour_count,
             comment_count: articleInfo.comment_count,
             collect_count: articleInfo.collect_count,
