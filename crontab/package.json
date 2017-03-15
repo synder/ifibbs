@@ -1,0 +1,12 @@
+{
+  "name": "ifibbs-crontab",
+  "version": "0.0.1",
+  "dependencies": {
+    "kue": "*",
+    "async": "*",
+    "redis": "*",
+    "winston": "*",
+    "winston-mail": "*",
+    "winston-mongodb": "*"
+  }
+}

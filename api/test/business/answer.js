@@ -146,7 +146,7 @@ describe('获取问题回答详情', function () {
             .put('/user/question/answer')
             .send({
                 question_id: questionID,
-                answer_content: Mock.Random.cparagraph(5, 10),
+                answer_content: encodeURIComponent(Mock.Random.cparagraph(5, 10)),
             })
             .expect(200)
             .end(function(err, res) {

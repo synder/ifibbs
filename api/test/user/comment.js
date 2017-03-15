@@ -17,8 +17,8 @@ describe('用户新增回答评论', function () {
         request(app)
             .put('/user/question')
             .send({
-                title: Mock.Random.ctitle(3, 20),
-                describe: Mock.Random.cparagraph(10, 50),
+                title: encodeURIComponent(Mock.Random.ctitle(3, 20)),
+                describe: encodeURIComponent(Mock.Random.cparagraph(10, 50)),
                 tags: []
             })
             .expect(200)
@@ -39,7 +39,7 @@ describe('用户新增回答评论', function () {
                     .put('/user/question/answer')
                     .send({
                         question_id: questionID,
-                        answer_content: Mock.Random.cparagraph(5, 10),
+                        answer_content: encodeURIComponent(Mock.Random.cparagraph(5, 10)),
                     })
                     .expect(200)
                     .end(function (err, res) {
@@ -63,7 +63,7 @@ describe('用户新增回答评论', function () {
                                 to_comment_id: null,
                                 question_id: questionID,
                                 answer_id: answerID,
-                                comment_content: Mock.Random.ctitle(10, 20)
+                                comment_content: encodeURIComponent(Mock.Random.ctitle(10, 20))
                             })
                             .expect(200)
                             .end(function (err, res) {
@@ -101,8 +101,8 @@ describe('用户删除回答评论', function () {
                 request(app)
                     .put('/user/question')
                     .send({
-                        title: Mock.Random.ctitle(3, 20),
-                        describe: Mock.Random.cparagraph(10, 50),
+                        title: encodeURIComponent(Mock.Random.ctitle(3, 20)),
+                        describe: encodeURIComponent(Mock.Random.cparagraph(10, 50)),
                         tags: []
                     })
                     .expect(200)
@@ -123,7 +123,7 @@ describe('用户删除回答评论', function () {
                     .put('/user/question/answer')
                     .send({
                         question_id: questionID,
-                        answer_content: Mock.Random.cparagraph(5, 10),
+                        answer_content: encodeURIComponent(Mock.Random.cparagraph(5, 10)),
                     })
                     .expect(200)
                     .end(function (err, res) {
@@ -145,7 +145,7 @@ describe('用户删除回答评论', function () {
                         to_comment_id: null,
                         question_id: questionID,
                         answer_id: answer_id,
-                        comment_content: Mock.Random.ctitle(10, 20)
+                        comment_content: encodeURIComponent(Mock.Random.ctitle(10, 20))
                     })
                     .expect(200)
                     .end(function (err, res) {
@@ -202,8 +202,8 @@ describe('用户获取自己的回答评论列表', function () {
                 request(app)
                     .put('/user/question')
                     .send({
-                        title: Mock.Random.ctitle(3, 20),
-                        describe: Mock.Random.cparagraph(10, 50),
+                        title: encodeURIComponent(Mock.Random.ctitle(3, 20)),
+                        describe: encodeURIComponent(Mock.Random.cparagraph(10, 50)),
                         tags: []
                     })
                     .expect(200)
@@ -224,7 +224,7 @@ describe('用户获取自己的回答评论列表', function () {
                     .put('/user/question/answer')
                     .send({
                         question_id: question_id,
-                        answer_content: Mock.Random.cparagraph(5, 10),
+                        answer_content: encodeURIComponent(Mock.Random.cparagraph(5, 10)),
                     })
                     .expect(200)
                     .end(function (err, res) {
@@ -245,7 +245,7 @@ describe('用户获取自己的回答评论列表', function () {
                         to_comment_id: null,
                         question_id: questionID,
                         answer_id: answer_id,
-                        comment_content: Mock.Random.ctitle(10, 20)
+                        comment_content: encodeURIComponent(Mock.Random.ctitle(10, 20))
                     })
                     .expect(200)
                     .end(cb)

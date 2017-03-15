@@ -14,8 +14,8 @@ describe('获取问题详情', function () {
         request(app)
             .put('/user/question')
             .send({
-                title: Mock.Random.ctitle(3, 20),
-                describe: Mock.Random.cparagraph(10, 50),
+                title: encodeURIComponent(Mock.Random.ctitle(3, 20)),
+                describe: encodeURIComponent(Mock.Random.cparagraph(10, 50)),
                 tags: []
             })
             .expect(200)
@@ -83,8 +83,8 @@ describe('根据问题标题、描述和问题回答搜索问题', function () {
         request(app)
             .put('/user/question')
             .send({
-                title: title,
-                describe: describe,
+                title: encodeURIComponent(title),
+                describe: encodeURIComponent(describe),
                 tags: []
             })
             .expect(200)
@@ -108,7 +108,7 @@ describe('根据问题标题、描述和问题回答搜索问题', function () {
         request(app)
             .get('/questions/find/answer')
             .query({
-                content: '基金',
+                content: encodeURIComponent('基金'),
                 page_size: 20,
                 page_index: 1
             })
@@ -158,8 +158,8 @@ describe('根据问题标题、描述搜索问题', function () {
         request(app)
             .put('/user/question')
             .send({
-                title: title,
-                describe: describe,
+                title: encodeURIComponent(title),
+                describe: encodeURIComponent(describe),
                 tags: []
             })
             .expect(200)
@@ -260,7 +260,7 @@ describe('根据关键词搜索TAG', function () {
         request(app)
             .get('/question/tags/find')
             .query({
-                content: '投资基金'
+                content: encodeURIComponent('投资基金')
             })
             .expect(200)
             .end(function (err, res) {

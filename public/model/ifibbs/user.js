@@ -22,7 +22,7 @@ const self = this;
  * @desc 密码加密
  * */
 const hashUserPassword = function (salt, password) {
-    salt = salt.trim();
+    salt = salt ? salt.trim() : '@';
     password = password.trim();
     return crypto.createHash('md5').update(`${salt}&${password}`).digest('hex');
 };
@@ -160,8 +160,9 @@ exports.getUserByMobileAndPassword = function (phone, pass, cid, callback) {
         }
         user.getui_cid = cid;
 
-        user.save();
-        callback(null, user);
+        user.save(function (err) {
+            callback(err, user);
+        });
     });
 };
 

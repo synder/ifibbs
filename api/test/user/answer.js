@@ -13,8 +13,8 @@ describe('用户新增问题回答', function () {
         request(app)
             .put('/user/question')
             .send({
-                title: Mock.Random.ctitle(3, 20),
-                describe: Mock.Random.cparagraph(10, 50),
+                title: encodeURIComponent(Mock.Random.ctitle(3, 20)),
+                describe: encodeURIComponent(Mock.Random.cparagraph(10, 50)),
                 tags: []
             })
             .expect(200)
@@ -40,7 +40,7 @@ describe('用户新增问题回答', function () {
             .put('/user/question/answer')
             .send({
                 question_id: questionID,
-                answer_content: Mock.Random.cparagraph(5, 10),
+                answer_content: encodeURIComponent(Mock.Random.cparagraph(5, 10)),
             })
             .expect(200)
             .end(function (err, res) {
@@ -68,8 +68,8 @@ describe('删除用户的问题回答', function () {
         request(app)
             .put('/user/question')
             .send({
-                title: Mock.Random.ctitle(3, 20),
-                describe: Mock.Random.cparagraph(10, 50),
+                title: encodeURIComponent(Mock.Random.ctitle(3, 20)),
+                describe: encodeURIComponent(Mock.Random.cparagraph(10, 50)),
                 tags: []
             })
             .expect(200)
@@ -90,7 +90,7 @@ describe('删除用户的问题回答', function () {
                     .put('/user/question/answer')
                     .send({
                         question_id: questionID,
-                        answer_content: Mock.Random.cparagraph(5, 10),
+                        answer_content: encodeURIComponent(Mock.Random.cparagraph(5, 10)),
                     })
                     .expect(200)
                     .end(function (err, res) {

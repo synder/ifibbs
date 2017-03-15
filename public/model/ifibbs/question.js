@@ -3,7 +3,6 @@
  * @copyright
  * @desc
  */
-
 const async = require('async');
 const ifibbsMongodb = require('../../service/mongodb/ifibbs').client;
 const ifibbsElasticsearch = require('../../service/elasticsearch/ifibbs').client;
@@ -62,13 +61,13 @@ exports.createNewQuestion = function (userID, question, callback) {
 
         let questionID = question._id.toString();
 
-
         async.parallel({
             createElasticSearchDoc: function (cb) {
+                
                 //在搜索引擎中创建索引
                 let elasticDoc = {
-                    title: questionDoc.title,
-                    describe: questionDoc.describe,
+                    title: decodeURIComponent(questionDoc.title),
+                    describe: decodeURIComponent(questionDoc.describe),
                     tags: questionDoc.tags,
                     create_time: questionDoc.create_time,
                     update_time: questionDoc.update_time,
@@ -221,7 +220,7 @@ exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callb
         body: {
             query: {
                 multi_match: {
-                    query: content,
+                    query: decodeURIComponent(content),
                     fields: ['title', 'describe']
                 }
             },
@@ -249,8 +248,8 @@ exports.searchQuestionByAttribute = function (content, pageSkip, pageSize, callb
             return {
                 question_id: hit._id,
                 question_tags: hit._source.tags,
-                question_title: title,
-                question_describe: describe,
+                question_title: encodeURIComponent(title),
+                question_describe: encodeURIComponent(describe),
                 question_collect_count: hit._source.collect_count || 0,
                 create_user_id: hit._source.create_user_id,
                 create_user_name: hit._source.create_user_name,
@@ -279,7 +278,7 @@ exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback
         body: {
             query: {
                 multi_match: {
-                    query: content,
+                    query: decodeURIComponent(content),
                     fields: ['question_title', 'question_describe' , 'answer_content']
                 }
             },
@@ -303,13 +302,13 @@ exports.searchQuestionByAnswer = function (content, pageSkip, pageSize, callback
 
             let title = hit.highlight.question_title ? hit.highlight.question_title.join() : hit._source.question_title;
             let answerContent = hit.highlight.answer_content ? hit.highlight.answer_content.join() : hit._source.answer_content;
-
+            
             return {
                 question_id: hit._source.question_id,
                 question_tags: hit._source.tags,
-                question_title: title,
+                question_title: encodeURIComponent(title),
                 answer_id: hit._id,
-                answer_content: answerContent,
+                answer_content: encodeURIComponent(answerContent),
                 answer_comment_count: hit._source.answer_comment_count || 0,
                 answer_favour_count: hit._source.answer_favour_count || 0,
                 answer_collect_count: hit._source.answer_collect_count || 0,

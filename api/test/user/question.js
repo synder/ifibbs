@@ -61,8 +61,8 @@ describe('用户删除提问', function () {
         request(app)
             .put('/user/question')
             .send({
-                title: Mock.Random.ctitle(3, 20),
-                describe: Mock.Random.cparagraph(10, 50),
+                title: encodeURIComponent(Mock.Random.ctitle(3, 20)),
+                describe: encodeURIComponent(Mock.Random.cparagraph(10, 50)),
                 tags: []
             })
             .expect(200)
@@ -106,8 +106,8 @@ describe('用户新增提问', function(){
         request(app)
             .put('/user/question')
             .send({
-                title: Mock.Random.ctitle(3, 20),
-                describe: Mock.Random.cparagraph(10, 50),
+                title: encodeURIComponent(Mock.Random.ctitle(3, 20)),
+                describe: encodeURIComponent(Mock.Random.cparagraph(10, 50)),
                 tags: ['58aa50177ddbf5507c51f082', '58aa50177ddbf5507c51f083']
             })
             .expect(200)

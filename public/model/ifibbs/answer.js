@@ -181,13 +181,14 @@ exports.getQuestionAnswerList = function (questionID, lastAnswerID, pageSkip, pa
  * */
 exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, callback) {
     
-    QuestionAnswer.findOne({ question_id: questionID}, function (err, answer) {
+    QuestionAnswer.findOne({question_id: questionID}, function (err, answer) {
+        
         if(err){
             return callback(err);
         }
         
         if(!answer){
-            return callback(null, []);
+            return callback(null, [answerID]);
         }
         
         let createTime = answer.create_time;
@@ -225,9 +226,13 @@ exports.getPrevAndNextAnswerIDSByAnswerID = function (questionID, answerID, call
             },
         }, function (err, results) {
 
+           
+
             if(err){
-                return ;
+                return callback(err);
             }
+            
+            
 
             let prev = results.prev;
             let next = results.next;
@@ -369,9 +374,9 @@ exports.createNewQuestionAnswer = function (userID, questionID, content, callbac
                     body: {
                         create_user_id: userID,
                         question_id: question._id,
-                        question_title: question.title,
-                        question_describe: question.describe,
-                        answer_content: answer.content,
+                        question_title: decodeURIComponent(question.title),
+                        question_describe: decodeURIComponent(question.describe),
+                        answer_content: decodeURIComponent(answer.content),
                         create_time: answer.create_time,
                         update_time: answer.update_time
                     }
