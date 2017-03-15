@@ -1620,7 +1620,7 @@ exports.consumeForUserBeenAttentionMQS = function (callback) {
                 save: function (cb) {
                     UserNotification.create({
                         status: UserNotification.STATUS.UNREAD,      //通知状态
-                        category: UserNotification.CATEGORY.SYSTEM,      //通知类别
+                        category: UserNotification.CATEGORY.BUSINESS,      //通知类别
                         type: UserNotification.TYPE.USER_ANSWER_BEEN_COMMEND,      //通知类型
                         push_title: pushMessage,      //通知标题
                         notify_content: null,
