@@ -309,13 +309,29 @@ exports.notifyClientToDownload = function (isIOS, clientID, title, content, icon
  * */
 exports.notifyTransmissionMsg = function (clientIDS, title, content, callback) {
     
+    if(!clientIDS){
+        return callback();
+    }
+    
+    let temp = clientIDS;
+    clientIDS = [];
+    
+    if(Array.isArray(temp)){
+        temp.forEach(function (id) {
+            if(id){
+                clientIDS.push(id);
+            }
+        });
+        
+        if(clientIDS.length === 0){
+            return callback();
+        }
+    }
+    
     if(typeof content !== 'string'){
         content = JSON.stringify(content);
     }
     
-    console.log(APP_ID);
-    console.log(APP_KEY);
-
     let template = new TransmissionTemplate({
         appId: APP_ID,
         appKey: APP_KEY,
