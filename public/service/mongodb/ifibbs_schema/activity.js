@@ -29,6 +29,7 @@ ActivitySchema.virtual('id', function () {
 });
 
 ActivitySchema.index({create_time : 1});
+ActivitySchema.index({recommend : 1});
 
 
 //回答状态

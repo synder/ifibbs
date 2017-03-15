@@ -27,6 +27,7 @@ exports.createOrUpdateNewArticle = function (createUserID, subjectID, article, c
     
     let update = {
         status          : Article.STATUS.PUBLISHED,    //文章状态
+        order           : article.order || 10,
         top             : article.top || false,    //是否置顶
         recommend       : false,
         title           : article.title,    //文章标题
@@ -173,6 +174,25 @@ exports.getRecommendArticleList = function (pageSkip, pageSize, callback) {
         }
     }, callback);
 };
+
+/**
+ * @desc 获取首页推荐文章列表
+ * */
+exports.getFirstPageRecommendArticles = function (callback) {
+
+    let end = new Date();
+    let temp = new Date();
+    let start = temp.setHours(temp.getHours() - 1);
+
+    let condition = {
+        recommend: true,
+        status: Article.STATUS.PUBLISHED,
+        update_time : { $gt: start, $lt: end}
+    };
+
+    Article.find(condition, callback);
+};
+
 
 
 /**

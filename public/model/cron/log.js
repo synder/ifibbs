@@ -15,15 +15,12 @@ const cronMongodbClient = cronMongodb.client;
 const CronTaskLog = cronMongodbClient.model('CronTaskLog');
 
 exports.createCronTaskLogs = function (name, logs, callback) {
-
-    let condition = {};
-
-    callback();
-};
-
-exports.updateCronTaskLogs = function (name, logs, callback) {
-
-    let condition = {};
-
-    callback();
+    let doc = {
+        start_at        : logs.startTime,   //启动时间
+        stop_at         : logs.endTime,   //停止时间
+        job_name        : name,  //job名称
+        run_error       : logs.error
+    };
+    
+    CronTaskLog.create(doc, callback);
 };

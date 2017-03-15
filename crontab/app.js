@@ -14,20 +14,34 @@ const logger = global.logger = new Logger(config.log);
 
 const daemon = new Naemon();
 
-daemon.start(path.join(config.project.path, './jobs/recommend_answer.js'), null, null, function (err) {
+daemon.start(path.join(config.project.path, './jobs/recommend_answer.js'), null, null, function (err, module) {
     if(err){
-        logger.error(err);
+        return logger.error(err);
     }
+    
+    console.log('module:', module, 'started');
 });
 
-daemon.start(path.join(config.project.path, './jobs/recommend_article.js'), null, null, function (err) {
+daemon.start(path.join(config.project.path, './jobs/recommend_article.js'), null, null, function (err, module) {
     if(err){
-        logger.error(err);
+        return logger.error(err);
     }
+
+    console.log('module:', module, 'started');
 });
 
-daemon.start(path.join(config.project.path, './jobs/recommend_answer.js'), null, null, function (err) {
+daemon.start(path.join(config.project.path, './jobs/recommend_answer.js'), null, null, function (err, module) {
     if(err){
-        logger.error(err);
+        return logger.error(err);
     }
+
+    console.log('module:', module, 'started');
+});
+
+daemon.start(path.join(config.project.path, './jobs/recommend_subject.js'), null, null, function (err, module) {
+    if(err){
+        return logger.error(err);
+    }
+
+    console.log('module:', module, 'started');
 });

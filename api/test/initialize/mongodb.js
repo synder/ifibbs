@@ -193,6 +193,7 @@ const initSubject = function (callback) {
 
     docs.push({
         _id: SUBJECT_ID,
+        order: 10,
         status: Subject.STATUS.ENABLE,
         recommend: true,
         title: Mock.Random.ctitle(10, 20),
@@ -209,6 +210,7 @@ const initSubject = function (callback) {
     for (let i = 0; i < 10; i++) {
         docs.push({
             status: Subject.STATUS.ENABLE,
+            order: 12,
             recommend: false,
             title: Mock.Random.ctitle(10, 20),
             describe: Mock.Random.ctitle(50, 100),
@@ -321,6 +323,7 @@ const initArticle = function (callback) {
     let docs = [{
         _id: ARTICLE_ID,
         status: Article.STATUS.PUBLISHED,    //文章状态
+        order: 1,
         top: true,    //是否置顶
         recommend: true,
         title: Mock.Random.ctitle(10, 20),    //文章标题
@@ -342,6 +345,7 @@ const initArticle = function (callback) {
     for (let i = 0; i < 100; i++) {
         docs.push({
             status: Article.STATUS.PUBLISHED,    //文章状态
+            order: 1,
             top: true,    //是否置顶
             recommend: false,
             title: Mock.Random.ctitle(10, 20),    //文章标题
@@ -641,6 +645,7 @@ const initRecommend = function (callback) {
         let article = {
             _id: articleID,
             status: Article.STATUS.PUBLISHED,    //文章状态
+            order: 1,
             top: false,    //是否置顶
             recommend: false,
             title: Mock.Random.ctitle(10, 20),    //文章标题
@@ -785,6 +790,7 @@ const initCollection = function (callback) {
     let article = {
         _id: articleID,
         status: Article.STATUS.PUBLISHED,    //文章状态
+        order: 1,
         top: false,    //是否置顶
         recommend: false,
         title: Mock.Random.ctitle(10, 20),    //文章标题

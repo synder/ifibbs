@@ -13,6 +13,7 @@ const ObjectId = Schema.Types.ObjectId;
 //用户===================================================
 const SubjectSchema = new Schema({
     status          : {type: Number, required: true},   //专题状态
+    order           : {type: Number, required: true},   //显示顺序
     title           : {type: String, required: true},   //专题名称
     recommend       : {type: Boolean, required: true},  //是否推荐
     describe        : {type: String, required: true},   //专题描述

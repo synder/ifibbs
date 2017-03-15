@@ -70,6 +70,8 @@ Daemon.prototype.start = function(module, args, options, callback){
     });
 
     self.workers[module] = childProcess;
+    
+    callback && callback(null, module);
 
     return childProcess;
 };

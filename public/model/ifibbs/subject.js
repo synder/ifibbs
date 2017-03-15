@@ -12,6 +12,25 @@ const ifibbsElasticsearch = require('../../service/elasticsearch/ifibbs').client
 const Subject = ifibbsMongodb.model('Subject');
 
 /**
+ * @desc 获取首页推荐文章列表
+ * */
+exports.getFirstPageRecommendSubjects = function (callback) {
+
+    let end = new Date();
+    let temp = new Date();
+    let start = temp.setHours(temp.getHours() - 1);
+
+    let condition = {
+        recommend: true,
+        status: Subject.STATUS.ENABLE,
+        update_time : { $gt: start, $lt: end}
+    };
+
+    Subject.find(condition, callback);
+};
+
+
+/**
  * @desc 获取专题列表
  * */
 exports.getSubjectList = function (callback) {

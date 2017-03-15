@@ -13,6 +13,7 @@ const ObjectId = Schema.Types.ObjectId;
 const ArticleSchema = new Schema({
     status          : {type: Number,  required: true},    //文章状态
     top             : {type: Boolean, required: true},    //是否置顶
+    order           : {type: Number, required: true},     //显示顺序
     recommend       : {type: Boolean, required: true},    //是否推荐
     title           : {type: String,  required: true},    //文章标题
     summary         : {type: String,  required: true},    //文章摘要

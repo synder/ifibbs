@@ -1,27 +1,28 @@
 /**
  * @author synder on 2017/3/15
  * @copyright
- * @desc 推荐问答或者文章给用户
+ * @desc
  */
+
 
 const async = require('async');
 const cron = require('cron');
+
 const schedule = require('../lib/schedule');
 const config = global.config = require('../config');
 
-const CONFIG = config.jobs.ifibbs.recommend_answer;
+const CONFIG = config.jobs.ifibbs.recommend_article;
 
 const cronLogModel = require('../../public/model/cron/log');
 const ifibbsRecommendModel = require('../../public/model/ifibbs/recommend');
-const ifibbsAnswerModel = require('../../public/model/ifibbs/answer');
+const ifibbsSubjectModel = require('../../public/model/ifibbs/subject');
 
-const JOB_NAME = 'recommend_question_answer';
+const JOB_NAME = 'recommend_subject';
 
 /***
  * @desc 推荐任务，推荐问答
  * */
-const recommendQuestionAnswerJobs = new cron.CronJob(schedule(CONFIG), function () {
-
+const recommendSubjectJobs = new cron.CronJob(schedule(CONFIG), function () {
     let start = new Date();
 
     let saveLog = function (err) {
@@ -36,20 +37,20 @@ const recommendQuestionAnswerJobs = new cron.CronJob(schedule(CONFIG), function 
         });
     };
 
-    ifibbsAnswerModel.getFirstPageRecommendAnswers(function (err, answers) {
+    ifibbsSubjectModel.getFirstPageRecommendSubjects(function (err, subjects) {
         if(err){
             return saveLog(err);
         }
 
-        if(!answers){
+        if(!subjects){
             return saveLog(null);
         }
 
-        async.eachLimit(answers, 2, function(answer, cb){
+        async.eachLimit(subjects, 2, function(subject, cb){
 
-            let  order = 10;
+            let order = subject.order || 10;
 
-            ifibbsRecommendModel.createAnswerRecommend(null, answer.question_id, answer._id, ~~order, cb);
+            ifibbsRecommendModel.createSubjectRecommend(null, subject._id, ~~order, cb);
 
         }, function(err, result){
             saveLog(err);
@@ -59,4 +60,4 @@ const recommendQuestionAnswerJobs = new cron.CronJob(schedule(CONFIG), function 
 });
 
 
-recommendQuestionAnswerJobs.start();
+recommendSubjectJobs.start();
