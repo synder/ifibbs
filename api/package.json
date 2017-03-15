@@ -3,7 +3,6 @@
   "version": "2.0.0",
   "description": "",
   "dependencies": {
-    "utf8": "*",
     "async": "*",
     "bluebird": "^3.4.7",
     "body-parser": "*",
