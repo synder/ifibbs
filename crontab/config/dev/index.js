@@ -81,28 +81,36 @@ module.exports =  {
     
     jobs: {
         ifibbs: {
-            recommend_activity: {
+            recommend_answer: {
                 months: '*',
                 days: '*',
-                weeks: '0-6',
-                hours: '0-23',
-                minutes: 10,
+                weeks: '*',
+                hours: '*/1',
+                minutes: 0,
                 seconds: 0
             },
             recommend_article: {
                 months: '*',
                 days: '*',
-                weeks: '0-6',
-                hours: '0-23',
-                minutes: 10,
+                weeks: '*',
+                hours: '*',
+                minutes: '*/5',
                 seconds: 0
             },
-            recommend_answer: {
+            recommend_subject: {
                 months: '*',
                 days: '*',
-                weeks: '0-6',
-                hours: '0-23',
-                minutes: '0-59',
+                weeks: '*',
+                hours: '*',
+                minutes: '*/30',
+                seconds: 0
+            },
+            recommend_activity: {
+                months: '*',
+                days: '*',
+                weeks: '*',
+                hours: '*',
+                minutes: '*/10',
                 seconds: 0
             },
         }
