@@ -175,7 +175,6 @@ exports.searchQuestionsByAttr = function(req, res, next){
                 question_id: question.question_id,
                 question_title: question.question_title,
                 question_tags: question.question_tags || [],
-                question_describe: question.question_describe,
                 question_answer_count: question.answer_count || 0,
                 question_favour_count: question.favour_count || 0,
                 question_collect_count: question.collect_count || 0,
